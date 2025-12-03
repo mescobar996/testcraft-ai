@@ -2,149 +2,147 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Wand2, FileText, Info } from "lucide-react";
+import { FileText, Wand2, Info } from "lucide-react";
+import { TemplatesPanel } from "@/components/TemplatesPanel";
 
 interface TestCaseFormProps {
-  onGenerate: (requirement: string, context: string, format: string) => Promise<void>;
+  onGenerate: (requirement: string, context: string, format: string) => void;
   isLoading: boolean;
 }
-
-const EXAMPLE_REQUIREMENT = `Como usuario registrado
-Quiero poder iniciar sesión en la aplicación
-Para acceder a mi cuenta personal
-
-Criterios de aceptación:
-- El usuario debe ingresar email y contraseña
-- El email debe tener formato válido
-- La contraseña debe tener mínimo 8 caracteres
-- Después de 3 intentos fallidos, la cuenta se bloquea por 15 minutos
-- Si las credenciales son correctas, redirigir al dashboard`;
 
 export function TestCaseForm({ onGenerate, isLoading }: TestCaseFormProps) {
   const [requirement, setRequirement] = useState("");
   const [context, setContext] = useState("");
   const [format, setFormat] = useState("both");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!requirement.trim()) return;
-    await onGenerate(requirement, context, format);
+    onGenerate(requirement, context, format);
+  };
+
+  const handleSelectTemplate = (templateRequirement: string, templateContext: string) => {
+    setRequirement(templateRequirement);
+    setContext(templateContext);
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const loadExample = () => {
-    setRequirement(EXAMPLE_REQUIREMENT);
-    setContext("Aplicación web de e-commerce. Base de datos PostgreSQL. Frontend en React.");
+    setRequirement(`Como usuario registrado, quiero poder iniciar sesión en la aplicación con mi email y contraseña.
+
+Criterios de aceptación:
+- El formulario debe tener campos para email y contraseña
+- El email debe tener formato válido
+- La contraseña debe tener mínimo 8 caracteres
+- Mostrar mensaje de error si las credenciales son incorrectas
+- Redirigir al dashboard después de login exitoso
+- Opción "Recordarme" para mantener la sesión activa`);
+    setContext("Aplicación web en React. Autenticación con JWT. Base de datos PostgreSQL.");
   };
 
   return (
-    <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
+    <div className="space-y-4">
+      {/* Templates Panel */}
+      <TemplatesPanel onSelectTemplate={handleSelectTemplate} />
+      
+      {/* Main Form */}
+      <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 space-y-4">
+        <div className="flex items-center gap-2 mb-2">
           <FileText className="w-5 h-5 text-violet-400" />
-          Requisito o Historia de Usuario
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Main Requirement Input */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-slate-300">
-                Descripción del requisito *
-              </label>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={loadExample}
-                className="text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 text-xs"
-              >
-                Cargar ejemplo
-              </Button>
-            </div>
-            <Textarea
-              value={requirement}
-              onChange={(e) => setRequirement(e.target.value)}
-              placeholder="Pegá aquí tu historia de usuario, requisito funcional o descripción de la funcionalidad a probar..."
-              className="min-h-[200px] bg-slate-950/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
-            />
-          </div>
+          <h2 className="font-semibold text-white">Requisito o Historia de Usuario</h2>
+        </div>
 
-          {/* Context Input */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Contexto adicional
-              <span className="text-slate-500 font-normal">(opcional)</span>
+        {/* Requirement Field */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-sm text-slate-300">
+              Descripción del requisito <span className="text-red-400">*</span>
             </label>
-            <Textarea
-              value={context}
-              onChange={(e) => setContext(e.target.value)}
-              placeholder="Información adicional: tecnologías usadas, restricciones, reglas de negocio..."
-              className="min-h-[80px] bg-slate-950/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
-            />
+            <button
+              onClick={loadExample}
+              className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+            >
+              Cargar ejemplo
+            </button>
           </div>
+          <Textarea
+            placeholder="Pegá aquí tu historia de usuario, requisito funcional o descripción de la funcionalidad a probar..."
+            value={requirement}
+            onChange={(e) => setRequirement(e.target.value)}
+            className="min-h-[150px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
+          />
+        </div>
 
-          {/* Format Selector */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">
-              Formato de salida
-            </label>
-            <Select value={format} onValueChange={setFormat}>
-              <SelectTrigger className="bg-slate-950/50 border-slate-700 text-white">
-                <SelectValue placeholder="Seleccionar formato" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-slate-700">
-                <SelectItem value="both" className="text-white hover:bg-slate-800">
-                  Tabla + Gherkin (Recomendado)
-                </SelectItem>
-                <SelectItem value="table" className="text-white hover:bg-slate-800">
-                  Solo Tabla clásica
-                </SelectItem>
-                <SelectItem value="gherkin" className="text-white hover:bg-slate-800">
-                  Solo Gherkin (BDD)
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Context Field */}
+        <div className="space-y-2">
+          <label className="text-sm text-slate-300">
+            Contexto adicional <span className="text-slate-500">(opcional)</span>
+          </label>
+          <Textarea
+            placeholder="Información adicional: tecnologías usadas, restricciones, reglas de negocio..."
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            className="min-h-[80px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
+          />
+        </div>
 
-          {/* Info Box */}
-          <div className="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
-            <Info className="w-5 h-5 text-violet-400 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-slate-400">
-              Mientras más detallado sea el requisito, mejores serán los casos de prueba generados. 
-              Incluí criterios de aceptación, validaciones y reglas de negocio si las tenés.
-            </p>
-          </div>
+        {/* Format Select */}
+        <div className="space-y-2">
+          <label className="text-sm text-slate-300">Formato de salida</label>
+          <Select value={format} onValueChange={setFormat}>
+            <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white focus:ring-violet-500/20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectItem value="both" className="text-white focus:bg-violet-500/20">
+                Tabla + Gherkin (Recomendado)
+              </SelectItem>
+              <SelectItem value="table" className="text-white focus:bg-violet-500/20">
+                Solo Tabla
+              </SelectItem>
+              <SelectItem value="gherkin" className="text-white focus:bg-violet-500/20">
+                Solo Gherkin
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            disabled={!requirement.trim() || isLoading}
-            className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium py-5 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Generando casos de prueba...
-              </>
-            ) : (
-              <>
-                <Wand2 className="w-4 h-4 mr-2" />
-                Generar Casos de Prueba
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        {/* Info Box */}
+        <div className="flex items-start gap-2 p-3 bg-slate-800/30 rounded-lg">
+          <Info className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-slate-400">
+            Mientras más detallado sea el requisito, mejores serán los casos de prueba generados. 
+            Incluí criterios de aceptación, validaciones y reglas de negocio si las tenés.
+          </p>
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          onClick={handleSubmit}
+          disabled={!requirement.trim() || isLoading}
+          className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+        >
+          {isLoading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+              Generando casos de prueba...
+            </>
+          ) : (
+            <>
+              <Wand2 className="w-5 h-5 mr-2" />
+              Generar Casos de Prueba
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
   );
 }
