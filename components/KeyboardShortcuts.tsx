@@ -20,12 +20,10 @@ interface KeyboardShortcutsProps {
 export function useKeyboardShortcuts(shortcuts: ShortcutAction[]) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // No activar si estamos escribiendo en un input/textarea
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
       ) {
-        // Solo permitir Ctrl+Enter en textareas
         if (!(e.ctrlKey && e.key === "Enter")) {
           return;
         }
@@ -53,7 +51,6 @@ export function useKeyboardShortcuts(shortcuts: ShortcutAction[]) {
 export function KeyboardShortcutsHelp({ shortcuts }: KeyboardShortcutsProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Shortcut para abrir/cerrar el panel de ayuda
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "?" && e.shiftKey) {
@@ -80,7 +77,6 @@ export function KeyboardShortcutsHelp({ shortcuts }: KeyboardShortcutsProps) {
 
   return (
     <>
-      {/* Help Button */}
       <Button
         onClick={() => setIsOpen(true)}
         variant="outline"
@@ -91,7 +87,6 @@ export function KeyboardShortcutsHelp({ shortcuts }: KeyboardShortcutsProps) {
         <Keyboard className="w-4 h-4" />
       </Button>
 
-      {/* Modal */}
       {isOpen && (
         <>
           <div 
@@ -100,7 +95,7 @@ export function KeyboardShortcutsHelp({ shortcuts }: KeyboardShortcutsProps) {
           />
           
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-w-md w-full overflow-hidden mt-16">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-slate-800">
                 <div className="flex items-center gap-2">
@@ -118,7 +113,7 @@ export function KeyboardShortcutsHelp({ shortcuts }: KeyboardShortcutsProps) {
               </div>
 
               {/* Shortcuts List */}
-              <div className="p-4 space-y-2 max-h-96 overflow-y-auto">
+              <div className="p-4 space-y-2 max-h-80 overflow-y-auto">
                 {shortcuts.map((shortcut, index) => (
                   <div
                     key={index}
@@ -131,7 +126,6 @@ export function KeyboardShortcutsHelp({ shortcuts }: KeyboardShortcutsProps) {
                   </div>
                 ))}
                 
-                {/* Help shortcut */}
                 <div className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-800/50 border-t border-slate-800 mt-2 pt-4">
                   <span className="text-sm text-slate-300">Mostrar/ocultar atajos</span>
                   <kbd className="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-xs text-violet-400 font-mono">

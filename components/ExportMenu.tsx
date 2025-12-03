@@ -17,6 +17,7 @@ import {
   exportToQTest,
   exportToJSON,
 } from "@/lib/export-formats";
+import { useToast } from "@/components/Toast";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
@@ -28,6 +29,7 @@ interface ExportMenuProps {
 
 export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { showExportToast } = useToast();
 
   const exportToExcel = () => {
     const data = testCases.map((tc) => ({
@@ -50,6 +52,7 @@ export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps)
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(blob, `casos-de-prueba-${new Date().toISOString().split("T")[0]}.xlsx`);
+    showExportToast("Excel");
     setIsOpen(false);
   };
 
@@ -60,21 +63,27 @@ export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps)
         break;
       case "pdf":
         onExportPDF();
+        showExportToast("PDF");
         break;
       case "jira":
         exportToJira(testCases);
+        showExportToast("Jira CSV");
         break;
       case "testrail":
         exportToTestRail(testCases);
+        showExportToast("TestRail CSV");
         break;
       case "zephyr":
         exportToZephyr(testCases);
+        showExportToast("Zephyr CSV");
         break;
       case "qtest":
         exportToQTest(testCases);
+        showExportToast("qTest Excel");
         break;
       case "json":
         exportToJSON(testCases);
+        showExportToast("JSON");
         break;
     }
     setIsOpen(false);

@@ -21,6 +21,7 @@ import { StatsCards } from "@/components/StatsCards";
 import { ExportMenu } from "@/components/ExportMenu";
 import { useAuth } from "@/lib/auth-context";
 import { addFavorite } from "@/lib/favorites-db";
+import { useToast } from "@/components/Toast";
 
 interface TestCaseOutputProps {
   result: GenerationResult | null;
@@ -33,6 +34,7 @@ type FilterType = "all" | "Positivo" | "Negativo" | "Borde";
 
 export function TestCaseOutput({ result, isLoading, error, requirementTitle }: TestCaseOutputProps) {
   const { user } = useAuth();
+  const { showCopyToast, showFavoriteToast } = useToast();
   const [expandedCases, setExpandedCases] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
@@ -51,6 +53,7 @@ export function TestCaseOutput({ result, isLoading, error, requirementTitle }: T
   const copyToClipboard = async (text: string, id: string) => {
     await navigator.clipboard.writeText(text);
     setCopiedId(id);
+    showCopyToast();
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -62,6 +65,7 @@ export function TestCaseOutput({ result, isLoading, error, requirementTitle }: T
     
     if (saved) {
       setFavoritedIds(prev => new Set([...prev, tc.id]));
+      showFavoriteToast();
     }
   };
 
@@ -89,7 +93,6 @@ Resultado Esperado: ${tc.expectedResult}`;
     activeFilter === "all" ? true : tc.type === activeFilter
   ) || [];
 
-  // Loading State
   if (isLoading) {
     return (
       <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8">
@@ -118,7 +121,6 @@ Resultado Esperado: ${tc.expectedResult}`;
     );
   }
 
-  // Error State
   if (error) {
     return (
       <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
@@ -133,7 +135,6 @@ Resultado Esperado: ${tc.expectedResult}`;
     );
   }
 
-  // Empty State
   if (!result) {
     return (
       <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 border-dashed">
@@ -156,7 +157,6 @@ Resultado Esperado: ${tc.expectedResult}`;
     );
   }
 
-  // Results
   return (
     <div className="space-y-4">
       <StatsCards testCases={result.testCases} />
