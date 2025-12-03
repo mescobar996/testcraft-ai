@@ -9,18 +9,15 @@ import {
   ChevronUp,
   Copy,
   Check,
-  FileSpreadsheet,
   FileText,
   Code,
   AlertCircle,
   ListChecks,
-  FileDown,
   Filter,
 } from "lucide-react";
 import { GenerationResult, TestCase } from "@/app/page";
 import { StatsCards } from "@/components/StatsCards";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import { ExportMenu } from "@/components/ExportMenu";
 
 interface TestCaseOutputProps {
   result: GenerationResult | null;
@@ -51,34 +48,8 @@ export function TestCaseOutput({ result, isLoading, error }: TestCaseOutputProps
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const exportToExcel = () => {
-    if (!result) return;
-
-    const data = result.testCases.map((tc) => ({
-      ID: tc.id,
-      Título: tc.title,
-      Tipo: tc.type,
-      Prioridad: tc.priority,
-      Precondiciones: tc.preconditions,
-      Pasos: tc.steps.join("\n"),
-      "Resultado Esperado": tc.expectedResult,
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Casos de Prueba");
-
-    const gherkinWs = XLSX.utils.aoa_to_sheet([[result.gherkin]]);
-    XLSX.utils.book_append_sheet(wb, gherkinWs, "Gherkin");
-
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, `casos-de-prueba-${new Date().toISOString().split("T")[0]}.xlsx`);
-  };
-
   const exportToPDF = async () => {
     if (!result) return;
-    
     const { generatePDF } = await import('@/lib/generate-pdf');
     generatePDF({
       testCases: result.testCases,
@@ -175,26 +146,13 @@ Resultado Esperado: ${tc.expectedResult}`;
       {/* Stats */}
       <StatsCards testCases={result.testCases} />
 
-      {/* Export Buttons */}
+      {/* Export & Copy Buttons */}
       <div className="flex gap-2 flex-wrap">
-        <Button
-          onClick={exportToExcel}
-          variant="outline"
-          size="sm"
-          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
-        >
-          <FileSpreadsheet className="w-4 h-4 mr-2 text-green-400" />
-          Exportar Excel
-        </Button>
-        <Button
-          onClick={exportToPDF}
-          variant="outline"
-          size="sm"
-          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
-        >
-          <FileDown className="w-4 h-4 mr-2 text-red-400" />
-          Exportar PDF
-        </Button>
+        <ExportMenu 
+          testCases={result.testCases} 
+          gherkin={result.gherkin}
+          onExportPDF={exportToPDF}
+        />
         <Button
           onClick={() => copyToClipboard(result.gherkin, "gherkin-all")}
           variant="outline"
@@ -317,7 +275,6 @@ Resultado Esperado: ${tc.expectedResult}`;
                 {/* Expanded Content */}
                 {expandedCases.has(tc.id) && (
                   <div className="px-4 pb-4 space-y-3 border-t border-slate-800 pt-3">
-                    {/* Preconditions */}
                     {tc.preconditions && (
                       <div>
                         <p className="text-xs text-slate-400 mb-1">Precondiciones</p>
@@ -325,7 +282,6 @@ Resultado Esperado: ${tc.expectedResult}`;
                       </div>
                     )}
 
-                    {/* Steps */}
                     <div>
                       <p className="text-xs text-slate-400 mb-2">Pasos</p>
                       <ol className="space-y-1">
@@ -338,13 +294,11 @@ Resultado Esperado: ${tc.expectedResult}`;
                       </ol>
                     </div>
 
-                    {/* Expected Result */}
                     <div>
                       <p className="text-xs text-slate-400 mb-1">Resultado Esperado</p>
                       <p className="text-sm text-green-400">{tc.expectedResult}</p>
                     </div>
 
-                    {/* Copy Button */}
                     <Button
                       onClick={() => copyToClipboard(formatTestCaseForCopy(tc), tc.id)}
                       variant="ghost"
