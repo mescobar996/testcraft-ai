@@ -14,23 +14,29 @@ import {
   AlertCircle,
   ListChecks,
   Filter,
+  Star,
 } from "lucide-react";
 import { GenerationResult, TestCase } from "@/app/page";
 import { StatsCards } from "@/components/StatsCards";
 import { ExportMenu } from "@/components/ExportMenu";
+import { useAuth } from "@/lib/auth-context";
+import { addFavorite } from "@/lib/favorites-db";
 
 interface TestCaseOutputProps {
   result: GenerationResult | null;
   isLoading: boolean;
   error: string | null;
+  requirementTitle?: string;
 }
 
 type FilterType = "all" | "Positivo" | "Negativo" | "Borde";
 
-export function TestCaseOutput({ result, isLoading, error }: TestCaseOutputProps) {
+export function TestCaseOutput({ result, isLoading, error, requirementTitle }: TestCaseOutputProps) {
+  const { user } = useAuth();
   const [expandedCases, setExpandedCases] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [favoritedIds, setFavoritedIds] = useState<Set<string>>(new Set());
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedCases);
@@ -46,6 +52,17 @@ export function TestCaseOutput({ result, isLoading, error }: TestCaseOutputProps
     await navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleFavorite = async (tc: TestCase) => {
+    if (!user) return;
+    
+    const title = requirementTitle || "Sin título";
+    const saved = await addFavorite(user.id, tc, title);
+    
+    if (saved) {
+      setFavoritedIds(prev => new Set([...prev, tc.id]));
+    }
   };
 
   const exportToPDF = async () => {
@@ -68,7 +85,6 @@ ${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join("\n")}
 Resultado Esperado: ${tc.expectedResult}`;
   };
 
-  // Filter test cases
   const filteredTestCases = result?.testCases.filter(tc => 
     activeFilter === "all" ? true : tc.type === activeFilter
   ) || [];
@@ -143,10 +159,8 @@ Resultado Esperado: ${tc.expectedResult}`;
   // Results
   return (
     <div className="space-y-4">
-      {/* Stats */}
       <StatsCards testCases={result.testCases} />
 
-      {/* Export & Copy Buttons */}
       <div className="flex gap-2 flex-wrap">
         <ExportMenu 
           testCases={result.testCases} 
@@ -168,7 +182,6 @@ Resultado Esperado: ${tc.expectedResult}`;
         </Button>
       </div>
 
-      {/* Filter Buttons */}
       <div className="flex items-center gap-2 flex-wrap">
         <Filter className="w-4 h-4 text-slate-400" />
         <span className="text-sm text-slate-400 mr-1">Filtrar:</span>
@@ -198,7 +211,6 @@ Resultado Esperado: ${tc.expectedResult}`;
         ))}
       </div>
 
-      {/* Tabs */}
       <Tabs defaultValue="table" className="w-full">
         <TabsList className="bg-slate-800 border border-slate-700">
           <TabsTrigger
@@ -217,7 +229,6 @@ Resultado Esperado: ${tc.expectedResult}`;
           </TabsTrigger>
         </TabsList>
 
-        {/* Table View */}
         <TabsContent value="table" className="mt-4 space-y-3">
           {filteredTestCases.length === 0 ? (
             <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6 text-center">
@@ -230,7 +241,6 @@ Resultado Esperado: ${tc.expectedResult}`;
                 className="bg-slate-900/50 border border-slate-800 rounded-lg overflow-hidden animate-in fade-in slide-in-from-bottom-2"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                {/* Header */}
                 <button
                   onClick={() => toggleExpand(tc.id)}
                   className="w-full flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors"
@@ -272,7 +282,6 @@ Resultado Esperado: ${tc.expectedResult}`;
                   </div>
                 </button>
 
-                {/* Expanded Content */}
                 {expandedCases.has(tc.id) && (
                   <div className="px-4 pb-4 space-y-3 border-t border-slate-800 pt-3">
                     {tc.preconditions && (
@@ -299,24 +308,43 @@ Resultado Esperado: ${tc.expectedResult}`;
                       <p className="text-sm text-green-400">{tc.expectedResult}</p>
                     </div>
 
-                    <Button
-                      onClick={() => copyToClipboard(formatTestCaseForCopy(tc), tc.id)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-slate-400 hover:text-white"
-                    >
-                      {copiedId === tc.id ? (
-                        <>
-                          <Check className="w-4 h-4 mr-2 text-green-400" />
-                          Copiado
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4 mr-2" />
-                          Copiar caso
-                        </>
+                    <div className="flex items-center gap-2 pt-2">
+                      <Button
+                        onClick={() => copyToClipboard(formatTestCaseForCopy(tc), tc.id)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-400 hover:text-white"
+                      >
+                        {copiedId === tc.id ? (
+                          <>
+                            <Check className="w-4 h-4 mr-2 text-green-400" />
+                            Copiado
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4 mr-2" />
+                            Copiar
+                          </>
+                        )}
+                      </Button>
+                      
+                      {user && (
+                        <Button
+                          onClick={() => handleFavorite(tc)}
+                          variant="ghost"
+                          size="sm"
+                          disabled={favoritedIds.has(tc.id)}
+                          className={`${
+                            favoritedIds.has(tc.id)
+                              ? "text-yellow-400"
+                              : "text-slate-400 hover:text-yellow-400"
+                          }`}
+                        >
+                          <Star className={`w-4 h-4 mr-2 ${favoritedIds.has(tc.id) ? "fill-yellow-400" : ""}`} />
+                          {favoritedIds.has(tc.id) ? "Guardado" : "Favorito"}
+                        </Button>
                       )}
-                    </Button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -324,7 +352,6 @@ Resultado Esperado: ${tc.expectedResult}`;
           )}
         </TabsContent>
 
-        {/* Gherkin View */}
         <TabsContent value="gherkin" className="mt-4">
           <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4">
             <pre className="text-sm text-slate-300 whitespace-pre-wrap font-mono overflow-x-auto">
@@ -334,7 +361,6 @@ Resultado Esperado: ${tc.expectedResult}`;
         </TabsContent>
       </Tabs>
 
-      {/* Summary */}
       <div className="bg-slate-800/30 border border-slate-800 rounded-lg p-4">
         <p className="text-xs text-slate-400 mb-1">Resumen</p>
         <p className="text-sm text-slate-300">{result.summary}</p>

@@ -8,6 +8,7 @@ import { AppIcon } from "@/components/AppIcon";
 import { UserMenu } from "@/components/UserMenu";
 import { UsageBanner } from "@/components/UsageBanner";
 import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
+import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { useAuth } from "@/lib/auth-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
 import { Zap, Shield, Clock } from "lucide-react";
@@ -62,10 +63,8 @@ export default function Home() {
       const data = await response.json();
       setResult(data);
 
-      // Increment usage counter
       incrementUsage();
 
-      // Save to cloud if user is logged in
       if (user) {
         const saved = await saveGeneration(user.id, requirement, context, data);
         if (saved) {
@@ -86,6 +85,15 @@ export default function Home() {
     setError(null);
   };
 
+  const handleSelectFavorite = (testCase: TestCase) => {
+    // Mostrar solo el caso favorito seleccionado
+    setResult({
+      testCases: [testCase],
+      gherkin: "",
+      summary: "Caso de prueba favorito"
+    });
+  };
+
   return (
     <main className="min-h-screen relative">
       <AnimatedBackground />
@@ -102,15 +110,12 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Right side: History + User Menu */}
             <div className="flex items-center gap-3">
-              {/* Cloud History */}
+              <FavoritesPanel onSelectCase={handleSelectFavorite} />
               <CloudHistoryPanel 
                 onSelect={handleSelectFromHistory}
                 onNewGeneration={newGeneration}
               />
-              
-              {/* User Menu */}
               <UserMenu />
             </div>
           </div>
@@ -134,27 +139,23 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Usage Banner */}
           <UsageBanner />
 
-          {/* Two Column Layout */}
           <div className="grid lg:grid-cols-2 gap-6">
-            {/* Input Column */}
             <div className="order-2 lg:order-1">
               <TestCaseForm onGenerate={handleGenerate} isLoading={isLoading} />
             </div>
 
-            {/* Output Column */}
             <div className="order-1 lg:order-2">
               <TestCaseOutput 
                 result={result} 
                 isLoading={isLoading} 
-                error={error} 
+                error={error}
+                requirementTitle={currentRequirement.split('\n')[0].substring(0, 50)}
               />
             </div>
           </div>
           
-          {/* Features Section */}
           <div className="mt-16 grid md:grid-cols-3 gap-6">
             <FeatureCard
               icon={<Zap className="w-6 h-6 text-yellow-400" />}
