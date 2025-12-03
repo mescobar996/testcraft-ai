@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +15,9 @@ import {
   ListChecks,
   Filter,
   Star,
+  Search,
+  ChevronsUpDown,
+  X,
 } from "lucide-react";
 import { GenerationResult, TestCase } from "@/app/page";
 import { StatsCards } from "@/components/StatsCards";
@@ -39,6 +42,8 @@ export function TestCaseOutput({ result, isLoading, error, requirementTitle }: T
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [favoritedIds, setFavoritedIds] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [allExpanded, setAllExpanded] = useState(false);
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedCases);
@@ -48,6 +53,19 @@ export function TestCaseOutput({ result, isLoading, error, requirementTitle }: T
       newExpanded.add(id);
     }
     setExpandedCases(newExpanded);
+  };
+
+  const toggleExpandAll = () => {
+    if (!result) return;
+    
+    if (allExpanded) {
+      setExpandedCases(new Set());
+      setAllExpanded(false);
+    } else {
+      const allIds = new Set(result.testCases.map(tc => tc.id));
+      setExpandedCases(allIds);
+      setAllExpanded(true);
+    }
   };
 
   const copyToClipboard = async (text: string, id: string) => {
@@ -89,9 +107,30 @@ ${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join("\n")}
 Resultado Esperado: ${tc.expectedResult}`;
   };
 
-  const filteredTestCases = result?.testCases.filter(tc => 
-    activeFilter === "all" ? true : tc.type === activeFilter
-  ) || [];
+  // Filtrar por tipo y búsqueda
+  const filteredTestCases = useMemo(() => {
+    if (!result) return [];
+    
+    let filtered = result.testCases;
+    
+    // Filtrar por tipo
+    if (activeFilter !== "all") {
+      filtered = filtered.filter(tc => tc.type === activeFilter);
+    }
+    
+    // Filtrar por búsqueda
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(tc => 
+        tc.title.toLowerCase().includes(query) ||
+        tc.preconditions.toLowerCase().includes(query) ||
+        tc.steps.some(step => step.toLowerCase().includes(query)) ||
+        tc.expectedResult.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
+  }, [result, activeFilter, searchQuery]);
 
   if (isLoading) {
     return (
@@ -161,6 +200,7 @@ Resultado Esperado: ${tc.expectedResult}`;
     <div className="space-y-4">
       <StatsCards testCases={result.testCases} />
 
+      {/* Export & Actions */}
       <div className="flex gap-2 flex-wrap">
         <ExportMenu 
           testCases={result.testCases} 
@@ -180,8 +220,38 @@ Resultado Esperado: ${tc.expectedResult}`;
           )}
           Copiar Gherkin
         </Button>
+        <Button
+          onClick={toggleExpandAll}
+          variant="outline"
+          size="sm"
+          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
+        >
+          <ChevronsUpDown className="w-4 h-4 mr-2" />
+          {allExpanded ? "Colapsar" : "Expandir"} todos
+        </Button>
       </div>
 
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+        <input
+          type="text"
+          placeholder="Buscar en casos de prueba..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-10 pr-10 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20 text-sm"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Filters */}
       <div className="flex items-center gap-2 flex-wrap">
         <Filter className="w-4 h-4 text-slate-400" />
         <span className="text-sm text-slate-400 mr-1">Filtrar:</span>
@@ -211,6 +281,13 @@ Resultado Esperado: ${tc.expectedResult}`;
         ))}
       </div>
 
+      {/* Results count when searching */}
+      {searchQuery && (
+        <p className="text-sm text-slate-400">
+          {filteredTestCases.length} resultado{filteredTestCases.length !== 1 ? 's' : ''} para &quot;{searchQuery}&quot;
+        </p>
+      )}
+
       <Tabs defaultValue="table" className="w-full">
         <TabsList className="bg-slate-800 border border-slate-700">
           <TabsTrigger
@@ -232,7 +309,9 @@ Resultado Esperado: ${tc.expectedResult}`;
         <TabsContent value="table" className="mt-4 space-y-3">
           {filteredTestCases.length === 0 ? (
             <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6 text-center">
-              <p className="text-slate-400">No hay casos de tipo "{activeFilter}"</p>
+              <p className="text-slate-400">
+                {searchQuery ? `No se encontraron casos para "${searchQuery}"` : `No hay casos de tipo "${activeFilter}"`}
+              </p>
             </div>
           ) : (
             filteredTestCases.map((tc, index) => (
