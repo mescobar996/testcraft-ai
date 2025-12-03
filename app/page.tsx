@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { TestCaseForm } from "@/components/TestCaseForm";
 import { TestCaseOutput } from "@/components/TestCaseOutput";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { HistoryPanel, HistoryItem } from "@/components/HistoryPanel";
 import { AppIcon, AppIconSVG } from "@/components/AppIcon";
 import { UserMenu } from "@/components/UserMenu";
 import { UsageBanner } from "@/components/UsageBanner";
+import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
 import { useAuth } from "@/lib/auth-context";
+import { saveGeneration, HistoryRecord } from "@/lib/history-db";
 import { Zap, Shield, Clock } from "lucide-react";
 
 export interface TestCase {
@@ -27,45 +28,23 @@ export interface GenerationResult {
   summary: string;
 }
 
-const HISTORY_KEY = "testcraft-history";
-
 export default function Home() {
   const [result, setResult] = useState<GenerationResult | null>(null);
+  const [currentRequirement, setCurrentRequirement] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-  const { canGenerate, incrementUsage } = useAuth();
-
-  // Load history from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem(HISTORY_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setHistory(parsed.map((item: HistoryItem) => ({
-          ...item,
-          timestamp: new Date(item.timestamp)
-        })));
-      } catch (e) {
-        console.error("Error loading history:", e);
-      }
-    }
-  }, []);
-
-  // Save history to localStorage
-  const saveHistory = (newHistory: HistoryItem[]) => {
-    setHistory(newHistory);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory));
-  };
+  const [newGeneration, setNewGeneration] = useState<HistoryRecord | null>(null);
+  const { user, canGenerate, incrementUsage } = useAuth();
 
   const handleGenerate = async (requirement: string, context: string, format: string) => {
     if (!canGenerate) {
-      setError("Has alcanzado el límite diario de generaciones. Iniciá sesión para obtener más.");
+      setError("Has alcanzado el límite diario de generaciones. Iniciá sesión o actualizá a Pro para obtener más.");
       return;
     }
 
     setIsLoading(true);
     setError(null);
+    setCurrentRequirement(requirement);
 
     try {
       const response = await fetch("/api/generate", {
@@ -86,14 +65,13 @@ export default function Home() {
       // Increment usage counter
       incrementUsage();
 
-      // Add to history
-      const newItem: HistoryItem = {
-        id: Date.now().toString(),
-        timestamp: new Date(),
-        requirement,
-        result: data,
-      };
-      saveHistory([newItem, ...history].slice(0, 20));
+      // Save to cloud if user is logged in
+      if (user) {
+        const saved = await saveGeneration(user.id, requirement, context, data);
+        if (saved) {
+          setNewGeneration(saved);
+        }
+      }
 
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -102,30 +80,15 @@ export default function Home() {
     }
   };
 
-  const handleSelectHistory = (item: HistoryItem) => {
-    setResult(item.result);
+  const handleSelectFromHistory = (requirement: string, historyResult: GenerationResult) => {
+    setResult(historyResult);
+    setCurrentRequirement(requirement);
     setError(null);
-  };
-
-  const handleDeleteHistory = (id: string) => {
-    saveHistory(history.filter(item => item.id !== id));
-  };
-
-  const handleClearHistory = () => {
-    saveHistory([]);
   };
 
   return (
     <main className="min-h-screen relative">
       <AnimatedBackground />
-      
-      {/* History Panel */}
-      <HistoryPanel
-        history={history}
-        onSelect={handleSelectHistory}
-        onDelete={handleDeleteHistory}
-        onClear={handleClearHistory}
-      />
 
       {/* Header */}
       <header className="border-b border-slate-800/50 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40">
@@ -139,14 +102,20 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Right side: Features + User Menu */}
-            <div className="flex items-center gap-4">
+            {/* Right side: Features + History + User Menu */}
+            <div className="flex items-center gap-3">
               {/* Feature badges - hidden on mobile */}
-              <div className="hidden lg:flex items-center gap-4">
+              <div className="hidden lg:flex items-center gap-4 mr-2">
                 <FeatureBadge icon={<Zap className="w-3.5 h-3.5" />} text="IA Avanzada" />
                 <FeatureBadge icon={<Shield className="w-3.5 h-3.5" />} text="Cobertura Completa" />
                 <FeatureBadge icon={<Clock className="w-3.5 h-3.5" />} text="En Segundos" />
               </div>
+              
+              {/* Cloud History */}
+              <CloudHistoryPanel 
+                onSelect={handleSelectFromHistory}
+                onNewGeneration={newGeneration}
+              />
               
               {/* User Menu */}
               <UserMenu />
@@ -211,7 +180,7 @@ export default function Home() {
             <FeatureCard
               icon={<Clock className="w-6 h-6 text-blue-400" />}
               title="Múltiples Formatos"
-              description="Exportá a Excel, Gherkin o copiá directo a tu herramienta."
+              description="Exportá a Excel, PDF, Gherkin o copiá directo a tu herramienta."
             />
           </div>
         </div>
