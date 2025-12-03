@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { TestCaseForm } from "@/components/TestCaseForm";
 import { TestCaseOutput } from "@/components/TestCaseOutput";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
@@ -9,6 +9,7 @@ import { UserMenu } from "@/components/UserMenu";
 import { UsageBanner } from "@/components/UsageBanner";
 import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
+import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { useAuth } from "@/lib/auth-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
 import { Zap, Shield, Clock } from "lucide-react";
@@ -35,6 +36,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [newGeneration, setNewGeneration] = useState<HistoryRecord | null>(null);
+  const [triggerGenerate, setTriggerGenerate] = useState(0);
   const { user, canGenerate, incrementUsage } = useAuth();
 
   const handleGenerate = async (requirement: string, context: string, format: string) => {
@@ -86,13 +88,63 @@ export default function Home() {
   };
 
   const handleSelectFavorite = (testCase: TestCase) => {
-    // Mostrar solo el caso favorito seleccionado
     setResult({
       testCases: [testCase],
       gherkin: "",
       summary: "Caso de prueba favorito"
     });
   };
+
+  // Funciones para atajos de teclado
+  const copyGherkin = useCallback(() => {
+    if (result?.gherkin) {
+      navigator.clipboard.writeText(result.gherkin);
+    }
+  }, [result]);
+
+  const copyAllCases = useCallback(() => {
+    if (result?.testCases) {
+      const text = result.testCases.map(tc => 
+        `${tc.id} - ${tc.title}\nTipo: ${tc.type} | Prioridad: ${tc.priority}\nPasos:\n${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join("\n")}\nResultado: ${tc.expectedResult}`
+      ).join("\n\n---\n\n");
+      navigator.clipboard.writeText(text);
+    }
+  }, [result]);
+
+  const focusRequirement = useCallback(() => {
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+      textarea.focus();
+    }
+  }, []);
+
+  const triggerGenerateAction = useCallback(() => {
+    setTriggerGenerate(prev => prev + 1);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const scrollToResults = useCallback(() => {
+    const resultsSection = document.querySelector('[data-results]');
+    if (resultsSection) {
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
+  // Definir atajos
+  const shortcuts = [
+    { key: "Enter", ctrl: true, description: "Generar casos de prueba", action: triggerGenerateAction },
+    { key: "g", ctrl: true, description: "Copiar Gherkin", action: copyGherkin },
+    { key: "c", ctrl: true, shift: true, description: "Copiar todos los casos", action: copyAllCases },
+    { key: "f", ctrl: true, description: "Enfocar campo de requisito", action: focusRequirement },
+    { key: "ArrowUp", ctrl: true, description: "Ir al inicio", action: scrollToTop },
+    { key: "ArrowDown", ctrl: true, description: "Ir a resultados", action: scrollToResults },
+  ];
+
+  // Activar atajos
+  useKeyboardShortcuts(shortcuts);
 
   return (
     <main className="min-h-screen relative">
@@ -110,7 +162,8 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <KeyboardShortcutsHelp shortcuts={shortcuts} />
               <FavoritesPanel onSelectCase={handleSelectFavorite} />
               <CloudHistoryPanel 
                 onSelect={handleSelectFromHistory}
@@ -143,10 +196,14 @@ export default function Home() {
 
           <div className="grid lg:grid-cols-2 gap-6">
             <div className="order-2 lg:order-1">
-              <TestCaseForm onGenerate={handleGenerate} isLoading={isLoading} />
+              <TestCaseForm 
+                onGenerate={handleGenerate} 
+                isLoading={isLoading}
+                triggerGenerate={triggerGenerate}
+              />
             </div>
 
-            <div className="order-1 lg:order-2">
+            <div className="order-1 lg:order-2" data-results>
               <TestCaseOutput 
                 result={result} 
                 isLoading={isLoading} 

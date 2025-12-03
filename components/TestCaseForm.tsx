@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -18,13 +18,21 @@ import { GenerationResult } from "@/app/page";
 interface TestCaseFormProps {
   onGenerate: (requirement: string, context: string, format: string) => void;
   isLoading: boolean;
+  triggerGenerate?: number;
 }
 
-export function TestCaseForm({ onGenerate, isLoading }: TestCaseFormProps) {
+export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCaseFormProps) {
   const [requirement, setRequirement] = useState("");
   const [context, setContext] = useState("");
   const [format, setFormat] = useState("both");
   const [isComparing, setIsComparing] = useState(false);
+
+  // Escuchar trigger de generación desde atajos de teclado
+  useEffect(() => {
+    if (triggerGenerate && triggerGenerate > 0 && requirement.trim() && !isLoading) {
+      onGenerate(requirement, context, format);
+    }
+  }, [triggerGenerate]);
 
   const handleSubmit = () => {
     if (!requirement.trim()) return;
@@ -44,7 +52,6 @@ export function TestCaseForm({ onGenerate, isLoading }: TestCaseFormProps) {
     setIsComparing(true);
     
     try {
-      // Generar casos para versión 1
       const response1 = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -52,7 +59,6 @@ export function TestCaseForm({ onGenerate, isLoading }: TestCaseFormProps) {
       });
       const version1 = await response1.json();
 
-      // Generar casos para versión 2
       const response2 = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,6 +83,14 @@ Criterios de aceptación:
 - Redirigir al dashboard después de login exitoso
 - Opción "Recordarme" para mantener la sesión activa`);
     setContext("Aplicación web en React. Autenticación con JWT. Base de datos PostgreSQL.");
+  };
+
+  // Manejar Ctrl+Enter en textarea
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.ctrlKey && e.key === "Enter" && requirement.trim() && !isLoading) {
+      e.preventDefault();
+      handleSubmit();
+    }
   };
 
   return (
@@ -111,8 +125,12 @@ Criterios de aceptación:
             placeholder="Pegá aquí tu historia de usuario, requisito funcional o descripción de la funcionalidad a probar..."
             value={requirement}
             onChange={(e) => setRequirement(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="min-h-[150px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
           />
+          <p className="text-xs text-slate-500">
+            Tip: Presioná <kbd className="px-1 py-0.5 bg-slate-700 rounded text-violet-400">Ctrl + Enter</kbd> para generar
+          </p>
         </div>
 
         {/* Context Field */}
