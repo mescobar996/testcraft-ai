@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/select";
 import { FileText, Wand2, Info } from "lucide-react";
 import { TemplatesPanel } from "@/components/TemplatesPanel";
+import { CompareMode } from "@/components/CompareMode";
+import { GenerationResult } from "@/app/page";
 
 interface TestCaseFormProps {
   onGenerate: (requirement: string, context: string, format: string) => void;
@@ -22,6 +24,7 @@ export function TestCaseForm({ onGenerate, isLoading }: TestCaseFormProps) {
   const [requirement, setRequirement] = useState("");
   const [context, setContext] = useState("");
   const [format, setFormat] = useState("both");
+  const [isComparing, setIsComparing] = useState(false);
 
   const handleSubmit = () => {
     if (!requirement.trim()) return;
@@ -31,8 +34,36 @@ export function TestCaseForm({ onGenerate, isLoading }: TestCaseFormProps) {
   const handleSelectTemplate = (templateRequirement: string, templateContext: string) => {
     setRequirement(templateRequirement);
     setContext(templateContext);
-    // Scroll to form
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCompare = async (req1: string, req2: string, ctx: string): Promise<{
+    version1: GenerationResult;
+    version2: GenerationResult;
+  }> => {
+    setIsComparing(true);
+    
+    try {
+      // Generar casos para versión 1
+      const response1 = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requirement: req1, context: ctx, format: "both" }),
+      });
+      const version1 = await response1.json();
+
+      // Generar casos para versión 2
+      const response2 = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requirement: req2, context: ctx, format: "both" }),
+      });
+      const version2 = await response2.json();
+
+      return { version1, version2 };
+    } finally {
+      setIsComparing(false);
+    }
   };
 
   const loadExample = () => {
@@ -52,6 +83,9 @@ Criterios de aceptación:
     <div className="space-y-4">
       {/* Templates Panel */}
       <TemplatesPanel onSelectTemplate={handleSelectTemplate} />
+
+      {/* Compare Mode */}
+      <CompareMode onCompare={handleCompare} isLoading={isComparing} />
       
       {/* Main Form */}
       <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 space-y-4">

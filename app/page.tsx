@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TestCaseForm } from "@/components/TestCaseForm";
 import { TestCaseOutput } from "@/components/TestCaseOutput";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { AppIcon, AppIconSVG } from "@/components/AppIcon";
+import { AppIcon } from "@/components/AppIcon";
 import { UserMenu } from "@/components/UserMenu";
 import { UsageBanner } from "@/components/UsageBanner";
 import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
@@ -122,10 +122,6 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-violet-400 text-sm mb-4">
-              <AppIconSVG className="w-4 h-4" />
-              <span>Potenciado por IA</span>
-            </div>
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
               Generá casos de prueba{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-indigo-400">
