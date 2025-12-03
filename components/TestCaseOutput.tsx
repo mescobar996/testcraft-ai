@@ -15,6 +15,7 @@ import {
   AlertCircle,
   ListChecks,
   FileDown,
+  Filter,
 } from "lucide-react";
 import { GenerationResult, TestCase } from "@/app/page";
 import { StatsCards } from "@/components/StatsCards";
@@ -27,9 +28,12 @@ interface TestCaseOutputProps {
   error: string | null;
 }
 
+type FilterType = "all" | "Positivo" | "Negativo" | "Borde";
+
 export function TestCaseOutput({ result, isLoading, error }: TestCaseOutputProps) {
   const [expandedCases, setExpandedCases] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedCases);
@@ -64,7 +68,6 @@ export function TestCaseOutput({ result, isLoading, error }: TestCaseOutputProps
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Casos de Prueba");
 
-    // Add Gherkin sheet
     const gherkinWs = XLSX.utils.aoa_to_sheet([[result.gherkin]]);
     XLSX.utils.book_append_sheet(wb, gherkinWs, "Gherkin");
 
@@ -76,7 +79,6 @@ export function TestCaseOutput({ result, isLoading, error }: TestCaseOutputProps
   const exportToPDF = async () => {
     if (!result) return;
     
-    // Dynamic import to avoid SSR issues
     const { generatePDF } = await import('@/lib/generate-pdf');
     generatePDF({
       testCases: result.testCases,
@@ -94,6 +96,11 @@ Pasos:
 ${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join("\n")}
 Resultado Esperado: ${tc.expectedResult}`;
   };
+
+  // Filter test cases
+  const filteredTestCases = result?.testCases.filter(tc => 
+    activeFilter === "all" ? true : tc.type === activeFilter
+  ) || [];
 
   // Loading State
   if (isLoading) {
@@ -203,6 +210,36 @@ Resultado Esperado: ${tc.expectedResult}`;
         </Button>
       </div>
 
+      {/* Filter Buttons */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <Filter className="w-4 h-4 text-slate-400" />
+        <span className="text-sm text-slate-400 mr-1">Filtrar:</span>
+        {[
+          { key: "all", label: "Todos", count: result.testCases.length },
+          { key: "Positivo", label: "Positivos", count: result.testCases.filter(tc => tc.type === "Positivo").length },
+          { key: "Negativo", label: "Negativos", count: result.testCases.filter(tc => tc.type === "Negativo").length },
+          { key: "Borde", label: "Borde", count: result.testCases.filter(tc => tc.type === "Borde").length },
+        ].map(filter => (
+          <Button
+            key={filter.key}
+            onClick={() => setActiveFilter(filter.key as FilterType)}
+            variant="outline"
+            size="sm"
+            className={`text-xs ${
+              activeFilter === filter.key
+                ? filter.key === "Positivo" ? "bg-green-500/20 border-green-500/50 text-green-400" :
+                  filter.key === "Negativo" ? "bg-red-500/20 border-red-500/50 text-red-400" :
+                  filter.key === "Borde" ? "bg-yellow-500/20 border-yellow-500/50 text-yellow-400" :
+                  "bg-violet-500/20 border-violet-500/50 text-violet-300"
+                : "border-slate-700 text-slate-400 hover:text-white"
+            }`}
+          >
+            {filter.label}
+            <span className="ml-1.5 opacity-70">({filter.count})</span>
+          </Button>
+        ))}
+      </div>
+
       {/* Tabs */}
       <Tabs defaultValue="table" className="w-full">
         <TabsList className="bg-slate-800 border border-slate-700">
@@ -224,107 +261,113 @@ Resultado Esperado: ${tc.expectedResult}`;
 
         {/* Table View */}
         <TabsContent value="table" className="mt-4 space-y-3">
-          {result.testCases.map((tc, index) => (
-            <div
-              key={tc.id}
-              className="bg-slate-900/50 border border-slate-800 rounded-lg overflow-hidden animate-in fade-in slide-in-from-bottom-2"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              {/* Header */}
-              <button
-                onClick={() => toggleExpand(tc.id)}
-                className="w-full flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-slate-500 font-mono">{tc.id}</span>
-                  <span className="text-white font-medium text-left">{tc.title}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${
-                      tc.type === "Positivo"
-                        ? "border-green-500/50 text-green-400"
-                        : tc.type === "Negativo"
-                        ? "border-red-500/50 text-red-400"
-                        : "border-yellow-500/50 text-yellow-400"
-                    }`}
-                  >
-                    {tc.type}
-                  </Badge>
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${
-                      tc.priority === "Alta"
-                        ? "border-red-500/50 text-red-400"
-                        : tc.priority === "Media"
-                        ? "border-yellow-500/50 text-yellow-400"
-                        : "border-green-500/50 text-green-400"
-                    }`}
-                  >
-                    {tc.priority}
-                  </Badge>
-                  {expandedCases.has(tc.id) ? (
-                    <ChevronUp className="w-4 h-4 text-slate-400" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
-                  )}
-                </div>
-              </button>
-
-              {/* Expanded Content */}
-              {expandedCases.has(tc.id) && (
-                <div className="px-4 pb-4 space-y-3 border-t border-slate-800 pt-3">
-                  {/* Preconditions */}
-                  {tc.preconditions && (
-                    <div>
-                      <p className="text-xs text-slate-400 mb-1">Precondiciones</p>
-                      <p className="text-sm text-slate-300">{tc.preconditions}</p>
-                    </div>
-                  )}
-
-                  {/* Steps */}
-                  <div>
-                    <p className="text-xs text-slate-400 mb-2">Pasos</p>
-                    <ol className="space-y-1">
-                      {tc.steps.map((step, i) => (
-                        <li key={i} className="flex gap-2 text-sm">
-                          <span className="text-violet-400 font-mono">{i + 1}.</span>
-                          <span className="text-slate-300">{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-
-                  {/* Expected Result */}
-                  <div>
-                    <p className="text-xs text-slate-400 mb-1">Resultado Esperado</p>
-                    <p className="text-sm text-green-400">{tc.expectedResult}</p>
-                  </div>
-
-                  {/* Copy Button */}
-                  <Button
-                    onClick={() => copyToClipboard(formatTestCaseForCopy(tc), tc.id)}
-                    variant="ghost"
-                    size="sm"
-                    className="text-slate-400 hover:text-white"
-                  >
-                    {copiedId === tc.id ? (
-                      <>
-                        <Check className="w-4 h-4 mr-2 text-green-400" />
-                        Copiado
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4 mr-2" />
-                        Copiar caso
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
+          {filteredTestCases.length === 0 ? (
+            <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6 text-center">
+              <p className="text-slate-400">No hay casos de tipo "{activeFilter}"</p>
             </div>
-          ))}
+          ) : (
+            filteredTestCases.map((tc, index) => (
+              <div
+                key={tc.id}
+                className="bg-slate-900/50 border border-slate-800 rounded-lg overflow-hidden animate-in fade-in slide-in-from-bottom-2"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                {/* Header */}
+                <button
+                  onClick={() => toggleExpand(tc.id)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-500 font-mono">{tc.id}</span>
+                    <span className="text-white font-medium text-left">{tc.title}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className={`text-xs ${
+                        tc.type === "Positivo"
+                          ? "border-green-500/50 text-green-400"
+                          : tc.type === "Negativo"
+                          ? "border-red-500/50 text-red-400"
+                          : "border-yellow-500/50 text-yellow-400"
+                      }`}
+                    >
+                      {tc.type}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className={`text-xs ${
+                        tc.priority === "Alta"
+                          ? "border-red-500/50 text-red-400"
+                          : tc.priority === "Media"
+                          ? "border-yellow-500/50 text-yellow-400"
+                          : "border-green-500/50 text-green-400"
+                      }`}
+                    >
+                      {tc.priority}
+                    </Badge>
+                    {expandedCases.has(tc.id) ? (
+                      <ChevronUp className="w-4 h-4 text-slate-400" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                    )}
+                  </div>
+                </button>
+
+                {/* Expanded Content */}
+                {expandedCases.has(tc.id) && (
+                  <div className="px-4 pb-4 space-y-3 border-t border-slate-800 pt-3">
+                    {/* Preconditions */}
+                    {tc.preconditions && (
+                      <div>
+                        <p className="text-xs text-slate-400 mb-1">Precondiciones</p>
+                        <p className="text-sm text-slate-300">{tc.preconditions}</p>
+                      </div>
+                    )}
+
+                    {/* Steps */}
+                    <div>
+                      <p className="text-xs text-slate-400 mb-2">Pasos</p>
+                      <ol className="space-y-1">
+                        {tc.steps.map((step, i) => (
+                          <li key={i} className="flex gap-2 text-sm">
+                            <span className="text-violet-400 font-mono">{i + 1}.</span>
+                            <span className="text-slate-300">{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+
+                    {/* Expected Result */}
+                    <div>
+                      <p className="text-xs text-slate-400 mb-1">Resultado Esperado</p>
+                      <p className="text-sm text-green-400">{tc.expectedResult}</p>
+                    </div>
+
+                    {/* Copy Button */}
+                    <Button
+                      onClick={() => copyToClipboard(formatTestCaseForCopy(tc), tc.id)}
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-400 hover:text-white"
+                    >
+                      {copiedId === tc.id ? (
+                        <>
+                          <Check className="w-4 h-4 mr-2 text-green-400" />
+                          Copiado
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4 mr-2" />
+                          Copiar caso
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </TabsContent>
 
         {/* Gherkin View */}

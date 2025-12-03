@@ -188,15 +188,25 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/50 mt-16">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <AppIcon size="sm" />
-              <span className="text-slate-400 font-medium">TestCraft AI</span>
+        <div className="container mx-auto px-4 py-8">
+          {/* Feature Badges Row */}
+          <div className="flex justify-center items-center gap-8 md:gap-12 mb-6 flex-wrap">
+            <FooterFeature icon={<Zap className="w-5 h-5 text-yellow-400" />} text="IA Avanzada" />
+            <FooterFeature icon={<Shield className="w-5 h-5 text-green-400" />} text="Cobertura Completa" />
+            <FooterFeature icon={<Clock className="w-5 h-5 text-blue-400" />} text="En Segundos" />
+          </div>
+          
+          {/* Divider */}
+          <div className="border-t border-slate-800/50 pt-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <AppIcon size="sm" />
+                <span className="text-slate-400 font-medium">TestCraft AI</span>
+              </div>
+              <p className="text-slate-500 text-sm">
+                © 2025 TestCraft AI. Todos los derechos reservados.
+              </p>
             </div>
-            <p className="text-slate-500 text-sm">
-              © 2025 TestCraft AI. Todos los derechos reservados.
-            </p>
           </div>
         </div>
       </footer>
@@ -209,6 +219,15 @@ function FeatureBadge({ icon, text }: { icon: React.ReactNode; text: string }) {
     <div className="flex items-center gap-1.5 text-xs text-slate-400">
       <span className="text-violet-400">{icon}</span>
       {text}
+    </div>
+  );
+}
+
+function FooterFeature({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <div className="flex items-center gap-2 text-slate-300">
+      {icon}
+      <span className="font-medium">{text}</span>
     </div>
   );
 }
