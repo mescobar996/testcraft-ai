@@ -6,6 +6,9 @@ import { TestCaseOutput } from "@/components/TestCaseOutput";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { HistoryPanel, HistoryItem } from "@/components/HistoryPanel";
 import { AppIcon, AppIconSVG } from "@/components/AppIcon";
+import { UserMenu } from "@/components/UserMenu";
+import { UsageBanner } from "@/components/UsageBanner";
+import { useAuth } from "@/lib/auth-context";
 import { Zap, Shield, Clock } from "lucide-react";
 
 export interface TestCase {
@@ -31,6 +34,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const { canGenerate, incrementUsage } = useAuth();
 
   // Load history from localStorage on mount
   useEffect(() => {
@@ -55,6 +59,11 @@ export default function Home() {
   };
 
   const handleGenerate = async (requirement: string, context: string, format: string) => {
+    if (!canGenerate) {
+      setError("Has alcanzado el límite diario de generaciones. Iniciá sesión para obtener más.");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -74,6 +83,9 @@ export default function Home() {
       const data = await response.json();
       setResult(data);
 
+      // Increment usage counter
+      incrementUsage();
+
       // Add to history
       const newItem: HistoryItem = {
         id: Date.now().toString(),
@@ -81,7 +93,7 @@ export default function Home() {
         requirement,
         result: data,
       };
-      saveHistory([newItem, ...history].slice(0, 20)); // Keep last 20 items
+      saveHistory([newItem, ...history].slice(0, 20));
 
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -127,11 +139,17 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Feature badges */}
-            <div className="hidden md:flex items-center gap-4">
-              <FeatureBadge icon={<Zap className="w-3.5 h-3.5" />} text="IA Avanzada" />
-              <FeatureBadge icon={<Shield className="w-3.5 h-3.5" />} text="Cobertura Completa" />
-              <FeatureBadge icon={<Clock className="w-3.5 h-3.5" />} text="En Segundos" />
+            {/* Right side: Features + User Menu */}
+            <div className="flex items-center gap-4">
+              {/* Feature badges - hidden on mobile */}
+              <div className="hidden lg:flex items-center gap-4">
+                <FeatureBadge icon={<Zap className="w-3.5 h-3.5" />} text="IA Avanzada" />
+                <FeatureBadge icon={<Shield className="w-3.5 h-3.5" />} text="Cobertura Completa" />
+                <FeatureBadge icon={<Clock className="w-3.5 h-3.5" />} text="En Segundos" />
+              </div>
+              
+              {/* User Menu */}
+              <UserMenu />
             </div>
           </div>
         </div>
@@ -157,6 +175,9 @@ export default function Home() {
               profesionales con cobertura completa, incluyendo casos de borde y negativos.
             </p>
           </div>
+
+          {/* Usage Banner */}
+          <UsageBanner />
 
           {/* Two Column Layout */}
           <div className="grid lg:grid-cols-2 gap-6">
