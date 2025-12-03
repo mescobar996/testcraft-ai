@@ -8,17 +8,20 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isPro: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   usageCount: number;
   maxUsage: number;
   canGenerate: boolean;
   incrementUsage: () => void;
+  checkSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const FREE_DAILY_LIMIT = 5;
+const REGISTERED_DAILY_LIMIT = 20;
 const USAGE_KEY = 'testcraft-daily-usage';
 const USAGE_DATE_KEY = 'testcraft-usage-date';
 
@@ -27,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [usageCount, setUsageCount] = useState(0);
+  const [isPro, setIsPro] = useState(false);
 
   // Check and reset daily usage
   const checkDailyUsage = () => {
@@ -34,13 +38,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const savedDate = localStorage.getItem(USAGE_DATE_KEY);
     
     if (savedDate !== today) {
-      // New day, reset usage
       localStorage.setItem(USAGE_DATE_KEY, today);
       localStorage.setItem(USAGE_KEY, '0');
       setUsageCount(0);
     } else {
       const saved = localStorage.getItem(USAGE_KEY);
       setUsageCount(saved ? parseInt(saved) : 0);
+    }
+  };
+
+  // Check subscription status
+  const checkSubscription = async () => {
+    if (!user) {
+      setIsPro(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/subscription?userId=${user.id}`);
+      const data = await response.json();
+      setIsPro(data.isPro);
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+      setIsPro(false);
     }
   };
 
@@ -67,6 +87,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Check subscription when user changes
+  useEffect(() => {
+    if (user) {
+      checkSubscription();
+    } else {
+      setIsPro(false);
+    }
+  }, [user]);
+
+  // Check for successful payment on page load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      // Refresh subscription status
+      setTimeout(() => {
+        checkSubscription();
+      }, 1000);
+      // Clean URL
+      window.history.replaceState({}, '', '/');
+    }
+  }, [user]);
+
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -80,29 +122,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) console.error('Error signing out:', error);
+    setIsPro(false);
   };
 
   const incrementUsage = () => {
+    if (isPro) return; // Pro users don't have limits
+    
     const newCount = usageCount + 1;
     setUsageCount(newCount);
     localStorage.setItem(USAGE_KEY, newCount.toString());
   };
 
-  // Logged in users get more generations (or unlimited for premium - future)
-  const maxUsage = user ? 20 : FREE_DAILY_LIMIT;
-  const canGenerate = usageCount < maxUsage;
+  // Calculate limits based on plan
+  const maxUsage = isPro ? Infinity : (user ? REGISTERED_DAILY_LIMIT : FREE_DAILY_LIMIT);
+  const canGenerate = isPro || usageCount < maxUsage;
 
   return (
     <AuthContext.Provider value={{
       user,
       session,
       loading,
+      isPro,
       signInWithGoogle,
       signOut,
       usageCount,
       maxUsage,
       canGenerate,
-      incrementUsage
+      incrementUsage,
+      checkSubscription
     }}>
       {children}
     </AuthContext.Provider>
