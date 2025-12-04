@@ -18,12 +18,6 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "TestCraft AI",
   },
-  openGraph: {
-    title: "TestCraft AI - Generador de Casos de Prueba",
-    description: "Generá casos de prueba profesionales a partir de requisitos usando IA",
-    type: "website",
-    locale: "es_AR",
-  },
 };
 
 export const viewport: Viewport = {
@@ -39,13 +33,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es" className="dark" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icon-192.svg" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+      <body className={`${inter.className} bg-slate-950 text-white antialiased`} suppressHydrationWarning>
         <Providers>
           {children}
         </Providers>
