@@ -10,7 +10,10 @@ import { UsageBanner } from "@/components/UsageBanner";
 import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { useAuth } from "@/lib/auth-context";
+import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
 import { Zap, Shield, Clock } from "lucide-react";
 
@@ -38,6 +41,7 @@ export default function Home() {
   const [newGeneration, setNewGeneration] = useState<HistoryRecord | null>(null);
   const [triggerGenerate, setTriggerGenerate] = useState(0);
   const { user, canGenerate, incrementUsage } = useAuth();
+  const { t } = useLanguage();
 
   const handleGenerate = async (requirement: string, context: string, format: string) => {
     if (!canGenerate) {
@@ -52,33 +56,61 @@ export default function Home() {
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ requirement, context, format }),
       });
 
-      if (!response.ok) {
-        throw new Error("Error al generar casos de prueba");
-      }
+      if (!response.ok) throw new Error("Error al generar casos de prueba");
 
       const data = await response.json();
       setResult(data);
-
       incrementUsage();
 
       if (user) {
         const saved = await saveGeneration(user.id, requirement, context, data);
-        if (saved) {
-          setNewGeneration(saved);
-        }
+        if (saved) setNewGeneration(saved);
       }
-
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRegenerateCase = async (testCase: TestCase): Promise<TestCase | null> => {
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requirement: `Regenerar el siguiente caso de prueba con mejoras:
+Título: ${testCase.title}
+Tipo: ${testCase.type}
+Prioridad: ${testCase.priority}
+Precondiciones: ${testCase.preconditions}
+Pasos actuales: ${testCase.steps.join(", ")}
+Resultado esperado: ${testCase.expectedResult}
+
+Genera una versión mejorada manteniendo el mismo ID y tipo.`,
+          context: "Regeneración de caso individual",
+          format: "table",
+        }),
+      });
+
+      if (!response.ok) return null;
+
+      const data = await response.json();
+      if (data.testCases && data.testCases.length > 0) {
+        return { ...data.testCases[0], id: testCase.id, type: testCase.type };
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const handleUpdateResult = (updatedResult: GenerationResult) => {
+    setResult(updatedResult);
   };
 
   const handleSelectFromHistory = (requirement: string, historyResult: GenerationResult) => {
@@ -95,11 +127,8 @@ export default function Home() {
     });
   };
 
-  // Funciones para atajos de teclado
   const copyGherkin = useCallback(() => {
-    if (result?.gherkin) {
-      navigator.clipboard.writeText(result.gherkin);
-    }
+    if (result?.gherkin) navigator.clipboard.writeText(result.gherkin);
   }, [result]);
 
   const copyAllCases = useCallback(() => {
@@ -113,56 +142,40 @@ export default function Home() {
 
   const focusRequirement = useCallback(() => {
     const textarea = document.querySelector('textarea');
-    if (textarea) {
-      textarea.focus();
-    }
+    if (textarea) textarea.focus();
   }, []);
 
   const triggerGenerateAction = useCallback(() => {
     setTriggerGenerate(prev => prev + 1);
   }, []);
 
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
-  const scrollToResults = useCallback(() => {
-    const resultsSection = document.querySelector('[data-results]');
-    if (resultsSection) {
-      resultsSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
-
-  // Definir atajos
   const shortcuts = [
     { key: "Enter", ctrl: true, description: "Generar casos de prueba", action: triggerGenerateAction },
     { key: "g", ctrl: true, description: "Copiar Gherkin", action: copyGherkin },
     { key: "c", ctrl: true, shift: true, description: "Copiar todos los casos", action: copyAllCases },
     { key: "f", ctrl: true, description: "Enfocar campo de requisito", action: focusRequirement },
-    { key: "Flecha hacia arriba (↑)", ctrl: true, description: "Ir al inicio", action: scrollToTop },
-    { key: "Flecha hacia abajo (↓)", ctrl: true, description: "Ir a resultados", action: scrollToResults },
   ];
 
-  // Activar atajos
   useKeyboardShortcuts(shortcuts);
 
   return (
     <main className="min-h-screen relative">
       <AnimatedBackground />
 
-      {/* Header */}
       <header className="border-b border-slate-800/50 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <AppIcon size="lg" withGlow />
               <div>
-                <h1 className="text-xl font-bold text-white">TestCraft AI</h1>
-                <p className="text-xs text-slate-400">Generador de Casos de Prueba</p>
+                <h1 className="text-xl font-bold text-white">{t.appName}</h1>
+                <p className="text-xs text-slate-400">{t.appSubtitle}</p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <ThemeToggle />
               <KeyboardShortcutsHelp shortcuts={shortcuts} />
               <FavoritesPanel onSelectCase={handleSelectFavorite} />
               <CloudHistoryPanel 
@@ -175,21 +188,16 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          {/* Hero Section */}
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              Generá casos de prueba{" "}
+              {t.heroTitle}{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-indigo-400">
-                en segundos
+                {t.heroHighlight}
               </span>
             </h2>
-            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              Pegá tus requisitos o historias de usuario y obtené casos de prueba 
-              profesionales con cobertura completa, incluyendo casos de borde y negativos.
-            </p>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto">{t.heroSubtitle}</p>
           </div>
 
           <UsageBanner />
@@ -209,6 +217,8 @@ export default function Home() {
                 isLoading={isLoading} 
                 error={error}
                 requirementTitle={currentRequirement.split('\n')[0].substring(0, 50)}
+                onRegenerateCase={handleRegenerateCase}
+                onUpdateResult={handleUpdateResult}
               />
             </div>
           </div>
@@ -216,34 +226,31 @@ export default function Home() {
           <div className="mt-16 grid md:grid-cols-3 gap-6">
             <FeatureCard
               icon={<Zap className="w-6 h-6 text-yellow-400" />}
-              title="Generación Instantánea"
-              description="Casos de prueba completos en segundos, no en horas."
+              title={t.feature1Title}
+              description={t.feature1Desc}
             />
             <FeatureCard
               icon={<Shield className="w-6 h-6 text-green-400" />}
-              title="Cobertura Exhaustiva"
-              description="Casos positivos, negativos y de borde automáticamente."
+              title={t.feature2Title}
+              description={t.feature2Desc}
             />
             <FeatureCard
               icon={<Clock className="w-6 h-6 text-blue-400" />}
-              title="Múltiples Formatos"
-              description="Exportá a Excel, PDF, Gherkin o copiá directo a tu herramienta."
+              title={t.feature3Title}
+              description={t.feature3Desc}
             />
           </div>
         </div>
       </div>
 
-      {/* Footer */}
       <footer className="border-t border-slate-800/50 mt-16">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <AppIcon size="sm" />
-              <span className="text-slate-400 font-medium">TestCraft AI</span>
+              <span className="text-slate-400 font-medium">{t.appName}</span>
             </div>
-            <p className="text-slate-500 text-sm">
-              © 2025 TestCraft AI. Todos los derechos reservados.
-            </p>
+            <p className="text-slate-500 text-sm">{t.copyright}</p>
           </div>
         </div>
       </footer>

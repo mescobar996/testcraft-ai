@@ -2,11 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  ChevronDown,
-  ChevronUp,
   Copy,
   Check,
   FileText,
@@ -14,7 +11,6 @@ import {
   AlertCircle,
   ListChecks,
   Filter,
-  Star,
   Search,
   ChevronsUpDown,
   X,
@@ -24,15 +20,19 @@ import {
 import { GenerationResult, TestCase } from "@/app/page";
 import { StatsCards } from "@/components/StatsCards";
 import { ExportMenu } from "@/components/ExportMenu";
+import { EditableTestCase } from "@/components/EditableTestCase";
 import { useAuth } from "@/lib/auth-context";
 import { addFavorite } from "@/lib/favorites-db";
 import { useToast } from "@/components/Toast";
+import { useLanguage } from "@/lib/language-context";
 
 interface TestCaseOutputProps {
   result: GenerationResult | null;
   isLoading: boolean;
   error: string | null;
   requirementTitle?: string;
+  onRegenerateCase?: (testCase: TestCase) => Promise<TestCase | null>;
+  onUpdateResult?: (result: GenerationResult) => void;
 }
 
 type FilterType = "all" | "Positivo" | "Negativo" | "Borde";
@@ -41,9 +41,17 @@ type SortType = "default" | "priority" | "type" | "id";
 const priorityOrder = { "Alta": 1, "Media": 2, "Baja": 3 };
 const typeOrder = { "Positivo": 1, "Negativo": 2, "Borde": 3 };
 
-export function TestCaseOutput({ result, isLoading, error, requirementTitle }: TestCaseOutputProps) {
+export function TestCaseOutput({ 
+  result, 
+  isLoading, 
+  error, 
+  requirementTitle,
+  onRegenerateCase,
+  onUpdateResult
+}: TestCaseOutputProps) {
   const { user } = useAuth();
   const { showCopyToast, showFavoriteToast, showToast } = useToast();
+  const { t } = useLanguage();
   const [expandedCases, setExpandedCases] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
@@ -60,6 +68,7 @@ export function TestCaseOutput({ result, isLoading, error, requirementTitle }: T
       newExpanded.add(id);
     }
     setExpandedCases(newExpanded);
+    setAllExpanded(false);
   };
 
   const toggleExpandAll = () => {
@@ -111,6 +120,18 @@ Resultado Esperado: ${tc.expectedResult}`;
     }
   };
 
+  const handleUpdateCase = (updated: TestCase) => {
+    if (!result || !onUpdateResult) return;
+    
+    const newCases = result.testCases.map(tc => tc.id === updated.id ? updated : tc);
+    onUpdateResult({ ...result, testCases: newCases });
+  };
+
+  const handleRegenerate = async (tc: TestCase): Promise<TestCase | null> => {
+    if (!onRegenerateCase) return null;
+    return await onRegenerateCase(tc);
+  };
+
   const exportToPDF = async () => {
     if (!result) return;
     const { generatePDF } = await import('@/lib/generate-pdf');
@@ -131,25 +152,22 @@ Resultado Esperado: ${tc.expectedResult}`;
 
   const getSortLabel = () => {
     switch (sortBy) {
-      case "priority": return "Prioridad";
-      case "type": return "Tipo";
-      case "id": return "ID";
-      default: return "Ordenar";
+      case "priority": return t.sortPriority;
+      case "type": return t.sortType;
+      case "id": return t.sortId;
+      default: return t.sort;
     }
   };
 
-  // Filtrar y ordenar casos
   const filteredTestCases = useMemo(() => {
     if (!result) return [];
     
     let filtered = [...result.testCases];
     
-    // Filtrar por tipo
     if (activeFilter !== "all") {
       filtered = filtered.filter(tc => tc.type === activeFilter);
     }
     
-    // Filtrar por búsqueda
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(tc => 
@@ -160,7 +178,6 @@ Resultado Esperado: ${tc.expectedResult}`;
       );
     }
 
-    // Ordenar
     if (sortBy === "priority") {
       filtered.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
     } else if (sortBy === "type") {
@@ -183,8 +200,8 @@ Resultado Esperado: ${tc.expectedResult}`;
             </div>
           </div>
           <div className="text-center">
-            <p className="text-white font-medium">Generando casos de prueba...</p>
-            <p className="text-sm text-slate-400 mt-1">Analizando requisitos con IA</p>
+            <p className="text-white font-medium">{t.generating}</p>
+            <p className="text-sm text-slate-400 mt-1">{t.generatingDesc}</p>
           </div>
           <div className="flex gap-1">
             {[0, 1, 2].map((i) => (
@@ -206,7 +223,7 @@ Resultado Esperado: ${tc.expectedResult}`;
         <div className="flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-400 mt-0.5" />
           <div>
-            <p className="text-red-400 font-medium">Error al generar</p>
+            <p className="text-red-400 font-medium">{t.errorTitle}</p>
             <p className="text-red-300/80 text-sm mt-1">{error}</p>
           </div>
         </div>
@@ -222,15 +239,10 @@ Resultado Esperado: ${tc.expectedResult}`;
             <ListChecks className="w-8 h-8 text-slate-600" />
           </div>
           <div>
-            <p className="text-white font-medium">Sin casos de prueba</p>
-            <p className="text-sm text-slate-400 mt-1">
-              Ingresá un requisito o historia de usuario y hacé clic en
-              &quot;Generar&quot; para crear casos de prueba automáticamente.
-            </p>
+            <p className="text-white font-medium">{t.noTestCases}</p>
+            <p className="text-sm text-slate-400 mt-1">{t.noTestCasesDesc}</p>
           </div>
-          <p className="text-xs text-slate-500">
-            Tip: Usá &quot;Cargar ejemplo&quot; para probar
-          </p>
+          <p className="text-xs text-slate-500">{t.noTestCasesTip}</p>
         </div>
       </div>
     );
@@ -240,7 +252,6 @@ Resultado Esperado: ${tc.expectedResult}`;
     <div className="space-y-4">
       <StatsCards testCases={result.testCases} />
 
-      {/* Export & Actions Row 1 */}
       <div className="flex gap-2 flex-wrap">
         <ExportMenu 
           testCases={result.testCases} 
@@ -258,7 +269,7 @@ Resultado Esperado: ${tc.expectedResult}`;
           ) : (
             <Copy className="w-4 h-4 mr-2" />
           )}
-          Copiar Gherkin
+          {t.copyGherkin}
         </Button>
         <Button
           onClick={copyAllCases}
@@ -267,11 +278,10 @@ Resultado Esperado: ${tc.expectedResult}`;
           className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
         >
           <CopyCheck className="w-4 h-4 mr-2" />
-          Copiar Todos
+          {t.copyAll}
         </Button>
       </div>
 
-      {/* Actions Row 2 */}
       <div className="flex gap-2 flex-wrap">
         <Button
           onClick={toggleExpandAll}
@@ -280,7 +290,7 @@ Resultado Esperado: ${tc.expectedResult}`;
           className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
         >
           <ChevronsUpDown className="w-4 h-4 mr-2" />
-          {allExpanded ? "Colapsar" : "Expandir"}
+          {allExpanded ? t.collapse : t.expand}
         </Button>
         <Button
           onClick={cycleSortOrder}
@@ -295,12 +305,11 @@ Resultado Esperado: ${tc.expectedResult}`;
         </Button>
       </div>
 
-      {/* Search Bar */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
         <input
           type="text"
-          placeholder="Buscar en casos de prueba..."
+          placeholder={t.searchPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-10 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20 text-sm"
@@ -315,15 +324,14 @@ Resultado Esperado: ${tc.expectedResult}`;
         )}
       </div>
 
-      {/* Filters */}
       <div className="flex items-center gap-2 flex-wrap">
         <Filter className="w-4 h-4 text-slate-400" />
-        <span className="text-sm text-slate-400 mr-1">Filtrar:</span>
+        <span className="text-sm text-slate-400 mr-1">{t.filter}</span>
         {[
-          { key: "all", label: "Todos", count: result.testCases.length },
-          { key: "Positivo", label: "Positivos", count: result.testCases.filter(tc => tc.type === "Positivo").length },
-          { key: "Negativo", label: "Negativos", count: result.testCases.filter(tc => tc.type === "Negativo").length },
-          { key: "Borde", label: "Borde", count: result.testCases.filter(tc => tc.type === "Borde").length },
+          { key: "all", label: t.all, count: result.testCases.length },
+          { key: "Positivo", label: t.positive, count: result.testCases.filter(tc => tc.type === "Positivo").length },
+          { key: "Negativo", label: t.negative, count: result.testCases.filter(tc => tc.type === "Negativo").length },
+          { key: "Borde", label: t.edge, count: result.testCases.filter(tc => tc.type === "Borde").length },
         ].map(filter => (
           <Button
             key={filter.key}
@@ -345,12 +353,11 @@ Resultado Esperado: ${tc.expectedResult}`;
         ))}
       </div>
 
-      {/* Results info */}
       {(searchQuery || sortBy !== "default") && (
         <p className="text-sm text-slate-400">
-          {filteredTestCases.length} resultado{filteredTestCases.length !== 1 ? 's' : ''}
+          {filteredTestCases.length} {t.results}
           {searchQuery && ` para "${searchQuery}"`}
-          {sortBy !== "default" && ` • Ordenado por ${getSortLabel().toLowerCase()}`}
+          {sortBy !== "default" && ` • ${t.orderedBy} ${getSortLabel().toLowerCase()}`}
         </p>
       )}
 
@@ -376,122 +383,28 @@ Resultado Esperado: ${tc.expectedResult}`;
           {filteredTestCases.length === 0 ? (
             <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6 text-center">
               <p className="text-slate-400">
-                {searchQuery ? `No se encontraron casos para "${searchQuery}"` : `No hay casos de tipo "${activeFilter}"`}
+                {searchQuery ? `${t.noResults} para "${searchQuery}"` : `${t.noResults}`}
               </p>
             </div>
           ) : (
             filteredTestCases.map((tc, index) => (
               <div
                 key={tc.id}
-                className="bg-slate-900/50 border border-slate-800 rounded-lg overflow-hidden animate-in fade-in slide-in-from-bottom-2"
+                className="animate-in fade-in slide-in-from-bottom-2"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <button
-                  onClick={() => toggleExpand(tc.id)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-500 font-mono">{tc.id}</span>
-                    <span className="text-white font-medium text-left">{tc.title}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className={`text-xs ${
-                        tc.type === "Positivo"
-                          ? "border-green-500/50 text-green-400"
-                          : tc.type === "Negativo"
-                          ? "border-red-500/50 text-red-400"
-                          : "border-yellow-500/50 text-yellow-400"
-                      }`}
-                    >
-                      {tc.type}
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className={`text-xs ${
-                        tc.priority === "Alta"
-                          ? "border-red-500/50 text-red-400"
-                          : tc.priority === "Media"
-                          ? "border-yellow-500/50 text-yellow-400"
-                          : "border-green-500/50 text-green-400"
-                      }`}
-                    >
-                      {tc.priority}
-                    </Badge>
-                    {expandedCases.has(tc.id) ? (
-                      <ChevronUp className="w-4 h-4 text-slate-400" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-400" />
-                    )}
-                  </div>
-                </button>
-
-                {expandedCases.has(tc.id) && (
-                  <div className="px-4 pb-4 space-y-3 border-t border-slate-800 pt-3">
-                    {tc.preconditions && (
-                      <div>
-                        <p className="text-xs text-slate-400 mb-1">Precondiciones</p>
-                        <p className="text-sm text-slate-300">{tc.preconditions}</p>
-                      </div>
-                    )}
-
-                    <div>
-                      <p className="text-xs text-slate-400 mb-2">Pasos</p>
-                      <ol className="space-y-1">
-                        {tc.steps.map((step, i) => (
-                          <li key={i} className="flex gap-2 text-sm">
-                            <span className="text-violet-400 font-mono">{i + 1}.</span>
-                            <span className="text-slate-300">{step}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-
-                    <div>
-                      <p className="text-xs text-slate-400 mb-1">Resultado Esperado</p>
-                      <p className="text-sm text-green-400">{tc.expectedResult}</p>
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-2">
-                      <Button
-                        onClick={() => copyToClipboard(formatTestCaseForCopy(tc), tc.id)}
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-400 hover:text-white"
-                      >
-                        {copiedId === tc.id ? (
-                          <>
-                            <Check className="w-4 h-4 mr-2 text-green-400" />
-                            Copiado
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-4 h-4 mr-2" />
-                            Copiar
-                          </>
-                        )}
-                      </Button>
-                      
-                      {user && (
-                        <Button
-                          onClick={() => handleFavorite(tc)}
-                          variant="ghost"
-                          size="sm"
-                          disabled={favoritedIds.has(tc.id)}
-                          className={`${
-                            favoritedIds.has(tc.id)
-                              ? "text-yellow-400"
-                              : "text-slate-400 hover:text-yellow-400"
-                          }`}
-                        >
-                          <Star className={`w-4 h-4 mr-2 ${favoritedIds.has(tc.id) ? "fill-yellow-400" : ""}`} />
-                          {favoritedIds.has(tc.id) ? "Guardado" : "Favorito"}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                )}
+                <EditableTestCase
+                  testCase={tc}
+                  isExpanded={expandedCases.has(tc.id)}
+                  onToggleExpand={() => toggleExpand(tc.id)}
+                  onCopy={() => copyToClipboard(formatTestCaseForCopy(tc), tc.id)}
+                  onFavorite={() => handleFavorite(tc)}
+                  onUpdate={handleUpdateCase}
+                  onRegenerate={handleRegenerate}
+                  isCopied={copiedId === tc.id}
+                  isFavorited={favoritedIds.has(tc.id)}
+                  canFavorite={!!user}
+                />
               </div>
             ))
           )}
@@ -507,7 +420,7 @@ Resultado Esperado: ${tc.expectedResult}`;
       </Tabs>
 
       <div className="bg-slate-800/30 border border-slate-800 rounded-lg p-4">
-        <p className="text-xs text-slate-400 mb-1">Resumen</p>
+        <p className="text-xs text-slate-400 mb-1">{t.summary}</p>
         <p className="text-sm text-slate-300">{result.summary}</p>
       </div>
     </div>
