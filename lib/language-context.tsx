@@ -5,16 +5,11 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 type Language = "es" | "en";
 
 interface Translations {
-  // Header
   appName: string;
   appSubtitle: string;
-  
-  // Hero
   heroTitle: string;
   heroHighlight: string;
   heroSubtitle: string;
-  
-  // Form
   requirement: string;
   requirementPlaceholder: string;
   context: string;
@@ -28,22 +23,16 @@ interface Translations {
   generatingButton: string;
   tipCtrlEnter: string;
   infoTip: string;
-  
-  // Templates
   templatesTitle: string;
   templatesAvailable: string;
   templatesAll: string;
   templatesTip: string;
-  
-  // Compare
   compareTitle: string;
   compareSubtitle: string;
   compareV1: string;
   compareV2: string;
   compareButton: string;
   comparingButton: string;
-  
-  // Output
   noTestCases: string;
   noTestCasesDesc: string;
   noTestCasesTip: string;
@@ -51,8 +40,6 @@ interface Translations {
   generatingDesc: string;
   errorTitle: string;
   summary: string;
-  
-  // Actions
   export: string;
   copyGherkin: string;
   copyAll: string;
@@ -76,28 +63,18 @@ interface Translations {
   save: string;
   cancel: string;
   regenerate: string;
-  
-  // Test case fields
   preconditions: string;
   steps: string;
   expectedResult: string;
-  
-  // Stats
   total: string;
   highPriority: string;
-  
-  // Features
   feature1Title: string;
   feature1Desc: string;
   feature2Title: string;
   feature2Desc: string;
   feature3Title: string;
   feature3Desc: string;
-  
-  // Footer
   copyright: string;
-  
-  // Misc
   results: string;
   orderedBy: string;
   casesFound: string;
@@ -265,11 +242,11 @@ interface LanguageContextType {
   t: Translations;
 }
 
-const LanguageContext = createContext<LanguageContextType | null>(null);
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function useLanguage() {
   const context = useContext(LanguageContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useLanguage must be used within a LanguageProvider");
   }
   return context;
@@ -277,21 +254,31 @@ export function useLanguage() {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>("es");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("language") as Language;
-    if (saved) {
+    setMounted(true);
+    const saved = localStorage.getItem("testcraft-language") as Language | null;
+    if (saved && (saved === "es" || saved === "en")) {
       setLanguage(saved);
     }
   }, []);
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
-    localStorage.setItem("language", lang);
+    if (mounted) {
+      localStorage.setItem("testcraft-language", lang);
+    }
+  };
+
+  const value = {
+    language,
+    setLanguage: handleSetLanguage,
+    t: translations[language]
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t: translations[language] }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

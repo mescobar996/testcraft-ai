@@ -10,11 +10,11 @@ interface ThemeContextType {
   isDark: boolean;
 }
 
-const ThemeContext = createContext<ThemeContextType | null>(null);
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
@@ -26,11 +26,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem("testcraft-theme") as Theme;
-    if (saved) {
+    const saved = localStorage.getItem("testcraft-theme") as Theme | null;
+    if (saved && (saved === "dark" || saved === "light")) {
       setTheme(saved);
-      document.documentElement.classList.remove("dark", "light");
-      document.documentElement.classList.add(saved);
     }
   }, []);
 
@@ -46,14 +44,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setTheme(prev => prev === "dark" ? "light" : "dark");
   };
 
-  // Prevent flash
-  if (!mounted) {
-    return <>{children}</>;
-  }
+  const value = {
+    theme,
+    toggleTheme,
+    isDark: theme === "dark"
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, isDark: theme === "dark" }}>
-      {children}
+    <ThemeContext.Provider value={value}>
+      <div className={theme}>
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 }
