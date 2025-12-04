@@ -2,16 +2,16 @@
 
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
-import { Zap, Infinity, Crown } from "lucide-react";
+import { Zap, Infinity as InfinityIcon, Crown } from "lucide-react";
 
 export function UsageCounter() {
   const { user, usageCount, isPro } = useAuth();
   const { language } = useLanguage();
 
   // Límites según el estado del usuario
-  const dailyLimit = !user ? 5 : isPro ? Infinity : 20;
-  const remaining = dailyLimit === Infinity ? Infinity : dailyLimit - usageCount;
-  const percentage = dailyLimit === Infinity ? 0 : (usageCount / dailyLimit) * 100;
+  const dailyLimit = !user ? 5 : isPro ? 999 : 20;
+  const remaining = isPro ? 999 : dailyLimit - usageCount;
+  const percentage = isPro ? 0 : (usageCount / dailyLimit) * 100;
 
   const getText = () => {
     if (isPro) {
@@ -65,7 +65,7 @@ export function UsageCounter() {
       </div>
 
       {isPro && (
-        <Infinity className="w-4 h-4 text-violet-400" />
+        <InfinityIcon className="w-4 h-4 text-violet-400" />
       )}
     </div>
   );
