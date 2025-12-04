@@ -1,30 +1,183 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Custom scrollbar for dark theme */
+:root {
+  --background: #020617;
+  --foreground: #f8fafc;
+}
+
+.light {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+.dark {
+  --background: #020617;
+  --foreground: #f8fafc;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode overrides */
+.light .bg-slate-950 {
+  background-color: #f8fafc !important;
+}
+
+.light .bg-slate-900\/50 {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.light .bg-slate-900 {
+  background-color: #ffffff !important;
+}
+
+.light .bg-slate-800\/50 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+.light .bg-slate-800\/30 {
+  background-color: rgba(241, 245, 249, 0.5) !important;
+}
+
+.light .bg-slate-800 {
+  background-color: #f1f5f9 !important;
+}
+
+.light .border-slate-800\/50 {
+  border-color: rgba(203, 213, 225, 0.5) !important;
+}
+
+.light .border-slate-800 {
+  border-color: #e2e8f0 !important;
+}
+
+.light .border-slate-700 {
+  border-color: #cbd5e1 !important;
+}
+
+.light .text-white {
+  color: #0f172a !important;
+}
+
+.light .text-slate-400 {
+  color: #64748b !important;
+}
+
+.light .text-slate-300 {
+  color: #475569 !important;
+}
+
+.light .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+.light .placeholder\:text-slate-500::placeholder {
+  color: #94a3b8 !important;
+}
+
+.light .bg-slate-950\/50 {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+}
+
+.light header {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+  backdrop-filter: blur(12px);
+}
+
+.light .hover\:bg-slate-700:hover {
+  background-color: #e2e8f0 !important;
+}
+
+.light .hover\:bg-slate-800\/50:hover {
+  background-color: rgba(226, 232, 240, 0.5) !important;
+}
+
+.light input,
+.light textarea {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.light input:focus,
+.light textarea:focus {
+  border-color: #8b5cf6 !important;
+}
+
+/* Animated background adjustments for light mode */
+.light .animated-bg {
+  opacity: 0.3;
+}
+
+/* Keep gradient text visible in light mode */
+.light .text-transparent {
+  color: transparent !important;
+}
+
+/* Maintain button gradients */
+.light .from-violet-600 {
+  --tw-gradient-from: #7c3aed;
+}
+
+.light .to-indigo-600 {
+  --tw-gradient-to: #4f46e5;
+}
+
+/* Toast light mode */
+.light .bg-green-500\/10 {
+  background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+.light .bg-red-500\/10 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+.light .bg-yellow-500\/10 {
+  background-color: rgba(234, 179, 8, 0.15) !important;
+}
+
+.light .bg-blue-500\/10 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Badges light mode */
+.light .bg-violet-500\/20 {
+  background-color: rgba(139, 92, 246, 0.2) !important;
+}
+
+/* Stats cards light mode */
+.light .bg-violet-500\/10 {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
-  border-radius: 4px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.5);
+  background: #475569;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.7);
+  background: #64748b;
 }
 
-/* Code block styling */
-pre {
-  font-family: 'Fira Code', 'Monaco', 'Cascadia Code', monospace;
+.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
 }
 
-code {
-  font-family: 'Fira Code', 'Monaco', 'Cascadia Code', monospace;
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

@@ -12,7 +12,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       variant="outline"
       size="sm"
-      className="border-slate-700 dark:border-slate-700 light:border-slate-300 bg-slate-800/50 dark:bg-slate-800/50 light:bg-white text-slate-300 dark:text-slate-300 light:text-slate-700 hover:bg-slate-700 dark:hover:bg-slate-700 light:hover:bg-slate-100"
+      className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white transition-all"
       title={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
     >
       {theme === "dark" ? (
