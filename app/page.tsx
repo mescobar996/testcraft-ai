@@ -139,8 +139,8 @@ export default function Home() {
     { key: "g", ctrl: true, description: "Copiar Gherkin", action: copyGherkin },
     { key: "c", ctrl: true, shift: true, description: "Copiar todos los casos", action: copyAllCases },
     { key: "f", ctrl: true, description: "Enfocar campo de requisito", action: focusRequirement },
-    { key: "ArrowUp", ctrl: true, description: "Ir al inicio", action: scrollToTop },
-    { key: "ArrowDown", ctrl: true, description: "Ir a resultados", action: scrollToResults },
+    { key: "Flecha hacia arriba (↑)", ctrl: true, description: "Ir al inicio", action: scrollToTop },
+    { key: "Flecha hacia abajo (↓)", ctrl: true, description: "Ir a resultados", action: scrollToResults },
   ];
 
   // Activar atajos
