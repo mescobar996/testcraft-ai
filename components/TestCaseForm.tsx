@@ -21,13 +21,14 @@ interface TestCaseFormProps {
   triggerGenerate?: number;
 }
 
+const MAX_CHARS = 5000;
+
 export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCaseFormProps) {
   const [requirement, setRequirement] = useState("");
   const [context, setContext] = useState("");
   const [format, setFormat] = useState("both");
   const [isComparing, setIsComparing] = useState(false);
 
-  // Escuchar trigger de generación desde atajos de teclado
   useEffect(() => {
     if (triggerGenerate && triggerGenerate > 0 && requirement.trim() && !isLoading) {
       onGenerate(requirement, context, format);
@@ -37,6 +38,12 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
   const handleSubmit = () => {
     if (!requirement.trim()) return;
     onGenerate(requirement, context, format);
+  };
+
+  const handleRequirementChange = (value: string) => {
+    if (value.length <= MAX_CHARS) {
+      setRequirement(value);
+    }
   };
 
   const handleSelectTemplate = (templateRequirement: string, templateContext: string) => {
@@ -85,7 +92,6 @@ Criterios de aceptación:
     setContext("Aplicación web en React. Autenticación con JWT. Base de datos PostgreSQL.");
   };
 
-  // Manejar Ctrl+Enter en textarea
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.ctrlKey && e.key === "Enter" && requirement.trim() && !isLoading) {
       e.preventDefault();
@@ -93,22 +99,24 @@ Criterios de aceptación:
     }
   };
 
+  const getCharCountColor = () => {
+    const percentage = (requirement.length / MAX_CHARS) * 100;
+    if (percentage >= 90) return "text-red-400";
+    if (percentage >= 75) return "text-yellow-400";
+    return "text-slate-500";
+  };
+
   return (
     <div className="space-y-4">
-      {/* Templates Panel */}
       <TemplatesPanel onSelectTemplate={handleSelectTemplate} />
-
-      {/* Compare Mode */}
       <CompareMode onCompare={handleCompare} isLoading={isComparing} />
       
-      {/* Main Form */}
       <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <FileText className="w-5 h-5 text-violet-400" />
           <h2 className="font-semibold text-white">Requisito o Historia de Usuario</h2>
         </div>
 
-        {/* Requirement Field */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-sm text-slate-300">
@@ -124,16 +132,20 @@ Criterios de aceptación:
           <Textarea
             placeholder="Pegá aquí tu historia de usuario, requisito funcional o descripción de la funcionalidad a probar..."
             value={requirement}
-            onChange={(e) => setRequirement(e.target.value)}
+            onChange={(e) => handleRequirementChange(e.target.value)}
             onKeyDown={handleKeyDown}
             className="min-h-[150px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
           />
-          <p className="text-xs text-slate-500">
-            Tip: Presioná <kbd className="px-1 py-0.5 bg-slate-700 rounded text-violet-400">Ctrl + Enter</kbd> para generar
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-slate-500">
+              Tip: Presioná <kbd className="px-1 py-0.5 bg-slate-700 rounded text-violet-400">Ctrl + Enter</kbd> para generar
+            </p>
+            <p className={`text-xs ${getCharCountColor()}`}>
+              {requirement.length.toLocaleString()} / {MAX_CHARS.toLocaleString()}
+            </p>
+          </div>
         </div>
 
-        {/* Context Field */}
         <div className="space-y-2">
           <label className="text-sm text-slate-300">
             Contexto adicional <span className="text-slate-500">(opcional)</span>
@@ -146,7 +158,6 @@ Criterios de aceptación:
           />
         </div>
 
-        {/* Format Select */}
         <div className="space-y-2">
           <label className="text-sm text-slate-300">Formato de salida</label>
           <Select value={format} onValueChange={setFormat}>
@@ -167,7 +178,6 @@ Criterios de aceptación:
           </Select>
         </div>
 
-        {/* Info Box */}
         <div className="flex items-start gap-2 p-3 bg-slate-800/30 rounded-lg">
           <Info className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
           <p className="text-xs text-slate-400">
@@ -176,7 +186,6 @@ Criterios de aceptación:
           </p>
         </div>
 
-        {/* Submit Button */}
         <Button
           onClick={handleSubmit}
           disabled={!requirement.trim() || isLoading}

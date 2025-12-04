@@ -18,6 +18,8 @@ import {
   Search,
   ChevronsUpDown,
   X,
+  ArrowUpDown,
+  CopyCheck,
 } from "lucide-react";
 import { GenerationResult, TestCase } from "@/app/page";
 import { StatsCards } from "@/components/StatsCards";
@@ -34,16 +36,21 @@ interface TestCaseOutputProps {
 }
 
 type FilterType = "all" | "Positivo" | "Negativo" | "Borde";
+type SortType = "default" | "priority" | "type" | "id";
+
+const priorityOrder = { "Alta": 1, "Media": 2, "Baja": 3 };
+const typeOrder = { "Positivo": 1, "Negativo": 2, "Borde": 3 };
 
 export function TestCaseOutput({ result, isLoading, error, requirementTitle }: TestCaseOutputProps) {
   const { user } = useAuth();
-  const { showCopyToast, showFavoriteToast } = useToast();
+  const { showCopyToast, showFavoriteToast, showToast } = useToast();
   const [expandedCases, setExpandedCases] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [favoritedIds, setFavoritedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [allExpanded, setAllExpanded] = useState(false);
+  const [sortBy, setSortBy] = useState<SortType>("default");
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedCases);
@@ -75,6 +82,23 @@ export function TestCaseOutput({ result, isLoading, error, requirementTitle }: T
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const formatTestCaseForCopy = (tc: TestCase) => {
+    return `${tc.id} - ${tc.title}
+Tipo: ${tc.type} | Prioridad: ${tc.priority}
+Precondiciones: ${tc.preconditions}
+Pasos:
+${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join("\n")}
+Resultado Esperado: ${tc.expectedResult}`;
+  };
+
+  const copyAllCases = async () => {
+    if (!result) return;
+    
+    const allText = result.testCases.map(tc => formatTestCaseForCopy(tc)).join("\n\n" + "=".repeat(50) + "\n\n");
+    await navigator.clipboard.writeText(allText);
+    showToast(`${result.testCases.length} casos copiados`, "success", <CopyCheck className="w-4 h-4" />);
+  };
+
   const handleFavorite = async (tc: TestCase) => {
     if (!user) return;
     
@@ -98,20 +122,27 @@ export function TestCaseOutput({ result, isLoading, error, requirementTitle }: T
     });
   };
 
-  const formatTestCaseForCopy = (tc: TestCase) => {
-    return `${tc.id} - ${tc.title}
-Tipo: ${tc.type} | Prioridad: ${tc.priority}
-Precondiciones: ${tc.preconditions}
-Pasos:
-${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join("\n")}
-Resultado Esperado: ${tc.expectedResult}`;
+  const cycleSortOrder = () => {
+    const orders: SortType[] = ["default", "priority", "type", "id"];
+    const currentIndex = orders.indexOf(sortBy);
+    const nextIndex = (currentIndex + 1) % orders.length;
+    setSortBy(orders[nextIndex]);
   };
 
-  // Filtrar por tipo y búsqueda
+  const getSortLabel = () => {
+    switch (sortBy) {
+      case "priority": return "Prioridad";
+      case "type": return "Tipo";
+      case "id": return "ID";
+      default: return "Ordenar";
+    }
+  };
+
+  // Filtrar y ordenar casos
   const filteredTestCases = useMemo(() => {
     if (!result) return [];
     
-    let filtered = result.testCases;
+    let filtered = [...result.testCases];
     
     // Filtrar por tipo
     if (activeFilter !== "all") {
@@ -128,9 +159,18 @@ Resultado Esperado: ${tc.expectedResult}`;
         tc.expectedResult.toLowerCase().includes(query)
       );
     }
+
+    // Ordenar
+    if (sortBy === "priority") {
+      filtered.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+    } else if (sortBy === "type") {
+      filtered.sort((a, b) => typeOrder[a.type] - typeOrder[b.type]);
+    } else if (sortBy === "id") {
+      filtered.sort((a, b) => a.id.localeCompare(b.id));
+    }
     
     return filtered;
-  }, [result, activeFilter, searchQuery]);
+  }, [result, activeFilter, searchQuery, sortBy]);
 
   if (isLoading) {
     return (
@@ -200,7 +240,7 @@ Resultado Esperado: ${tc.expectedResult}`;
     <div className="space-y-4">
       <StatsCards testCases={result.testCases} />
 
-      {/* Export & Actions */}
+      {/* Export & Actions Row 1 */}
       <div className="flex gap-2 flex-wrap">
         <ExportMenu 
           testCases={result.testCases} 
@@ -221,13 +261,37 @@ Resultado Esperado: ${tc.expectedResult}`;
           Copiar Gherkin
         </Button>
         <Button
+          onClick={copyAllCases}
+          variant="outline"
+          size="sm"
+          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
+        >
+          <CopyCheck className="w-4 h-4 mr-2" />
+          Copiar Todos
+        </Button>
+      </div>
+
+      {/* Actions Row 2 */}
+      <div className="flex gap-2 flex-wrap">
+        <Button
           onClick={toggleExpandAll}
           variant="outline"
           size="sm"
           className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
         >
           <ChevronsUpDown className="w-4 h-4 mr-2" />
-          {allExpanded ? "Colapsar" : "Expandir"} todos
+          {allExpanded ? "Colapsar" : "Expandir"}
+        </Button>
+        <Button
+          onClick={cycleSortOrder}
+          variant="outline"
+          size="sm"
+          className={`border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white ${
+            sortBy !== "default" ? "border-violet-500/50 text-violet-300" : ""
+          }`}
+        >
+          <ArrowUpDown className="w-4 h-4 mr-2" />
+          {getSortLabel()}
         </Button>
       </div>
 
@@ -281,10 +345,12 @@ Resultado Esperado: ${tc.expectedResult}`;
         ))}
       </div>
 
-      {/* Results count when searching */}
-      {searchQuery && (
+      {/* Results info */}
+      {(searchQuery || sortBy !== "default") && (
         <p className="text-sm text-slate-400">
-          {filteredTestCases.length} resultado{filteredTestCases.length !== 1 ? 's' : ''} para &quot;{searchQuery}&quot;
+          {filteredTestCases.length} resultado{filteredTestCases.length !== 1 ? 's' : ''}
+          {searchQuery && ` para "${searchQuery}"`}
+          {sortBy !== "default" && ` • Ordenado por ${getSortLabel().toLowerCase()}`}
         </p>
       )}
 
