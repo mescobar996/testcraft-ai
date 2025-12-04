@@ -5,11 +5,13 @@ import { useLanguage } from "@/lib/language-context";
 import { Zap, Infinity, Crown } from "lucide-react";
 
 export function UsageCounter() {
-  const { user, usageCount, dailyLimit, isPro } = useAuth();
+  const { user, usageCount, isPro } = useAuth();
   const { language } = useLanguage();
 
-  const remaining = dailyLimit - usageCount;
-  const percentage = (usageCount / dailyLimit) * 100;
+  // Límites según el estado del usuario
+  const dailyLimit = !user ? 5 : isPro ? Infinity : 20;
+  const remaining = dailyLimit === Infinity ? Infinity : dailyLimit - usageCount;
+  const percentage = dailyLimit === Infinity ? 0 : (usageCount / dailyLimit) * 100;
 
   const getText = () => {
     if (isPro) {
@@ -17,12 +19,12 @@ export function UsageCounter() {
     }
     if (!user) {
       return language === "es" 
-        ? `${remaining} de ${dailyLimit} gratis` 
-        : `${remaining} of ${dailyLimit} free`;
+        ? `${remaining} de 5 gratis` 
+        : `${remaining} of 5 free`;
     }
     return language === "es"
-      ? `${remaining} de ${dailyLimit} restantes`
-      : `${remaining} of ${dailyLimit} remaining`;
+      ? `${remaining} de 20 restantes`
+      : `${remaining} of 20 remaining`;
   };
 
   const getColor = () => {
@@ -56,7 +58,7 @@ export function UsageCounter() {
           <div className="h-1 bg-slate-700 rounded-full overflow-hidden mt-1">
             <div 
               className={`h-full ${getBarColor()} transition-all duration-300`}
-              style={{ width: `${100 - percentage}%` }}
+              style={{ width: `${Math.max(0, 100 - percentage)}%` }}
             />
           </div>
         )}
