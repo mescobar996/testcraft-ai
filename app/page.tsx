@@ -7,6 +7,7 @@ import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { AppIcon } from "@/components/AppIcon";
 import { UserMenu } from "@/components/UserMenu";
 import { UsageBanner } from "@/components/UsageBanner";
+import { UsageCounter } from "@/components/UsageCounter";
 import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
@@ -174,6 +175,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             </div>
             
             <div className="flex items-center gap-2">
+              <UsageCounter />
               <LanguageToggle />
               <ThemeToggle />
               <KeyboardShortcutsHelp shortcuts={shortcuts} />

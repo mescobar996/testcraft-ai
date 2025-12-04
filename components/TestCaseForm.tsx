@@ -13,7 +13,9 @@ import {
 import { FileText, Wand2, Info } from "lucide-react";
 import { TemplatesPanel } from "@/components/TemplatesPanel";
 import { CompareMode } from "@/components/CompareMode";
+import { RequirementValidator, validateRequirement } from "@/components/RequirementValidator";
 import { GenerationResult } from "@/app/page";
+import { useLanguage } from "@/lib/language-context";
 
 interface TestCaseFormProps {
   onGenerate: (requirement: string, context: string, format: string) => void;
@@ -24,19 +26,41 @@ interface TestCaseFormProps {
 const MAX_CHARS = 5000;
 
 export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCaseFormProps) {
+  const { t } = useLanguage();
   const [requirement, setRequirement] = useState("");
   const [context, setContext] = useState("");
   const [format, setFormat] = useState("both");
   const [isComparing, setIsComparing] = useState(false);
+  const [showValidator, setShowValidator] = useState(false);
 
   useEffect(() => {
     if (triggerGenerate && triggerGenerate > 0 && requirement.trim() && !isLoading) {
-      onGenerate(requirement, context, format);
+      const validation = validateRequirement(requirement);
+      if (validation.isValid) {
+        onGenerate(requirement, context, format);
+      }
     }
   }, [triggerGenerate]);
 
+  // Show validator after user starts typing (debounced)
+  useEffect(() => {
+    if (requirement.length > 10) {
+      const timer = setTimeout(() => setShowValidator(true), 500);
+      return () => clearTimeout(timer);
+    } else {
+      setShowValidator(false);
+    }
+  }, [requirement]);
+
   const handleSubmit = () => {
     if (!requirement.trim()) return;
+    
+    const validation = validateRequirement(requirement);
+    if (!validation.isValid) {
+      setShowValidator(true);
+      return;
+    }
+    
     onGenerate(requirement, context, format);
   };
 
@@ -49,6 +73,7 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
   const handleSelectTemplate = (templateRequirement: string, templateContext: string) => {
     setRequirement(templateRequirement);
     setContext(templateContext);
+    setShowValidator(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -90,6 +115,7 @@ Criterios de aceptación:
 - Redirigir al dashboard después de login exitoso
 - Opción "Recordarme" para mantener la sesión activa`);
     setContext("Aplicación web en React. Autenticación con JWT. Base de datos PostgreSQL.");
+    setShowValidator(true);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -106,6 +132,8 @@ Criterios de aceptación:
     return "text-slate-500";
   };
 
+  const validation = validateRequirement(requirement);
+
   return (
     <div className="space-y-4">
       <TemplatesPanel onSelectTemplate={handleSelectTemplate} />
@@ -114,44 +142,45 @@ Criterios de aceptación:
       <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <FileText className="w-5 h-5 text-violet-400" />
-          <h2 className="font-semibold text-white">Requisito o Historia de Usuario</h2>
+          <h2 className="font-semibold text-white">{t.requirement}</h2>
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-sm text-slate-300">
-              Descripción del requisito <span className="text-red-400">*</span>
+              {t.requirement} <span className="text-red-400">*</span>
             </label>
             <button
               onClick={loadExample}
               className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
             >
-              Cargar ejemplo
+              {t.loadExample}
             </button>
           </div>
           <Textarea
-            placeholder="Pegá aquí tu historia de usuario, requisito funcional o descripción de la funcionalidad a probar..."
+            placeholder={t.requirementPlaceholder}
             value={requirement}
             onChange={(e) => handleRequirementChange(e.target.value)}
             onKeyDown={handleKeyDown}
             className="min-h-[150px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
           />
           <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-500">
-              Tip: Presioná <kbd className="px-1 py-0.5 bg-slate-700 rounded text-violet-400">Ctrl + Enter</kbd> para generar
-            </p>
+            <p className="text-xs text-slate-500">{t.tipCtrlEnter}</p>
             <p className={`text-xs ${getCharCountColor()}`}>
               {requirement.length.toLocaleString()} / {MAX_CHARS.toLocaleString()}
             </p>
           </div>
         </div>
 
+        {/* Requirement Validator */}
+        <RequirementValidator requirement={requirement} show={showValidator} />
+
         <div className="space-y-2">
           <label className="text-sm text-slate-300">
-            Contexto adicional <span className="text-slate-500">(opcional)</span>
+            {t.context} <span className="text-slate-500">(opcional)</span>
           </label>
           <Textarea
-            placeholder="Información adicional: tecnologías usadas, restricciones, reglas de negocio..."
+            placeholder={t.contextPlaceholder}
             value={context}
             onChange={(e) => setContext(e.target.value)}
             className="min-h-[80px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
@@ -159,20 +188,20 @@ Criterios de aceptación:
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm text-slate-300">Formato de salida</label>
+          <label className="text-sm text-slate-300">{t.outputFormat}</label>
           <Select value={format} onValueChange={setFormat}>
             <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white focus:ring-violet-500/20">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-slate-800 border-slate-700">
               <SelectItem value="both" className="text-white focus:bg-violet-500/20">
-                Tabla + Gherkin (Recomendado)
+                {t.formatBoth}
               </SelectItem>
               <SelectItem value="table" className="text-white focus:bg-violet-500/20">
-                Solo Tabla
+                {t.formatTable}
               </SelectItem>
               <SelectItem value="gherkin" className="text-white focus:bg-violet-500/20">
-                Solo Gherkin
+                {t.formatGherkin}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -180,26 +209,23 @@ Criterios de aceptación:
 
         <div className="flex items-start gap-2 p-3 bg-slate-800/30 rounded-lg">
           <Info className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-slate-400">
-            Mientras más detallado sea el requisito, mejores serán los casos de prueba generados. 
-            Incluí criterios de aceptación, validaciones y reglas de negocio si las tenés.
-          </p>
+          <p className="text-xs text-slate-400">{t.infoTip}</p>
         </div>
 
         <Button
           onClick={handleSubmit}
-          disabled={!requirement.trim() || isLoading}
+          disabled={!requirement.trim() || isLoading || !validation.isValid}
           className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
         >
           {isLoading ? (
             <>
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-              Generando casos de prueba...
+              {t.generatingButton}
             </>
           ) : (
             <>
               <Wand2 className="w-5 h-5 mr-2" />
-              Generar Casos de Prueba
+              {t.generateButton}
             </>
           )}
         </Button>

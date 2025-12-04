@@ -21,6 +21,7 @@ import { GenerationResult, TestCase } from "@/app/page";
 import { StatsCards } from "@/components/StatsCards";
 import { ExportMenu } from "@/components/ExportMenu";
 import { EditableTestCase } from "@/components/EditableTestCase";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { useAuth } from "@/lib/auth-context";
 import { addFavorite } from "@/lib/favorites-db";
 import { useToast } from "@/components/Toast";
@@ -189,32 +190,9 @@ Resultado Esperado: ${tc.expectedResult}`;
     return filtered;
   }, [result, activeFilter, searchQuery, sortBy]);
 
+  // Loading State - Use Skeleton
   if (isLoading) {
-    return (
-      <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8">
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <div className="w-16 h-16 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <ListChecks className="w-6 h-6 text-violet-400 animate-pulse" />
-            </div>
-          </div>
-          <div className="text-center">
-            <p className="text-white font-medium">{t.generating}</p>
-            <p className="text-sm text-slate-400 mt-1">{t.generatingDesc}</p>
-          </div>
-          <div className="flex gap-1">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="w-2 h-2 bg-violet-500 rounded-full animate-bounce"
-                style={{ animationDelay: `${i * 0.15}s` }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingSkeleton />;
   }
 
   if (error) {
@@ -383,7 +361,7 @@ Resultado Esperado: ${tc.expectedResult}`;
           {filteredTestCases.length === 0 ? (
             <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6 text-center">
               <p className="text-slate-400">
-                {searchQuery ? `${t.noResults} para "${searchQuery}"` : `${t.noResults}`}
+                {searchQuery ? `${t.noResults} para "${searchQuery}"` : t.noResults}
               </p>
             </div>
           ) : (
