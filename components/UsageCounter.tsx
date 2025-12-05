@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { Zap, Infinity as InfinityIcon, Crown } from "lucide-react";
@@ -7,6 +8,14 @@ import { Zap, Infinity as InfinityIcon, Crown } from "lucide-react";
 export function UsageCounter() {
   const { user, usageCount, isPro } = useAuth();
   const { language } = useLanguage();
+  
+  // 1. Agregamos un estado para saber si el componente ya se montó en el cliente
+  const [mounted, setMounted] = useState(false);
+
+  // 2. Activamos el estado 'mounted' solo cuando el componente carga en el navegador
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Límites según el estado del usuario
   const dailyLimit = !user ? 5 : isPro ? 999 : 20;
@@ -41,8 +50,16 @@ export function UsageCounter() {
     return "bg-green-500";
   };
 
+  // 3. LA SOLUCIÓN: Si no ha montado, no renderizamos nada (o un skeleton vacío)
+  // Esto evita que el servidor y el cliente se peleen por el número.
+  if (!mounted) {
+    return (
+        <div className="h-8 w-32 bg-slate-800/50 rounded-lg animate-pulse" />
+    );
+  }
+
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg">
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg animate-in fade-in duration-300">
       {isPro ? (
         <Crown className="w-4 h-4 text-violet-400" />
       ) : (
