@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
 import { UpgradeModal } from '@/components/UpgradeModal';
@@ -18,6 +18,19 @@ export function UserMenu() {
   const { user, loading, signInWithGoogle, signOut, usageCount, maxUsage, isPro } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  
+  // --- CORRECCIÓN DE HIDRATACIÓN ---
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Si no ha montado, mostramos un "esqueleto" redondo para evitar saltos
+  if (!mounted) {
+    return <div className="w-8 h-8 bg-slate-800 rounded-full animate-pulse" />;
+  }
+  // ---------------------------------
 
   if (loading) {
     return (

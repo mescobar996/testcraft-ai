@@ -9,13 +9,13 @@ export function UsageCounter() {
   const { user, usageCount, isPro } = useAuth();
   const { language } = useLanguage();
   
-  // 1. Agregamos un estado para saber si el componente ya se montó en el cliente
+  // --- CORRECCIÓN DE HIDRATACIÓN ---
   const [mounted, setMounted] = useState(false);
 
-  // 2. Activamos el estado 'mounted' solo cuando el componente carga en el navegador
   useEffect(() => {
     setMounted(true);
   }, []);
+  // ---------------------------------
 
   // Límites según el estado del usuario
   const dailyLimit = !user ? 5 : isPro ? 999 : 20;
@@ -50,8 +50,7 @@ export function UsageCounter() {
     return "bg-green-500";
   };
 
-  // 3. LA SOLUCIÓN: Si no ha montado, no renderizamos nada (o un skeleton vacío)
-  // Esto evita que el servidor y el cliente se peleen por el número.
+  // Si no ha montado, retornamos un esqueleto rectangular para que no "salte" el diseño
   if (!mounted) {
     return (
         <div className="h-8 w-32 bg-slate-800/50 rounded-lg animate-pulse" />
