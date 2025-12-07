@@ -13,6 +13,7 @@ import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { ApiSettingsPanel } from "@/components/ApiSettingsPanel";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
@@ -179,6 +180,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
               <LanguageToggle />
               <ThemeToggle />
               <KeyboardShortcutsHelp shortcuts={shortcuts} />
+              <ApiSettingsPanel />
               <FavoritesPanel onSelectCase={handleSelectFavorite} />
               <CloudHistoryPanel 
                 onSelect={handleSelectFromHistory}
