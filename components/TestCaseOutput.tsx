@@ -22,6 +22,7 @@ import { StatsCards } from "@/components/StatsCards";
 import { ExportMenu } from "@/components/ExportMenu";
 import { EditableTestCase } from "@/components/EditableTestCase";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
+import { TestPlanModal } from "@/components/TestPlanModal";
 import { useAuth } from "@/lib/auth-context";
 import { addFavorite } from "@/lib/favorites-db";
 import { useToast } from "@/components/Toast";
@@ -235,6 +236,12 @@ Resultado Esperado: ${tc.expectedResult}`;
           testCases={result.testCases} 
           gherkin={result.gherkin}
           onExportPDF={exportToPDF}
+        />
+        <TestPlanModal 
+          testCases={result.testCases}
+          requirement={requirementTitle || ""}
+          gherkin={result.gherkin}
+          summary={result.summary}
         />
         <Button
           onClick={() => copyToClipboard(result.gherkin, "gherkin-all")}
