@@ -23,6 +23,31 @@ interface TestPlanConfig {
   scope?: string;
 }
 
+// Logo SVG as base64 - matching the app icon
+const drawAppLogo = (doc: jsPDF, x: number, y: number, size: number) => {
+  // Background rounded rectangle (violet)
+  doc.setFillColor(124, 58, 237);
+  doc.roundedRect(x, y, size, size, size * 0.2, size * 0.2, 'F');
+  
+  // Inner icon - code brackets < >
+  const centerX = x + size / 2;
+  const centerY = y + size / 2;
+  const iconSize = size * 0.35;
+  
+  doc.setStrokeColor(255, 255, 255);
+  doc.setLineWidth(size * 0.06);
+  doc.setLineCap('round');
+  doc.setLineJoin('round');
+  
+  // Left bracket <
+  doc.line(centerX - iconSize * 0.3, centerY - iconSize * 0.5, centerX - iconSize * 0.8, centerY);
+  doc.line(centerX - iconSize * 0.8, centerY, centerX - iconSize * 0.3, centerY + iconSize * 0.5);
+  
+  // Right bracket >
+  doc.line(centerX + iconSize * 0.3, centerY - iconSize * 0.5, centerX + iconSize * 0.8, centerY);
+  doc.line(centerX + iconSize * 0.8, centerY, centerX + iconSize * 0.3, centerY + iconSize * 0.5);
+};
+
 export function generateTestPlanPDF(config: TestPlanConfig) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -73,28 +98,31 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
   doc.setFillColor(124, 58, 237);
   doc.rect(0, 0, pageWidth, 80, 'F');
   
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(pageWidth / 2 - 25, 20, 50, 50, 5, 5, 'F');
+  // App Logo - positioned like in the app header
+  const logoSize = 50;
+  const logoX = pageWidth / 2 - logoSize / 2;
+  const logoY = 15;
+  drawAppLogo(doc, logoX, logoY, logoSize);
   
-  doc.setFontSize(28);
-  doc.setTextColor(...primaryColor);
-  doc.setFont('helvetica', 'bold');
-  doc.text('TC', pageWidth / 2, 52, { align: 'center' });
-  
+  // Title
   doc.setFontSize(32);
   doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
   doc.text('TEST PLAN', pageWidth / 2, 100, { align: 'center' });
   
+  // Project name
   doc.setFontSize(24);
   doc.setTextColor(...darkColor);
   doc.text(config.projectName || 'Proyecto de Testing', pageWidth / 2, 130, { align: 'center' });
   
+  // Version badge
   doc.setFillColor(...primaryColor);
   doc.roundedRect(pageWidth / 2 - 20, 145, 40, 12, 3, 3, 'F');
   doc.setFontSize(10);
   doc.setTextColor(255, 255, 255);
   doc.text(`Versión ${config.version || '1.0'}`, pageWidth / 2, 153, { align: 'center' });
   
+  // Metadata box
   const boxY = 180;
   doc.setFillColor(248, 250, 252);
   doc.roundedRect(margin, boxY, pageWidth - 2 * margin, 60, 5, 5, 'F');
@@ -120,9 +148,13 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
     doc.text(item.value, x + 45, y);
   });
   
+  // Footer with logo
   doc.setFontSize(9);
   doc.setTextColor(...lightColor);
-  doc.text('Generado con TestCraft AI', pageWidth / 2, pageHeight - 20, { align: 'center' });
+  
+  // Small logo in footer
+  drawAppLogo(doc, pageWidth / 2 - 8, pageHeight - 35, 16);
+  doc.text('Generado con TestCraft AI', pageWidth / 2, pageHeight - 15, { align: 'center' });
 
   // ========== PAGE 2: INDEX ==========
   doc.addPage();

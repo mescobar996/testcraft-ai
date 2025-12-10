@@ -10,7 +10,6 @@ import {
   Camera,
   Wand2,
   Eye,
-  Sparkles,
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
 
@@ -119,7 +118,6 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
       >
         <Camera className="w-4 h-4 mr-2" />
         Generar desde Imagen
-        <Sparkles className="w-3 h-3 ml-2 text-yellow-400" />
       </Button>
 
       {isOpen && (
