@@ -13,11 +13,11 @@ import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { ApiSettingsPanel } from "@/components/ApiSettingsPanel";
+import { ImageUploader } from "@/components/ImageUploader";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
-import { Zap, Shield, Clock } from "lucide-react";
+import { Zap, Shield, Clock, Camera } from "lucide-react";
 
 export interface TestCase {
   id: string;
@@ -39,6 +39,7 @@ export default function Home() {
   const [result, setResult] = useState<GenerationResult | null>(null);
   const [currentRequirement, setCurrentRequirement] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [newGeneration, setNewGeneration] = useState<HistoryRecord | null>(null);
   const [triggerGenerate, setTriggerGenerate] = useState(0);
@@ -77,6 +78,13 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGenerateFromImage = (imageResult: GenerationResult) => {
+    setResult(imageResult);
+    setCurrentRequirement("Generado desde imagen");
+    setError(null);
+    incrementUsage();
   };
 
   const handleRegenerateCase = async (testCase: TestCase): Promise<TestCase | null> => {
@@ -180,7 +188,6 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
               <LanguageToggle />
               <ThemeToggle />
               <KeyboardShortcutsHelp shortcuts={shortcuts} />
-              <ApiSettingsPanel />
               <FavoritesPanel onSelectCase={handleSelectFavorite} />
               <CloudHistoryPanel 
                 onSelect={handleSelectFromHistory}
@@ -202,6 +209,15 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
               </span>
             </h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">{t.heroSubtitle}</p>
+            
+            {/* Image Upload Button - Destacado */}
+            <div className="mt-6">
+              <ImageUploader 
+                onGenerateFromImage={handleGenerateFromImage}
+                isLoading={isImageLoading}
+                setIsLoading={setIsImageLoading}
+              />
+            </div>
           </div>
 
           <UsageBanner />
@@ -218,7 +234,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             <div className="order-1 lg:order-2" data-results>
               <TestCaseOutput 
                 result={result} 
-                isLoading={isLoading} 
+                isLoading={isLoading || isImageLoading} 
                 error={error}
                 requirementTitle={currentRequirement.split('\n')[0].substring(0, 50)}
                 onRegenerateCase={handleRegenerateCase}
@@ -227,7 +243,13 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             </div>
           </div>
           
-          <div className="mt-16 grid md:grid-cols-3 gap-6">
+          <div className="mt-16 grid md:grid-cols-4 gap-6">
+            <FeatureCard
+              icon={<Camera className="w-6 h-6 text-fuchsia-400" />}
+              title="Desde Imagen"
+              description="Subí un screenshot y generamos casos automáticamente."
+              isNew
+            />
             <FeatureCard
               icon={<Zap className="w-6 h-6 text-yellow-400" />}
               title={t.feature1Title}
@@ -262,9 +284,14 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
   );
 }
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+function FeatureCard({ icon, title, description, isNew }: { icon: React.ReactNode; title: string; description: string; isNew?: boolean }) {
   return (
-    <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 hover:border-violet-500/30 transition-all duration-300 group">
+    <div className={`bg-slate-900/50 border rounded-xl p-6 hover:border-violet-500/30 transition-all duration-300 group relative ${isNew ? 'border-fuchsia-500/50' : 'border-slate-800'}`}>
+      {isNew && (
+        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-fuchsia-500 to-violet-500 rounded-full text-xs font-bold text-white">
+          NUEVO
+        </div>
+      )}
       <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
         {icon}
       </div>
