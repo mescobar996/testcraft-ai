@@ -11,7 +11,6 @@ import { UsageCounter } from "@/components/UsageCounter";
 import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { ImageUploader } from "@/components/ImageUploader";
 import { useAuth } from "@/lib/auth-context";
@@ -186,7 +185,6 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             <div className="flex items-center gap-2">
               <UsageCounter />
               <LanguageToggle />
-              <ThemeToggle />
               <KeyboardShortcutsHelp shortcuts={shortcuts} />
               <FavoritesPanel onSelectCase={handleSelectFavorite} />
               <CloudHistoryPanel 
@@ -210,7 +208,6 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             </h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">{t.heroSubtitle}</p>
             
-            {/* Image Upload Button - Destacado */}
             <div className="mt-6">
               <ImageUploader 
                 onGenerateFromImage={handleGenerateFromImage}

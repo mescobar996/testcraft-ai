@@ -12,7 +12,6 @@ import {
   Calendar,
   FolderOpen,
   FileCheck,
-  Sparkles,
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import { TestCase } from "@/app/page";
@@ -76,15 +75,12 @@ export function TestPlanModal({ testCases, requirement, gherkin, summary }: Test
         size="sm"
         className="border-emerald-500/50 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
       >
-        <FileText className="w-4 h-4 mr-2" />
         Test Plan PDF
-        <Sparkles className="w-3 h-3 ml-2 text-yellow-400" />
       </Button>
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-slate-800">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
@@ -103,9 +99,7 @@ export function TestPlanModal({ testCases, requirement, gherkin, summary }: Test
               </button>
             </div>
 
-            {/* Content */}
             <div className="p-4 space-y-4">
-              {/* Preview info */}
               <div className="bg-slate-800/50 rounded-lg p-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-violet-500/20 rounded-lg flex items-center justify-center">
@@ -122,7 +116,6 @@ export function TestPlanModal({ testCases, requirement, gherkin, summary }: Test
                 </div>
               </div>
 
-              {/* Form */}
               <div className="space-y-3">
                 <div>
                   <label className="text-sm text-slate-300 mb-1.5 flex items-center gap-2">
@@ -165,7 +158,6 @@ export function TestPlanModal({ testCases, requirement, gherkin, summary }: Test
                 </div>
               </div>
 
-              {/* What's included */}
               <div className="bg-slate-800/30 rounded-lg p-3">
                 <p className="text-xs text-slate-400 mb-2 font-medium">El documento incluye:</p>
                 <div className="grid grid-cols-2 gap-1 text-xs text-slate-500">
@@ -183,7 +175,6 @@ export function TestPlanModal({ testCases, requirement, gherkin, summary }: Test
               </div>
             </div>
 
-            {/* Footer */}
             <div className="flex items-center justify-end gap-3 p-4 border-t border-slate-800 bg-slate-800/30">
               <Button
                 onClick={() => setIsOpen(false)}

@@ -23,13 +23,11 @@ interface TestPlanConfig {
   scope?: string;
 }
 
-// Logo drawing function - matching the app icon
+// Logo drawing function - smaller, like app header
 const drawAppLogo = (doc: jsPDF, x: number, y: number, size: number) => {
-  // Background rounded rectangle (violet)
   doc.setFillColor(124, 58, 237);
   doc.roundedRect(x, y, size, size, size * 0.2, size * 0.2, 'F');
   
-  // Inner icon - code brackets < >
   const centerX = x + size / 2;
   const centerY = y + size / 2;
   const iconSize = size * 0.35;
@@ -37,13 +35,21 @@ const drawAppLogo = (doc: jsPDF, x: number, y: number, size: number) => {
   doc.setDrawColor(255, 255, 255);
   doc.setLineWidth(size * 0.06);
   
-  // Left bracket <
   doc.line(centerX - iconSize * 0.3, centerY - iconSize * 0.5, centerX - iconSize * 0.8, centerY);
   doc.line(centerX - iconSize * 0.8, centerY, centerX - iconSize * 0.3, centerY + iconSize * 0.5);
-  
-  // Right bracket >
   doc.line(centerX + iconSize * 0.3, centerY - iconSize * 0.5, centerX + iconSize * 0.8, centerY);
   doc.line(centerX + iconSize * 0.8, centerY, centerX + iconSize * 0.3, centerY + iconSize * 0.5);
+};
+
+// Draw header with logo + text like the app
+const drawAppHeader = (doc: jsPDF, x: number, y: number) => {
+  const logoSize = 24;
+  drawAppLogo(doc, x, y, logoSize);
+  
+  doc.setFontSize(14);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.text('TestCraft AI', x + logoSize + 8, y + logoSize / 2 + 5);
 };
 
 export function generateTestPlanPDF(config: TestPlanConfig) {
@@ -66,7 +72,7 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
     return false;
   };
 
-  const drawHeader = (text: string, fontSize: number = 16) => {
+  const drawSectionHeader = (text: string, fontSize: number = 16) => {
     addNewPageIfNeeded(20);
     doc.setFontSize(fontSize);
     doc.setTextColor(...primaryColor);
@@ -94,34 +100,24 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
 
   // ========== PAGE 1: COVER ==========
   doc.setFillColor(124, 58, 237);
-  doc.rect(0, 0, pageWidth, 80, 'F');
+  doc.rect(0, 0, pageWidth, 50, 'F');
+  drawAppHeader(doc, margin, 13);
   
-  // App Logo - positioned like in the app header
-  const logoSize = 50;
-  const logoX = pageWidth / 2 - logoSize / 2;
-  const logoY = 15;
-  drawAppLogo(doc, logoX, logoY, logoSize);
-  
-  // Title
   doc.setFontSize(32);
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.text('TEST PLAN', pageWidth / 2, 100, { align: 'center' });
-  
-  // Project name
-  doc.setFontSize(24);
   doc.setTextColor(...darkColor);
-  doc.text(config.projectName || 'Proyecto de Testing', pageWidth / 2, 130, { align: 'center' });
+  doc.setFont('helvetica', 'bold');
+  doc.text('TEST PLAN', pageWidth / 2, 85, { align: 'center' });
   
-  // Version badge
+  doc.setFontSize(24);
+  doc.text(config.projectName || 'Proyecto de Testing', pageWidth / 2, 115, { align: 'center' });
+  
   doc.setFillColor(...primaryColor);
-  doc.roundedRect(pageWidth / 2 - 20, 145, 40, 12, 3, 3, 'F');
+  doc.roundedRect(pageWidth / 2 - 20, 130, 40, 12, 3, 3, 'F');
   doc.setFontSize(10);
   doc.setTextColor(255, 255, 255);
-  doc.text(`Versión ${config.version || '1.0'}`, pageWidth / 2, 153, { align: 'center' });
+  doc.text(`Versión ${config.version || '1.0'}`, pageWidth / 2, 138, { align: 'center' });
   
-  // Metadata box
-  const boxY = 180;
+  const boxY = 160;
   doc.setFillColor(248, 250, 252);
   doc.roundedRect(margin, boxY, pageWidth - 2 * margin, 60, 5, 5, 'F');
   
@@ -146,21 +142,18 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
     doc.text(item.value, x + 45, y);
   });
   
-  // Footer with logo
   doc.setFontSize(9);
   doc.setTextColor(...lightColor);
-  
-  // Small logo in footer
-  drawAppLogo(doc, pageWidth / 2 - 8, pageHeight - 35, 16);
-  doc.text('Generado con TestCraft AI', pageWidth / 2, pageHeight - 15, { align: 'center' });
+  drawAppLogo(doc, pageWidth / 2 - 8, pageHeight - 30, 12);
+  doc.text('Generado con TestCraft AI', pageWidth / 2, pageHeight - 12, { align: 'center' });
 
-  // ========== PAGE 2: INDEX ==========
+  // ========== PAGE 2+ (rest of document) ==========
   doc.addPage();
   currentY = margin;
-  drawHeader('ÍNDICE', 20);
+  drawSectionHeader('ÍNDICE', 20);
   currentY += 10;
   
-  const tocItems = [
+  [
     { num: '1', title: 'Información del Proyecto', page: '3' },
     { num: '2', title: 'Alcance y Objetivos', page: '3' },
     { num: '3', title: 'Requisito Analizado', page: '4' },
@@ -169,9 +162,7 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
     { num: '6', title: 'Matriz de Trazabilidad', page: '7' },
     { num: '7', title: 'Resumen Ejecutivo', page: '8' },
     { num: '8', title: 'Aprobaciones', page: '8' },
-  ];
-  
-  tocItems.forEach((item) => {
+  ].forEach((item) => {
     doc.setFontSize(12);
     doc.setTextColor(...darkColor);
     doc.setFont('helvetica', 'bold');
@@ -186,10 +177,9 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
     currentY += 12;
   });
 
-  // ========== PAGE 3: PROJECT INFO ==========
   doc.addPage();
   currentY = margin;
-  drawHeader('1. INFORMACIÓN DEL PROYECTO', 16);
+  drawSectionHeader('1. INFORMACIÓN DEL PROYECTO', 16);
   
   autoTable(doc, {
     startY: currentY,
@@ -206,13 +196,12 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
   });
   
   currentY = (doc as any).lastAutoTable.finalY + 15;
-  drawHeader('2. ALCANCE Y OBJETIVOS', 16);
+  drawSectionHeader('2. ALCANCE Y OBJETIVOS', 16);
   drawText(config.scope || 'Este plan cubre la validación funcional del requisito especificado, incluyendo casos positivos, negativos y de borde.');
 
-  // ========== PAGE 4: REQUIREMENT & SUMMARY ==========
   doc.addPage();
   currentY = margin;
-  drawHeader('3. REQUISITO ANALIZADO', 16);
+  drawSectionHeader('3. REQUISITO ANALIZADO', 16);
   
   doc.setFillColor(248, 250, 252);
   const reqLines = doc.splitTextToSize(config.requirement || 'No especificado', pageWidth - 2 * margin - 20);
@@ -224,7 +213,7 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
   });
   currentY += reqLines.length * 6 + 25;
   
-  drawHeader('4. RESUMEN DE CASOS', 16);
+  drawSectionHeader('4. RESUMEN DE CASOS', 16);
   
   const stats = {
     total: config.testCases.length,
@@ -234,14 +223,12 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
   };
   
   const boxWidth = (pageWidth - 2 * margin - 30) / 4;
-  const statsData = [
+  [
     { label: 'Total', value: stats.total, color: primaryColor },
     { label: 'Positivos', value: stats.positivos, color: [34, 197, 94] as [number, number, number] },
     { label: 'Negativos', value: stats.negativos, color: [239, 68, 68] as [number, number, number] },
     { label: 'Borde', value: stats.borde, color: [234, 179, 8] as [number, number, number] },
-  ];
-  
-  statsData.forEach((stat, i) => {
+  ].forEach((stat, i) => {
     const x = margin + i * (boxWidth + 10);
     doc.setFillColor(...stat.color);
     doc.roundedRect(x, currentY, boxWidth, 30, 3, 3, 'F');
@@ -265,14 +252,12 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
     styles: { fontSize: 9 },
   });
 
-  // ========== PAGE 5+: DETAILED CASES ==========
   doc.addPage();
   currentY = margin;
-  drawHeader('5. DETALLE DE CASOS DE PRUEBA', 16);
+  drawSectionHeader('5. DETALLE DE CASOS DE PRUEBA', 16);
   
   config.testCases.forEach((tc) => {
     addNewPageIfNeeded(70);
-    
     doc.setFillColor(248, 250, 252);
     doc.roundedRect(margin, currentY, pageWidth - 2 * margin, 12, 2, 2, 'F');
     doc.setFontSize(10);
@@ -307,10 +292,9 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
     currentY += 12;
   });
 
-  // ========== MATRIX ==========
   doc.addPage();
   currentY = margin;
-  drawHeader('6. MATRIZ DE TRAZABILIDAD', 16);
+  drawSectionHeader('6. MATRIZ DE TRAZABILIDAD', 16);
   
   autoTable(doc, {
     startY: currentY,
@@ -322,19 +306,17 @@ export function generateTestPlanPDF(config: TestPlanConfig) {
     styles: { fontSize: 9 },
   });
 
-  // ========== SUMMARY ==========
   currentY = (doc as any).lastAutoTable.finalY + 20;
   addNewPageIfNeeded(60);
-  drawHeader('7. RESUMEN EJECUTIVO', 16);
+  drawSectionHeader('7. RESUMEN EJECUTIVO', 16);
   
   const estimatedTime = Math.ceil(config.testCases.length * 12);
   drawText(`Total de casos: ${stats.total}
 Positivos: ${stats.positivos} | Negativos: ${stats.negativos} | Borde: ${stats.borde}
 Tiempo estimado de ejecución: ${estimatedTime} minutos (~${(estimatedTime/60).toFixed(1)} horas)`);
 
-  // ========== APPROVALS ==========
   addNewPageIfNeeded(80);
-  drawHeader('8. APROBACIONES', 16);
+  drawSectionHeader('8. APROBACIONES', 16);
   
   autoTable(doc, {
     startY: currentY,
@@ -346,7 +328,6 @@ Tiempo estimado de ejecución: ${estimatedTime} minutos (~${(estimatedTime/60).t
     styles: { minCellHeight: 15 },
   });
 
-  // Save
   const fileName = `TestPlan_${(config.projectName || 'Project').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
   doc.save(fileName);
   return fileName;

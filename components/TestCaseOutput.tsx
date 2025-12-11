@@ -192,7 +192,6 @@ Resultado Esperado: ${tc.expectedResult}`;
     return filtered;
   }, [result, activeFilter, searchQuery, sortBy]);
 
-  // Loading State - Use Skeleton
   if (isLoading) {
     return <LoadingSkeleton />;
   }
@@ -232,9 +231,9 @@ Resultado Esperado: ${tc.expectedResult}`;
     <div className="space-y-4">
       <StatsCards testCases={result.testCases} />
       
-      {/* Estimación de tiempo */}
       <ExecutionEstimate testCases={result.testCases} />
 
+      {/* Botones de acción - Primera fila */}
       <div className="flex gap-2 flex-wrap">
         <ExportMenu 
           testCases={result.testCases} 
@@ -247,6 +246,10 @@ Resultado Esperado: ${tc.expectedResult}`;
           gherkin={result.gherkin}
           summary={result.summary}
         />
+      </div>
+
+      {/* Botones de acción - Segunda fila */}
+      <div className="flex gap-2 flex-wrap">
         <Button
           onClick={() => copyToClipboard(result.gherkin, "gherkin-all")}
           variant="outline"
@@ -271,6 +274,7 @@ Resultado Esperado: ${tc.expectedResult}`;
         </Button>
       </div>
 
+      {/* Botones de acción - Tercera fila */}
       <div className="flex gap-2 flex-wrap">
         <Button
           onClick={toggleExpandAll}

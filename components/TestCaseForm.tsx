@@ -4,17 +4,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { FileText, Wand2, Info } from "lucide-react";
-import { TemplatesPanel } from "@/components/TemplatesPanel";
-import { CompareMode } from "@/components/CompareMode";
-import { RequirementValidator, validateRequirement } from "@/components/RequirementValidator";
-import { GenerationResult } from "@/app/page";
+  Sparkles,
+  Loader2,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  Settings2,
+  Lightbulb,
+} from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 
 interface TestCaseFormProps {
@@ -23,213 +20,195 @@ interface TestCaseFormProps {
   triggerGenerate?: number;
 }
 
-const MAX_CHARS = 5000;
+const TEMPLATES = [
+  {
+    id: "login",
+    name: "Sistema de Login",
+    requirement: "Como usuario quiero poder iniciar sesión en el sistema con mi email y contraseña para acceder a mi cuenta personal.",
+    context: "Aplicación web con autenticación, validación de campos, manejo de errores y bloqueo después de 3 intentos fallidos."
+  },
+  {
+    id: "cart",
+    name: "Carrito de Compras",
+    requirement: "Como cliente quiero agregar productos al carrito de compras para poder realizar una compra.",
+    context: "E-commerce con stock limitado, descuentos, múltiples cantidades y eliminación de productos."
+  },
+  {
+    id: "register",
+    name: "Registro de Usuario",
+    requirement: "Como visitante quiero registrarme en la plataforma con mis datos personales para crear una cuenta nueva.",
+    context: "Formulario con validación de email único, contraseña segura, confirmación de contraseña y términos y condiciones."
+  },
+  {
+    id: "search",
+    name: "Búsqueda con Filtros",
+    requirement: "Como usuario quiero buscar productos aplicando filtros para encontrar lo que necesito rápidamente.",
+    context: "Búsqueda con filtros por categoría, precio, disponibilidad, ordenamiento y paginación de resultados."
+  },
+  {
+    id: "payment",
+    name: "Proceso de Pago",
+    requirement: "Como cliente quiero completar el pago de mi pedido para finalizar la compra.",
+    context: "Checkout con múltiples métodos de pago, validación de tarjeta, dirección de envío y confirmación de pedido."
+  },
+  {
+    id: "profile",
+    name: "Editar Perfil",
+    requirement: "Como usuario quiero editar mi información de perfil para mantener mis datos actualizados.",
+    context: "Edición de nombre, email, foto de perfil, contraseña con validaciones y confirmación de cambios."
+  },
+];
 
 export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCaseFormProps) {
   const { t } = useLanguage();
   const [requirement, setRequirement] = useState("");
   const [context, setContext] = useState("");
   const [format, setFormat] = useState("both");
-  const [isComparing, setIsComparing] = useState(false);
-  const [showValidator, setShowValidator] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   useEffect(() => {
-    if (triggerGenerate && triggerGenerate > 0 && requirement.trim() && !isLoading) {
-      const validation = validateRequirement(requirement);
-      if (validation.isValid) {
-        onGenerate(requirement, context, format);
-      }
+    if (triggerGenerate && triggerGenerate > 0 && requirement.trim()) {
+      onGenerate(requirement, context, format);
     }
   }, [triggerGenerate]);
 
-  // Show validator after user starts typing (debounced)
-  useEffect(() => {
-    if (requirement.length > 10) {
-      const timer = setTimeout(() => setShowValidator(true), 500);
-      return () => clearTimeout(timer);
-    } else {
-      setShowValidator(false);
-    }
-  }, [requirement]);
-
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!requirement.trim()) return;
-    
-    const validation = validateRequirement(requirement);
-    if (!validation.isValid) {
-      setShowValidator(true);
-      return;
-    }
-    
     onGenerate(requirement, context, format);
   };
 
-  const handleRequirementChange = (value: string) => {
-    if (value.length <= MAX_CHARS) {
-      setRequirement(value);
-    }
+  const applyTemplate = (template: typeof TEMPLATES[0]) => {
+    setRequirement(template.requirement);
+    setContext(template.context);
+    setShowTemplates(false);
   };
-
-  const handleSelectTemplate = (templateRequirement: string, templateContext: string) => {
-    setRequirement(templateRequirement);
-    setContext(templateContext);
-    setShowValidator(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleCompare = async (req1: string, req2: string, ctx: string): Promise<{
-    version1: GenerationResult;
-    version2: GenerationResult;
-  }> => {
-    setIsComparing(true);
-    
-    try {
-      const response1 = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ requirement: req1, context: ctx, format: "both" }),
-      });
-      const version1 = await response1.json();
-
-      const response2 = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ requirement: req2, context: ctx, format: "both" }),
-      });
-      const version2 = await response2.json();
-
-      return { version1, version2 };
-    } finally {
-      setIsComparing(false);
-    }
-  };
-
-  const loadExample = () => {
-    setRequirement(`Como usuario registrado, quiero poder iniciar sesión en la aplicación con mi email y contraseña.
-
-Criterios de aceptación:
-- El formulario debe tener campos para email y contraseña
-- El email debe tener formato válido
-- La contraseña debe tener mínimo 8 caracteres
-- Mostrar mensaje de error si las credenciales son incorrectas
-- Redirigir al dashboard después de login exitoso
-- Opción "Recordarme" para mantener la sesión activa`);
-    setContext("Aplicación web en React. Autenticación con JWT. Base de datos PostgreSQL.");
-    setShowValidator(true);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.ctrlKey && e.key === "Enter" && requirement.trim() && !isLoading) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  };
-
-  const getCharCountColor = () => {
-    const percentage = (requirement.length / MAX_CHARS) * 100;
-    if (percentage >= 90) return "text-red-400";
-    if (percentage >= 75) return "text-yellow-400";
-    return "text-slate-500";
-  };
-
-  const validation = validateRequirement(requirement);
 
   return (
-    <div className="space-y-4">
-      <TemplatesPanel onSelectTemplate={handleSelectTemplate} />
-      <CompareMode onCompare={handleCompare} isLoading={isComparing} />
-      
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 space-y-4">
-        <div className="flex items-center gap-2 mb-2">
-          <FileText className="w-5 h-5 text-violet-400" />
-          <h2 className="font-semibold text-white">{t.requirement}</h2>
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="text-sm text-slate-300">
-              {t.requirement} <span className="text-red-400">*</span>
-            </label>
-            <button
-              onClick={loadExample}
-              className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
-            >
-              {t.loadExample}
-            </button>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FileText className="w-5 h-5 text-violet-400" />
+            <h3 className="text-white font-semibold">{t.requirement}</h3>
           </div>
-          <Textarea
-            placeholder={t.requirementPlaceholder}
-            value={requirement}
-            onChange={(e) => handleRequirementChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="min-h-[150px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
-          />
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-500">{t.tipCtrlEnter}</p>
-            <p className={`text-xs ${getCharCountColor()}`}>
-              {requirement.length.toLocaleString()} / {MAX_CHARS.toLocaleString()}
-            </p>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowTemplates(!showTemplates)}
+            className="text-slate-400 hover:text-white"
+          >
+            <Lightbulb className="w-4 h-4 mr-2" />
+            Plantillas Predefinidas
+            {showTemplates ? (
+              <ChevronUp className="w-4 h-4 ml-1" />
+            ) : (
+              <ChevronDown className="w-4 h-4 ml-1" />
+            )}
+          </Button>
+        </div>
+
+        {showTemplates && (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-3 bg-slate-800/50 rounded-lg animate-in fade-in slide-in-from-top-2">
+            {TEMPLATES.map((template) => (
+              <button
+                key={template.id}
+                type="button"
+                onClick={() => applyTemplate(template)}
+                className="text-left p-3 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 hover:border-violet-500/50 transition-all text-sm"
+              >
+                <span className="text-white font-medium block">{template.name}</span>
+                <span className="text-slate-400 text-xs line-clamp-2">{template.requirement.substring(0, 60)}...</span>
+              </button>
+            ))}
           </div>
-        </div>
+        )}
 
-        {/* Requirement Validator */}
-        <RequirementValidator requirement={requirement} show={showValidator} />
-
-        <div className="space-y-2">
-          <label className="text-sm text-slate-300">
-            {t.context} <span className="text-slate-500">(opcional)</span>
-          </label>
-          <Textarea
-            placeholder={t.contextPlaceholder}
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-            className="min-h-[80px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm text-slate-300">{t.outputFormat}</label>
-          <Select value={format} onValueChange={setFormat}>
-            <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white focus:ring-violet-500/20">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700">
-              <SelectItem value="both" className="text-white focus:bg-violet-500/20">
-                {t.formatBoth}
-              </SelectItem>
-              <SelectItem value="table" className="text-white focus:bg-violet-500/20">
-                {t.formatTable}
-              </SelectItem>
-              <SelectItem value="gherkin" className="text-white focus:bg-violet-500/20">
-                {t.formatGherkin}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex items-start gap-2 p-3 bg-slate-800/30 rounded-lg">
-          <Info className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-slate-400">{t.infoTip}</p>
-        </div>
+        <Textarea
+          value={requirement}
+          onChange={(e) => setRequirement(e.target.value)}
+          placeholder={t.requirementPlaceholder}
+          className="min-h-[120px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
+        />
 
         <Button
-          onClick={handleSubmit}
-          disabled={!requirement.trim() || isLoading || !validation.isValid}
-          className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="text-slate-400 hover:text-white w-full justify-between"
+        >
+          <span className="flex items-center gap-2">
+            <Settings2 className="w-4 h-4" />
+            {t.advancedOptions}
+          </span>
+          {showAdvanced ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
+        </Button>
+
+        {showAdvanced && (
+          <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2">
+            <div>
+              <label className="text-sm text-slate-300 mb-2 block">{t.additionalContext}</label>
+              <Textarea
+                value={context}
+                onChange={(e) => setContext(e.target.value)}
+                placeholder={t.contextPlaceholder}
+                className="min-h-[80px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-slate-300 mb-2 block">{t.outputFormat}</label>
+              <div className="flex gap-2">
+                {[
+                  { value: "table", label: t.tableOnly },
+                  { value: "gherkin", label: t.gherkinOnly },
+                  { value: "both", label: t.both },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setFormat(option.value)}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                      format === option.value
+                        ? "bg-violet-500/20 border-violet-500/50 text-violet-300 border"
+                        : "bg-slate-800 border-slate-700 text-slate-400 border hover:text-white"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <Button
+          type="submit"
+          disabled={!requirement.trim() || isLoading}
+          className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-semibold py-6 text-lg shadow-lg shadow-violet-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <>
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-              {t.generatingButton}
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              {t.generating}
             </>
           ) : (
             <>
-              <Wand2 className="w-5 h-5 mr-2" />
-              {t.generateButton}
+              <Sparkles className="w-5 h-5 mr-2" />
+              {t.generate}
             </>
           )}
         </Button>
+
+        <p className="text-xs text-slate-500 text-center">{t.generateHint}</p>
       </div>
-    </div>
+    </form>
   );
 }
