@@ -23,7 +23,7 @@ interface TestPlanConfig {
   scope?: string;
 }
 
-// Logo SVG as base64 - matching the app icon
+// Logo drawing function - matching the app icon
 const drawAppLogo = (doc: jsPDF, x: number, y: number, size: number) => {
   // Background rounded rectangle (violet)
   doc.setFillColor(124, 58, 237);
@@ -34,10 +34,8 @@ const drawAppLogo = (doc: jsPDF, x: number, y: number, size: number) => {
   const centerY = y + size / 2;
   const iconSize = size * 0.35;
   
-  doc.setStrokeColor(255, 255, 255);
+  doc.setDrawColor(255, 255, 255);
   doc.setLineWidth(size * 0.06);
-  doc.setLineCap('round');
-  doc.setLineJoin('round');
   
   // Left bracket <
   doc.line(centerX - iconSize * 0.3, centerY - iconSize * 0.5, centerX - iconSize * 0.8, centerY);
