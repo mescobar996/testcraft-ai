@@ -85,13 +85,28 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
     setShowTemplates(false);
   };
 
+  // Valores por defecto para las traducciones faltantes
+  const translations = {
+    requirement: t.requirement || "Requerimiento",
+    requirementPlaceholder: t.requirementPlaceholder || "Describe el requerimiento o funcionalidad a probar...",
+    additionalContext: t.additionalContext || "Contexto Adicional",
+    contextPlaceholder: t.contextPlaceholder || "Información adicional, reglas de negocio, limitaciones...",
+    outputFormat: t.outputFormat || "Formato de Salida",
+    tableOnly: t.tableOnly || "Solo Tabla",
+    gherkinOnly: t.gherkinOnly || "Solo Gherkin",
+    both: t.both || "Ambos",
+    generating: t.generating || "Generando...",
+    generate: t.generate || "Generar Casos de Prueba",
+    generateHint: t.generateHint || "Describe el requerimiento y haz clic en generar",
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-violet-400" />
-            <h3 className="text-white font-semibold">{t.requirement}</h3>
+            <h3 className="text-white font-semibold">{translations.requirement}</h3>
           </div>
           <Button
             type="button"
@@ -129,7 +144,7 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
         <Textarea
           value={requirement}
           onChange={(e) => setRequirement(e.target.value)}
-          placeholder={t.requirementPlaceholder}
+          placeholder={translations.requirementPlaceholder}
           className="min-h-[120px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
         />
 
@@ -154,22 +169,22 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
         {showAdvanced && (
           <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2">
             <div>
-              <label className="text-sm text-slate-300 mb-2 block">{t.additionalContext}</label>
+              <label className="text-sm text-slate-300 mb-2 block">{translations.additionalContext}</label>
               <Textarea
                 value={context}
                 onChange={(e) => setContext(e.target.value)}
-                placeholder={t.contextPlaceholder}
+                placeholder={translations.contextPlaceholder}
                 className="min-h-[80px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
               />
             </div>
 
             <div>
-              <label className="text-sm text-slate-300 mb-2 block">{t.outputFormat}</label>
+              <label className="text-sm text-slate-300 mb-2 block">{translations.outputFormat}</label>
               <div className="flex gap-2">
                 {[
-                  { value: "table", label: t.tableOnly },
-                  { value: "gherkin", label: t.gherkinOnly },
-                  { value: "both", label: t.both },
+                  { value: "table", label: translations.tableOnly },
+                  { value: "gherkin", label: translations.gherkinOnly },
+                  { value: "both", label: translations.both },
                 ].map((option) => (
                   <button
                     key={option.value}
@@ -197,17 +212,17 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
           {isLoading ? (
             <>
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              {t.generating}
+              {translations.generating}
             </>
           ) : (
             <>
               <Sparkles className="w-5 h-5 mr-2" />
-              {t.generate}
+              {translations.generate}
             </>
           )}
         </Button>
 
-        <p className="text-xs text-slate-500 text-center">{t.generateHint}</p>
+        <p className="text-xs text-slate-500 text-center">{translations.generateHint}</p>
       </div>
     </form>
   );
