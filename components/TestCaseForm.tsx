@@ -142,7 +142,7 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
         >
           <span className="flex items-center gap-2">
             <Settings2 className="w-4 h-4" />
-            {t.advancedOptions}
+            Opciones Avanzadas
           </span>
           {showAdvanced ? (
             <ChevronUp className="w-4 h-4" />
