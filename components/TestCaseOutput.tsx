@@ -23,6 +23,7 @@ import { ExportMenu } from "@/components/ExportMenu";
 import { EditableTestCase } from "@/components/EditableTestCase";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { TestPlanModal } from "@/components/TestPlanModal";
+import { ExecutionEstimate } from "@/components/ExecutionEstimate";
 import { useAuth } from "@/lib/auth-context";
 import { addFavorite } from "@/lib/favorites-db";
 import { useToast } from "@/components/Toast";
@@ -230,6 +231,9 @@ Resultado Esperado: ${tc.expectedResult}`;
   return (
     <div className="space-y-4">
       <StatsCards testCases={result.testCases} />
+      
+      {/* Estimación de tiempo */}
+      <ExecutionEstimate testCases={result.testCases} />
 
       <div className="flex gap-2 flex-wrap">
         <ExportMenu 
