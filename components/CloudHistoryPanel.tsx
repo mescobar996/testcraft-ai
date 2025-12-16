@@ -36,13 +36,11 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
   }, [user, isOpen]);
 
   useEffect(() => {
-    if (onNewGeneration && history.length > 0) {
+    if (onNewGeneration) {
       const exists = history.some(h => h.id === onNewGeneration.id);
       if (!exists) {
         setHistory(prev => [onNewGeneration, ...prev]);
       }
-    } else if (onNewGeneration && history.length === 0) {
-      setHistory([onNewGeneration]);
     }
   }, [onNewGeneration]);
 
@@ -62,7 +60,6 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!user) return;
-    
     const success = await deleteGeneration(user.id, id);
     if (success) {
       setHistory(prev => prev.filter(h => h.id !== id));
@@ -84,41 +81,24 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     
-    if (days === 0) {
-      return `Hoy ${date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (days === 1) {
-      return `Ayer ${date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (days < 7) {
-      return `Hace ${days} días`;
-    } else {
-      return date.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
-    }
+    if (days === 0) return `Hoy ${date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
+    if (days === 1) return `Ayer ${date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
+    if (days < 7) return `Hace ${days} días`;
+    return date.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
   };
 
   if (!user) {
     return (
-      <Button
-        variant="ghost"
-        size="sm"
-        className="text-slate-400 hover:text-white"
-        onClick={() => setIsOpen(true)}
-      >
-        <Cloud className="w-4 h-4 mr-2" />
-        Historial
+      <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white" onClick={() => setIsOpen(true)}>
+        <Cloud className="w-4 h-4 mr-2" /> Historial
       </Button>
     );
   }
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="text-slate-400 hover:text-white relative"
-        onClick={() => setIsOpen(true)}
-      >
-        <Cloud className="w-4 h-4 mr-2" />
-        Historial
+      <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white relative" onClick={() => setIsOpen(true)}>
+        <Cloud className="w-4 h-4 mr-2" /> Historial
         {history.length > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-violet-500 rounded-full text-xs flex items-center justify-center text-white">
             {history.length > 99 ? '99+' : history.length}
@@ -128,8 +108,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            {/* Header */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl h-[600px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-4 border-b border-slate-800">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
@@ -137,37 +116,26 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-white">Historial en la Nube</h2>
-                  <p className="text-sm text-slate-400">
-                    Sincronizado con tu cuenta • {history.length} generaciones
-                  </p>
+                  <p className="text-sm text-slate-400">Sincronizado • {history.length} generaciones</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 {history.length > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      if (confirm('¿Eliminar todo el historial?')) {
-                        history.forEach(h => deleteGeneration(user.id, h.id));
-                        setHistory([]);
-                      }
-                    }}
-                    className="text-slate-400 hover:text-red-400"
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => {
+                    if (confirm('¿Eliminar todo el historial?')) {
+                      history.forEach(h => deleteGeneration(user.id, h.id));
+                      setHistory([]);
+                    }
+                  }} className="text-slate-400 hover:text-red-400">
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 )}
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-slate-400 hover:text-white p-2"
-                >
+                <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white p-2">
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            {/* Search */}
             {history.length > 3 && (
               <div className="p-4 border-b border-slate-800">
                 <div className="relative">
@@ -183,26 +151,20 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
               </div>
             )}
 
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4 min-h-[400px]">
+            <div className="flex-1 overflow-y-auto p-4">
               {isLoading ? (
-                <div className="flex flex-col items-center justify-center h-64 text-slate-400">
+                <div className="flex flex-col items-center justify-center h-full text-slate-400">
                   <Loader2 className="w-8 h-8 animate-spin mb-3" />
                   <p>Cargando historial...</p>
                 </div>
               ) : filteredHistory.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-64 text-center">
+                <div className="flex flex-col items-center justify-center h-full text-center">
                   <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
                     <Clock className="w-8 h-8 text-slate-600" />
                   </div>
-                  <p className="text-white font-medium mb-1">
-                    {searchQuery ? 'Sin resultados' : 'Sin historial'}
-                  </p>
+                  <p className="text-white font-medium mb-1">{searchQuery ? 'Sin resultados' : 'Sin historial'}</p>
                   <p className="text-slate-400 text-sm">
-                    {searchQuery 
-                      ? `No se encontraron generaciones para "${searchQuery}"`
-                      : 'Tus generaciones aparecerán aquí'
-                    }
+                    {searchQuery ? `No se encontraron generaciones para "${searchQuery}"` : 'Tus generaciones aparecerán aquí'}
                   </p>
                 </div>
               ) : (
@@ -250,10 +212,9 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
               )}
             </div>
 
-            {/* Footer */}
             <div className="p-4 border-t border-slate-800 bg-slate-800/30">
               <p className="text-xs text-slate-500 text-center">
-                El historial se sincroniza automáticamente con tu cuenta de Google
+                El historial se sincroniza automáticamente con tu cuenta
               </p>
             </div>
           </div>
