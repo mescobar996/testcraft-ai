@@ -12,7 +12,6 @@ import {
   Settings2,
   Lightbulb,
 } from "lucide-react";
-import { useLanguage } from "@/lib/language-context";
 
 interface TestCaseFormProps {
   onGenerate: (requirement: string, context: string, format: string) => void;
@@ -60,7 +59,6 @@ const TEMPLATES = [
 ];
 
 export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCaseFormProps) {
-  const { t } = useLanguage();
   const [requirement, setRequirement] = useState("");
   const [context, setContext] = useState("");
   const [format, setFormat] = useState("both");
@@ -91,7 +89,7 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-violet-400" />
-            <h3 className="text-white font-semibold">{t.requirement}</h3>
+            <h3 className="text-white font-semibold">Requerimiento</h3>
           </div>
           <Button
             type="button"
@@ -129,7 +127,7 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
         <Textarea
           value={requirement}
           onChange={(e) => setRequirement(e.target.value)}
-          placeholder={t.requirementPlaceholder}
+          placeholder="Describe el requerimiento o funcionalidad a probar..."
           className="min-h-[120px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500/20 resize-none"
         />
 
@@ -197,12 +195,12 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
           {isLoading ? (
             <>
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              {t.generating}
+              Generando...
             </>
           ) : (
             <>
               <Sparkles className="w-5 h-5 mr-2" />
-              {t.generate}
+              Generar Casos de Prueba
             </>
           )}
         </Button>
