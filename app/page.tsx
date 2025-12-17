@@ -17,6 +17,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
 import { Zap, Shield, Clock, Camera } from "lucide-react";
+import { Footer } from "@/components/Footer";
 
 export interface TestCase {
   id: string;
