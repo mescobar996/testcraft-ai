@@ -1,0 +1,9 @@
+# robots.txt for TestCraft AI
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://testcraftai.com/sitemap.xml
+
+# Disallow API routes
+Disallow: /api/

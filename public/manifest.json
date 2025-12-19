@@ -1,27 +1,27 @@
 {
   "name": "TestCraft AI",
   "short_name": "TestCraft",
-  "description": "Generador de Casos de Prueba con IA",
+  "description": "Generador de casos de prueba con inteligencia artificial",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",
-  "theme_color": "#7c3aed",
+  "theme_color": "#8b5cf6",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon-192.svg",
+      "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.svg",
+      "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["productivity", "utilities", "developer tools"],
-  "lang": "es",
+  "categories": ["developer", "productivity", "utilities"],
+  "lang": "es-AR",
   "dir": "ltr"
 }
