@@ -11,13 +11,13 @@ import { UsageCounter } from "@/components/UsageCounter";
 import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { ImageUploader } from "@/components/ImageUploader";
+import { Footer } from "@/components/Footer";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
-import { Zap, Shield, Clock, Camera } from "lucide-react";
-import { Footer } from "@/components/Footer";
+import { Zap, Shield, Clock } from "lucide-react";
 
 export interface TestCase {
   id: string;
@@ -39,7 +39,6 @@ export default function Home() {
   const [result, setResult] = useState<GenerationResult | null>(null);
   const [currentRequirement, setCurrentRequirement] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isImageLoading, setIsImageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [newGeneration, setNewGeneration] = useState<HistoryRecord | null>(null);
   const [triggerGenerate, setTriggerGenerate] = useState(0);
@@ -78,13 +77,6 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGenerateFromImage = (imageResult: GenerationResult) => {
-    setResult(imageResult);
-    setCurrentRequirement("Generado desde imagen");
-    setError(null);
-    incrementUsage();
   };
 
   const handleRegenerateCase = async (testCase: TestCase): Promise<TestCase | null> => {
@@ -169,7 +161,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
   useKeyboardShortcuts(shortcuts);
 
   return (
-    <main className="min-h-screen relative">
+    <main className="min-h-screen relative flex flex-col">
       <AnimatedBackground />
 
       <header className="border-b border-slate-800/50 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40">
@@ -186,6 +178,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             <div className="flex items-center gap-2">
               <UsageCounter />
               <LanguageToggle />
+              <ThemeToggle />
               <KeyboardShortcutsHelp shortcuts={shortcuts} />
               <FavoritesPanel onSelectCase={handleSelectFavorite} />
               <CloudHistoryPanel 
@@ -198,7 +191,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 flex-1">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
@@ -208,14 +201,6 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
               </span>
             </h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">{t.heroSubtitle}</p>
-            
-            <div className="mt-6">
-              <ImageUploader 
-                onGenerateFromImage={handleGenerateFromImage}
-                isLoading={isImageLoading}
-                setIsLoading={setIsImageLoading}
-              />
-            </div>
           </div>
 
           <UsageBanner />
@@ -232,7 +217,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             <div className="order-1 lg:order-2" data-results>
               <TestCaseOutput 
                 result={result} 
-                isLoading={isLoading || isImageLoading} 
+                isLoading={isLoading} 
                 error={error}
                 requirementTitle={currentRequirement.split('\n')[0].substring(0, 50)}
                 onRegenerateCase={handleRegenerateCase}
@@ -241,13 +226,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             </div>
           </div>
           
-          <div className="mt-16 grid md:grid-cols-4 gap-6">
-            <FeatureCard
-              icon={<Camera className="w-6 h-6 text-fuchsia-400" />}
-              title="Desde Imagen"
-              description="Subí un screenshot y generamos casos automáticamente."
-              isNew
-            />
+          <div className="mt-16 grid md:grid-cols-3 gap-6">
             <FeatureCard
               icon={<Zap className="w-6 h-6 text-yellow-400" />}
               title={t.feature1Title}
@@ -267,29 +246,14 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
         </div>
       </div>
 
-      <footer className="border-t border-slate-800/50 mt-16">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <AppIcon size="sm" />
-              <span className="text-slate-400 font-medium">{t.appName}</span>
-            </div>
-            <p className="text-slate-500 text-sm">{t.copyright}</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
 
-function FeatureCard({ icon, title, description, isNew }: { icon: React.ReactNode; title: string; description: string; isNew?: boolean }) {
+function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className={`bg-slate-900/50 border rounded-xl p-6 hover:border-violet-500/30 transition-all duration-300 group relative ${isNew ? 'border-fuchsia-500/50' : 'border-slate-800'}`}>
-      {isNew && (
-        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-fuchsia-500 to-violet-500 rounded-full text-xs font-bold text-white">
-          NUEVO
-        </div>
-      )}
+    <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 hover:border-violet-500/30 transition-all duration-300 group">
       <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
         {icon}
       </div>
