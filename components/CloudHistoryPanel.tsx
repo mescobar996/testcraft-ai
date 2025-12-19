@@ -14,7 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { getHistory, deleteGeneration, HistoryRecord } from "@/lib/history-db";
+import { getGenerations, deleteGeneration, HistoryRecord } from "@/lib/history-db";
 import { GenerationResult } from "@/app/page";
 
 interface CloudHistoryPanelProps {
@@ -48,7 +48,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
     if (!user) return;
     setIsLoading(true);
     try {
-      const data = await getHistory(user.id);
+      const data = await getGenerations(user.id);
       setHistory(data);
     } catch (error) {
       console.error("Error loading history:", error);
