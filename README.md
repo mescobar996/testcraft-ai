@@ -86,9 +86,7 @@ Un buen test no solo encuentra bugs: **mejora el producto**.
 
 * 🔒 Roles y permisos avanzados
 * 🗂️ Organización de proyectos
-* 🔁 Integración con Jira / TestRail
 * 📊 Métricas de calidad
-* 🌍 Dominio personalizado
 
 ---
 
@@ -106,3 +104,4 @@ Proyecto educativo y experimental.
 © 2025 **TestCraft AI**. Todos los derechos reservados.
 
 ---
+
