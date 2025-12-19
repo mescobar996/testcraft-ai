@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Zap, Check, Loader2, Crown } from "lucide-react";
+import { X, Check, Loader2, Crown, Zap, Shield, Clock } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 interface UpgradeModalProps {
@@ -44,70 +44,104 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div className="relative bg-slate-900 border border-slate-800 rounded-xl w-full max-w-md overflow-hidden">
-        {/* Botón X fijo en esquina superior derecha */}
-        <button 
-          onClick={onClose} 
-          className="absolute top-3 right-3 z-10 text-slate-400 hover:text-white p-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        {/* Header con gradiente */}
-        <div className="bg-gradient-to-br from-violet-600 to-purple-700 p-6 pr-14">
-          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4">
-            <Crown className="w-6 h-6 text-white" />
+    <div className="fixed inset-0 z-[100] bg-slate-950">
+      {/* Header fijo */}
+      <div className="sticky top-0 bg-slate-900 border-b border-slate-800 z-10">
+        <div className="flex items-center justify-between p-4 max-w-2xl mx-auto">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <Crown className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-white">Actualizar a Pro</h2>
+              <p className="text-sm text-slate-400">Desbloqueá todo el potencial</p>
+            </div>
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Actualizá a Pro</h2>
-          <p className="text-violet-200">Desbloqueá todo el potencial de TestCraft AI</p>
+          <Button 
+            onClick={onClose} 
+            variant="outline"
+            size="sm"
+            className="border-slate-700 bg-slate-800 text-white hover:bg-slate-700"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Cerrar
+          </Button>
+        </div>
+      </div>
+
+      {/* Contenido */}
+      <div className="overflow-y-auto p-4 max-w-2xl mx-auto" style={{ height: 'calc(100vh - 80px)' }}>
+        {/* Banner */}
+        <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl p-8 mb-8 text-center">
+          <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Crown className="w-10 h-10 text-white" />
+          </div>
+          <h3 className="text-3xl font-bold text-white mb-3">TestCraft AI Pro</h3>
+          <p className="text-violet-200 text-lg mb-6">Generá casos de prueba sin límites</p>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-5xl font-bold text-white">$5</span>
+            <span className="text-violet-200 text-xl">/mes</span>
+          </div>
         </div>
 
-        {/* Contenido */}
-        <div className="p-6">
-          <div className="mb-6">
-            <p className="text-slate-400 text-sm mb-4">INCLUYE</p>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-3 text-white">
-                <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <Check className="w-3 h-3 text-green-400" />
-                </div>
-                <span>Generaciones ilimitadas</span>
-              </li>
-              <li className="flex items-center gap-3 text-white">
-                <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <Check className="w-3 h-3 text-green-400" />
-                </div>
-                <span>Prioridad en generación</span>
-              </li>
-              <li className="flex items-center gap-3 text-white">
-                <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <Check className="w-3 h-3 text-green-400" />
-                </div>
-                <span>Historial completo</span>
-              </li>
-              <li className="flex items-center gap-3 text-white">
-                <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <Check className="w-3 h-3 text-green-400" />
-                </div>
-                <span>Generación desde imagen</span>
-              </li>
-              <li className="flex items-center gap-3 text-white">
-                <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <Check className="w-3 h-3 text-green-400" />
-                </div>
-                <span>Test Plan PDF profesional</span>
-              </li>
-            </ul>
+        {/* Features */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 mb-8">
+          <h4 className="text-white font-semibold mb-4 text-lg">Todo incluido:</h4>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Zap className="w-5 h-5 text-green-400" />
+              </div>
+              <div>
+                <p className="text-white font-medium">Generaciones ilimitadas</p>
+                <p className="text-slate-400 text-sm">Sin límites diarios, generá todos los casos que necesites</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <p className="text-white font-medium">Prioridad en generación</p>
+                <p className="text-slate-400 text-sm">Respuestas más rápidas en horas pico</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Shield className="w-5 h-5 text-purple-400" />
+              </div>
+              <div>
+                <p className="text-white font-medium">Historial completo</p>
+                <p className="text-slate-400 text-sm">Guardá todos tus casos generados para siempre</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Check className="w-5 h-5 text-yellow-400" />
+              </div>
+              <div>
+                <p className="text-white font-medium">Generación desde imagen</p>
+                <p className="text-slate-400 text-sm">Subí screenshots y generá casos automáticamente</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-pink-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Check className="w-5 h-5 text-pink-400" />
+              </div>
+              <div>
+                <p className="text-white font-medium">Test Plan PDF profesional</p>
+                <p className="text-slate-400 text-sm">Exportá planes de prueba con formato ejecutivo</p>
+              </div>
+            </div>
           </div>
+        </div>
 
+        {/* CTA */}
+        <div className="space-y-4">
           <Button
             onClick={handleUpgrade}
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white py-6 text-lg font-semibold"
+            className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white py-6 text-lg font-semibold rounded-xl"
           >
             {isLoading ? (
               <>
@@ -122,7 +156,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             )}
           </Button>
 
-          <p className="text-center text-slate-500 text-sm mt-4">
+          <p className="text-center text-slate-500 text-sm">
             Pago seguro con Stripe • Cancelá cuando quieras
           </p>
         </div>
