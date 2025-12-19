@@ -23,10 +23,10 @@ interface FavoriteRecord {
 }
 
 interface FavoritesPanelProps {
-  onSelect?: (testCase: TestCase) => void;
+  onSelectCase?: (testCase: TestCase) => void;
 }
 
-export function FavoritesPanel({ onSelect }: FavoritesPanelProps) {
+export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [favorites, setFavorites] = useState<FavoriteRecord[]>([]);
@@ -43,7 +43,6 @@ export function FavoritesPanel({ onSelect }: FavoritesPanelProps) {
     if (!user) return;
     setIsLoading(true);
     try {
-      // Cargar desde localStorage por ahora
       const saved = localStorage.getItem(`favorites_${user.id}`);
       if (saved) {
         setFavorites(JSON.parse(saved));
@@ -65,8 +64,8 @@ export function FavoritesPanel({ onSelect }: FavoritesPanelProps) {
   };
 
   const handleSelect = (record: FavoriteRecord) => {
-    if (onSelect) {
-      onSelect(record.test_case);
+    if (onSelectCase) {
+      onSelectCase(record.test_case);
     }
     setIsOpen(false);
   };
