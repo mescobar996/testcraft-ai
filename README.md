@@ -1,92 +1,51 @@
-# 🧪 TestCraft AI
+# 🚀 TestCraft AI
 
-**TestCraft AI** es una plataforma web que genera **casos de prueba profesionales con Inteligencia Artificial**, pensada para QA testers, estudiantes y equipos de software que quieren **ahorrar tiempo**, **mejorar cobertura** y **estandarizar calidad**.
+**TestCraft AI** es una aplicación web construida con **Next.js y TypeScript** que actúa como base para un producto de generación automatizada de casos de prueba con ayuda de IA para QA testers, estudiantes y equipos de software.
 
-> Pegá tus requisitos → obtené casos de prueba listos para usar en segundos.
+Puede ser desplegada fácilmente en plataformas como **Vercel** y extendida con lógica de IA para sugerir y generar casos de prueba basados en texto descriptivo.
 
-🔗 **App en producción:** [https://testcraft-ai-pearl.vercel.app](https://testcraft-ai-pearl.vercel.app)
-
----
-
-## 🚀 ¿Qué hace TestCraft AI?
-
-* Analiza requisitos, historias de usuario o descripciones funcionales.
-* Genera automáticamente **casos de prueba estructurados**.
-* Detecta **escenarios positivos, negativos y casos de borde**.
-* Permite exportar los resultados y reutilizarlos en herramientas reales de QA.
-
-Todo con una interfaz moderna, rápida y pensada desde la práctica real del testing.
+🔗 **Demo deploy en Vercel:** https://testcraft-ai-five.vercel.app :contentReference[oaicite:4]{index=4}
 
 ---
 
-## 🎯 Problemas reales que resuelve
+## 📌 Estado actual del proyecto
 
-Basado en experiencia real en QA:
+Este repositorio contiene:
+- 📦 Aplicación web base con **Next.js 14/15+** y TypeScript  
+- 🧱 Componentes reutilizables UI  
+- 📁 Estructura lista para agregar IA/QA  
+- 🔐 Integración posible con Supabase para auth y BD  
+- ⚙️ Configuración Tailwind CSS para UI  
+- 🛠️ Setup completo para desarrollo local y deploy en Vercel :contentReference[oaicite:5]{index=5}
 
-* ⏳ Mucho tiempo escribiendo casos repetitivos
-* 🤯 Requisitos ambiguos o incompletos
-* ❌ Falta de cobertura (edge cases que se pasan por alto)
-* 📄 Inconsistencia en formato y calidad de los casos
-
-**TestCraft AI** automatiza lo repetitivo y potencia el criterio del tester.
-
----
-
-## 🧠 Funcionalidades principales
-
-* ✨ Generación automática de casos de prueba
-* 📋 Formato clásico (tabla):
-
-  * ID
-  * Título
-  * Precondiciones
-  * Pasos
-  * Resultado esperado
-  * Prioridad
-* 🧪 Formato **Gherkin / BDD** (Given / When / Then)
-* 📊 Estadísticas de cobertura (positivos, negativos, borde)
-* 📁 Historial de generaciones
-* 📤 Exportación a **Excel**
-* 🔐 Autenticación con Google
-* ⚡ Límites de uso inteligentes
+> El proyecto está en una **fase temprana funcional**, con la estructura completa para avanzar hacia una versión con IA y generación inteligente de pruebas.
 
 ---
 
-## 💼 Planes de uso
+## 💡 Características previstas
 
-Pagos gestionados de forma segura con **Stripe**.
+Mientras el producto crece, la visión es:
 
----
-
-## 🛠️ Stack tecnológico
-
-* **Next.js 16** – Full‑stack moderno
-* **TypeScript** – Mantenibilidad y calidad
-* **Tailwind CSS** – UI profesional
-* **shadcn/ui** – Componentes accesibles
-* **Anthropic (Claude)** – IA generativa
-* **Supabase** – Auth + Base de datos
-* **Stripe** – Monetización
-* **Vercel** – Deploy y hosting
+- 🤖 **Generación automática de casos de prueba** a partir de texto descriptivo  
+- 📄 Salidas en formatos estándar de QA (tablas, BDD, etc.)  
+- 📊 Estadísticas y métricas de cobertura de pruebas  
+- 📁 Integración con herramientas de QA como Jira, TestRail  
+- 🔐 Soporte de login y planes de uso  
+- 🧪 Puntos de integración con modelos de IA como Claude o GPT  
+- ☁️ Deploy escalable en Vercel o similar
 
 ---
 
-## 🧪 Filosofía QA
+## 🧠 Stack tecnológico
 
-* Automatizar lo repetitivo
-* Probar lo crítico
-* Pensar como usuario
-* Detectar errores antes de producción
-
-Un buen test no solo encuentra bugs: **mejora el producto**.
-
----
-
-## 📈 Roadmap
-
-* 🔒 Roles y permisos avanzados
-* 🗂️ Organización de proyectos
-* 📊 Métricas de calidad
+| Capa | Tecnología |
+|------|------------|
+| Frontend | Next.js + TypeScript |
+| UI | Tailwind CSS |
+| Auth/DB | Supabase (configurable) |
+| Deploy | Vercel |
+| IA (planeado) | Claude / GPT / Anthropic |
+| Monetización | Stripe (posible) |
 
 ---
 
@@ -104,4 +63,5 @@ Proyecto educativo y experimental.
 © 2025 **TestCraft AI**. Todos los derechos reservados.
 
 ---
+
 
