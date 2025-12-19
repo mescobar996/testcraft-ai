@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧪 TestCraft AI
 
-## Getting Started
+**TestCraft AI** es una plataforma web que genera **casos de prueba profesionales con Inteligencia Artificial**, pensada para QA testers, estudiantes y equipos de software que quieren **ahorrar tiempo**, **mejorar cobertura** y **estandarizar calidad**.
 
-First, run the development server:
+> Pegá tus requisitos → obtené casos de prueba listos para usar en segundos.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🔗 **App en producción:** [https://testcraft-ai-pearl.vercel.app](https://testcraft-ai-pearl.vercel.app)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 ¿Qué hace TestCraft AI?
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* Analiza requisitos, historias de usuario o descripciones funcionales.
+* Genera automáticamente **casos de prueba estructurados**.
+* Detecta **escenarios positivos, negativos y casos de borde**.
+* Permite exportar los resultados y reutilizarlos en herramientas reales de QA.
 
-## Learn More
+Todo con una interfaz moderna, rápida y pensada desde la práctica real del testing.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎯 Problemas reales que resuelve
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Basado en experiencia real en QA:
 
-## Deploy on Vercel
+* ⏳ Mucho tiempo escribiendo casos repetitivos
+* 🤯 Requisitos ambiguos o incompletos
+* ❌ Falta de cobertura (edge cases que se pasan por alto)
+* 📄 Inconsistencia en formato y calidad de los casos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**TestCraft AI** automatiza lo repetitivo y potencia el criterio del tester.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🧠 Funcionalidades principales
+
+* ✨ Generación automática de casos de prueba
+* 📋 Formato clásico (tabla):
+
+  * ID
+  * Título
+  * Precondiciones
+  * Pasos
+  * Resultado esperado
+  * Prioridad
+* 🧪 Formato **Gherkin / BDD** (Given / When / Then)
+* 📊 Estadísticas de cobertura (positivos, negativos, borde)
+* 📁 Historial de generaciones
+* 📤 Exportación a **Excel**
+* 🔐 Autenticación con Google
+* ⚡ Límites de uso inteligentes
+
+---
+
+## 💼 Planes de uso
+
+Pagos gestionados de forma segura con **Stripe**.
+
+---
+
+## 🛠️ Stack tecnológico
+
+* **Next.js 16** – Full‑stack moderno
+* **TypeScript** – Mantenibilidad y calidad
+* **Tailwind CSS** – UI profesional
+* **shadcn/ui** – Componentes accesibles
+* **Anthropic (Claude)** – IA generativa
+* **Supabase** – Auth + Base de datos
+* **Stripe** – Monetización
+* **Vercel** – Deploy y hosting
+
+---
+
+## 🧪 Filosofía QA
+
+* Automatizar lo repetitivo
+* Probar lo crítico
+* Pensar como usuario
+* Detectar errores antes de producción
+
+Un buen test no solo encuentra bugs: **mejora el producto**.
+
+---
+
+## 📈 Roadmap
+
+* 🔒 Roles y permisos avanzados
+* 🗂️ Organización de proyectos
+* 🔁 Integración con Jira / TestRail
+* 📊 Métricas de calidad
+* 🌍 Dominio personalizado
+
+---
+
+## 👤 Autor
+
+**Matías Escobar**
+QA · Automation · Software Quality
+
+---
+
+## 📄 Licencia
+
+Proyecto educativo y experimental.
+
+© 2025 **TestCraft AI**. Todos los derechos reservados.
+
+---
