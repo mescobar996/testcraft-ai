@@ -44,7 +44,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-white/10 backdrop-blur-md">
+    <div className="fixed inset-0 z-[100] bg-white/30 backdrop-blur-md">
       {/* Header fijo */}
       <div className="sticky top-0 bg-slate-900/95 border-b border-slate-700 z-10">
         <div className="flex items-center justify-between p-4 max-w-2xl mx-auto">
