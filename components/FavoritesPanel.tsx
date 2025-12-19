@@ -103,49 +103,50 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
       </Button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false); }}
+        >
+          <div className="relative bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+            {/* Botón X fijo en esquina superior derecha */}
+            <button 
+              onClick={() => setIsOpen(false)} 
+              className="absolute top-3 right-3 z-10 text-slate-400 hover:text-white p-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-800 flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
-                  <Star className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-white">Casos Favoritos</h2>
-                  <p className="text-sm text-slate-400">{favorites.length} guardados</p>
-                </div>
+            <div className="flex items-center gap-3 p-4 pr-14 border-b border-slate-800">
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Star className="w-5 h-5 text-white" />
               </div>
-              <div className="flex items-center gap-2">
-                {favorites.length > 0 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => {
-                      if (confirm('¿Eliminar todos los favoritos?')) {
-                        setFavorites([]);
-                        if (user) {
-                          localStorage.removeItem(`favorites_${user.id}`);
-                        }
+              <div className="min-w-0">
+                <h2 className="text-lg font-semibold text-white">Casos Favoritos</h2>
+                <p className="text-sm text-slate-400">{favorites.length} guardados</p>
+              </div>
+              {favorites.length > 0 && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => {
+                    if (confirm('¿Eliminar todos los favoritos?')) {
+                      setFavorites([]);
+                      if (user) {
+                        localStorage.removeItem(`favorites_${user.id}`);
                       }
-                    }} 
-                    className="text-slate-400 hover:text-red-400"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                )}
-                <button 
-                  onClick={() => setIsOpen(false)} 
-                  className="text-slate-400 hover:text-white p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                    }
+                  }} 
+                  className="ml-auto text-slate-400 hover:text-red-400"
                 >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
             </div>
 
             {/* Búsqueda */}
             {favorites.length > 3 && (
-              <div className="p-4 border-b border-slate-800 flex-shrink-0">
+              <div className="p-4 border-b border-slate-800">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input
@@ -160,7 +161,7 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
             )}
 
             {/* Contenido */}
-            <div className="flex-1 overflow-y-auto p-4 min-h-[200px]">
+            <div className="flex-1 overflow-y-auto p-4">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center h-48 text-slate-400">
                   <Loader2 className="w-8 h-8 animate-spin mb-3" />
@@ -234,7 +235,7 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
             </div>
 
             {/* Footer */}
-            <div className="p-3 border-t border-slate-800 bg-slate-800/30 flex-shrink-0">
+            <div className="p-3 border-t border-slate-800 bg-slate-800/30">
               <p className="text-xs text-slate-500 text-center">
                 Hacé click en la estrella de un caso para agregarlo a favoritos
               </p>
