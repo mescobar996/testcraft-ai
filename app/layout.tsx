@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { LanguageProvider } from "@/lib/language-context";
+import { ThemeProvider } from "@/lib/theme-context";
 import { ToastProvider } from "@/components/Toast";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -79,11 +80,6 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
     creator: "@testcraftai",
   },
-  
-  // Verificación (agregar cuando tengas las cuentas)
-  // verification: {
-  //   google: "tu-codigo-de-verificacion",
-  // },
   
   // Categoría
   category: "Technology",
@@ -164,13 +160,15 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
-        <AuthProvider>
-          <LanguageProvider>
-            <ToastProvider>
-              {children}
-            </ToastProvider>
-          </LanguageProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <LanguageProvider>
+              <ToastProvider>
+                {children}
+              </ToastProvider>
+            </LanguageProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
