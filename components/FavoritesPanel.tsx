@@ -2,216 +2,230 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/lib/auth-context";
-import { getFavorites, removeFavorite, FavoriteCase } from "@/lib/favorites-db";
-import { TestCase } from "@/app/page";
 import {
   Star,
-  Trash2,
   X,
+  Trash2,
+  Search,
+  FileText,
+  Calendar,
   Loader2,
   ChevronRight,
-  Clock,
-  Copy,
-  Check,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import { TestCase } from "@/app/page";
 
-interface FavoritesPanelProps {
-  onSelectCase: (testCase: TestCase) => void;
+interface FavoriteRecord {
+  id: string;
+  user_id: string;
+  test_case: TestCase;
+  created_at: string;
 }
 
-export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
+interface FavoritesPanelProps {
+  onSelect?: (testCase: TestCase) => void;
+}
+
+export function FavoritesPanel({ onSelect }: FavoritesPanelProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [favorites, setFavorites] = useState<FavoriteCase[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    if (isOpen && user) {
+    if (user && isOpen) {
       loadFavorites();
     }
-  }, [isOpen, user]);
+  }, [user, isOpen]);
 
   const loadFavorites = async () => {
     if (!user) return;
     setIsLoading(true);
     try {
-      const data = await getFavorites(user.id);
-      setFavorites(data);
+      // Cargar desde localStorage por ahora
+      const saved = localStorage.getItem(`favorites_${user.id}`);
+      if (saved) {
+        setFavorites(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error("Error loading favorites:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleRemove = async (id: string) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!user) return;
-    const success = await removeFavorite(user.id, id);
-    if (success) {
-      setFavorites(prev => prev.filter(f => f.id !== id));
-    }
+    
+    const updated = favorites.filter(f => f.id !== id);
+    setFavorites(updated);
+    localStorage.setItem(`favorites_${user.id}`, JSON.stringify(updated));
   };
 
-  const copyToClipboard = async (tc: TestCase) => {
-    const text = `${tc.id} - ${tc.title}
-Tipo: ${tc.type} | Prioridad: ${tc.priority}
-Precondiciones: ${tc.preconditions}
-Pasos:
-${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join("\n")}
-Resultado Esperado: ${tc.expectedResult}`;
-    
-    await navigator.clipboard.writeText(text);
-    setCopiedId(tc.id);
-    setTimeout(() => setCopiedId(null), 2000);
+  const handleSelect = (record: FavoriteRecord) => {
+    if (onSelect) {
+      onSelect(record.test_case);
+    }
+    setIsOpen(false);
   };
+
+  const filteredFavorites = favorites.filter(record =>
+    record.test_case.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit'
-    });
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    
+    if (days === 0) return "Hoy";
+    if (days === 1) return "Ayer";
+    if (days < 7) return `Hace ${days} días`;
+    return date.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
   };
-
-  if (!user) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        disabled
-        className="border-slate-700 bg-slate-800/50 text-slate-500"
-      >
-        <Star className="w-4 h-4 mr-2" />
-        <span className="hidden sm:inline">Favoritos</span>
-      </Button>
-    );
-  }
 
   return (
     <>
-      <Button
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className="text-slate-400 hover:text-white relative" 
         onClick={() => setIsOpen(true)}
-        variant="outline"
-        size="sm"
-        className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
       >
-        <Star className="w-4 h-4 mr-2 text-yellow-400" />
-        <span className="hidden sm:inline">Favoritos</span>
+        <Star className="w-4 h-4 mr-2" /> Favoritos
         {favorites.length > 0 && (
-          <span className="ml-1.5 px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
-            {favorites.length}
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full text-xs flex items-center justify-center text-black font-medium">
+            {favorites.length > 99 ? '99+' : favorites.length}
           </span>
         )}
       </Button>
 
       {isOpen && (
-        <>
-          <div 
-            className="fixed inset-0 bg-black/50 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-          
-          <div className="fixed inset-y-0 right-0 z-50 w-96 max-w-full bg-slate-900 border-l border-slate-800 shadow-xl flex flex-col">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-yellow-400" />
-                <h2 className="font-semibold text-white">Casos Favoritos</h2>
+            <div className="flex items-center justify-between p-4 border-b border-slate-800 flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                  <Star className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-white">Casos Favoritos</h2>
+                  <p className="text-sm text-slate-400">{favorites.length} guardados</p>
+                </div>
               </div>
-              <Button
-                onClick={() => setIsOpen(false)}
-                variant="ghost"
-                size="sm"
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </Button>
+              <div className="flex items-center gap-2">
+                {favorites.length > 0 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      if (confirm('¿Eliminar todos los favoritos?')) {
+                        setFavorites([]);
+                        if (user) {
+                          localStorage.removeItem(`favorites_${user.id}`);
+                        }
+                      }
+                    }} 
+                    className="text-slate-400 hover:text-red-400"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                )}
+                <button 
+                  onClick={() => setIsOpen(false)} 
+                  className="text-slate-400 hover:text-white p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center h-full text-slate-400">
-                  <Loader2 className="w-8 h-8 animate-spin mb-2" />
-                  <p className="text-sm">Cargando favoritos...</p>
+            {/* Búsqueda */}
+            {favorites.length > 3 && (
+              <div className="p-4 border-b border-slate-800 flex-shrink-0">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="text"
+                    placeholder="Buscar en favoritos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-yellow-500 text-sm"
+                  />
                 </div>
-              ) : favorites.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-slate-400">
-                  <Star className="w-12 h-12 mb-3 opacity-50" />
-                  <p className="text-sm font-medium">Sin favoritos</p>
-                  <p className="text-xs text-slate-500 mt-1 text-center">
-                    Marcá casos de prueba con ⭐ para guardarlos aquí
+              </div>
+            )}
+
+            {/* Contenido */}
+            <div className="flex-1 overflow-y-auto p-4 min-h-[200px]">
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center h-48 text-slate-400">
+                  <Loader2 className="w-8 h-8 animate-spin mb-3" />
+                  <p>Cargando favoritos...</p>
+                </div>
+              ) : filteredFavorites.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-48 text-center">
+                  <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                    <Star className="w-8 h-8 text-slate-600" />
+                  </div>
+                  <p className="text-white font-medium mb-1">
+                    {searchQuery ? 'Sin resultados' : 'Sin favoritos'}
+                  </p>
+                  <p className="text-slate-400 text-sm">
+                    {searchQuery 
+                      ? `No se encontraron favoritos para "${searchQuery}"` 
+                      : 'Marcá casos como favoritos para verlos aquí'}
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {favorites.map((fav) => (
+                <div className="space-y-2">
+                  {filteredFavorites.map((record) => (
                     <div
-                      key={fav.id}
-                      className="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-yellow-500/30 rounded-lg p-3 transition-all"
+                      key={record.id}
+                      onClick={() => handleSelect(record)}
+                      className="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-yellow-500/50 rounded-lg p-4 cursor-pointer transition-all"
                     >
-                      <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-white font-medium truncate">
-                            {fav.test_case.title}
-                          </p>
-                          <p className="text-xs text-slate-500 truncate">
-                            {fav.requirement_title}
-                          </p>
+                          <div className="flex items-center gap-2 mb-1">
+                            <FileText className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                            <p className="text-white font-medium truncate">
+                              {record.test_case.title}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-4 text-xs text-slate-400">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {formatDate(record.created_at)}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-xs ${
+                              record.test_case.type === 'Positivo' ? 'bg-green-500/20 text-green-400' :
+                              record.test_case.type === 'Negativo' ? 'bg-red-500/20 text-red-400' :
+                              'bg-yellow-500/20 text-yellow-400'
+                            }`}>
+                              {record.test_case.type}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-xs ${
+                              record.test_case.priority === 'Alta' ? 'bg-red-500/20 text-red-400' :
+                              record.test_case.priority === 'Media' ? 'bg-yellow-500/20 text-yellow-400' :
+                              'bg-green-500/20 text-green-400'
+                            }`}>
+                              {record.test_case.priority}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${
-                              fav.test_case.type === "Positivo"
-                                ? "border-green-500/50 text-green-400"
-                                : fav.test_case.type === "Negativo"
-                                ? "border-red-500/50 text-red-400"
-                                : "border-yellow-500/50 text-yellow-400"
-                            }`}
-                          >
-                            {fav.test_case.type}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-slate-500 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {formatDate(fav.created_at)}
-                        </span>
-                        
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2">
                           <button
-                            onClick={() => copyToClipboard(fav.test_case)}
-                            className="p-1.5 text-slate-500 hover:text-white hover:bg-slate-700 rounded transition-all"
-                            title="Copiar"
-                          >
-                            {copiedId === fav.test_case.id ? (
-                              <Check className="w-4 h-4 text-green-400" />
-                            ) : (
-                              <Copy className="w-4 h-4" />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => handleRemove(fav.id)}
-                            className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-all"
-                            title="Eliminar"
+                            onClick={(e) => handleDelete(record.id, e)}
+                            className="p-2 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => {
-                              onSelectCase(fav.test_case);
-                              setIsOpen(false);
-                            }}
-                            className="p-1.5 text-slate-500 hover:text-violet-400 hover:bg-violet-500/10 rounded transition-all"
-                            title="Ver detalle"
-                          >
-                            <ChevronRight className="w-4 h-4" />
-                          </button>
+                          <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-yellow-400 transition-colors" />
                         </div>
                       </div>
                     </div>
@@ -221,13 +235,13 @@ Resultado Esperado: ${tc.expectedResult}`;
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-slate-800">
+            <div className="p-3 border-t border-slate-800 bg-slate-800/30 flex-shrink-0">
               <p className="text-xs text-slate-500 text-center">
-                {favorites.length} caso{favorites.length !== 1 ? 's' : ''} guardado{favorites.length !== 1 ? 's' : ''}
+                Hacé click en la estrella de un caso para agregarlo a favoritos
               </p>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );
