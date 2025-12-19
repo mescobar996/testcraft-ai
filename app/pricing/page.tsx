@@ -28,7 +28,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "9",
+    price: "5",
     description: "Para profesionales de QA",
     icon: Crown,
     color: "from-violet-500 to-purple-600",
@@ -42,7 +42,7 @@ const plans = [
       { text: "Favoritos ilimitados", included: true },
       { text: "Soporte prioritario", included: true },
     ],
-    cta: "Comenzar Prueba Gratis",
+    cta: "Actualizar a Pro",
     popular: true,
   },
   {
@@ -83,7 +83,7 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 text-slate-400 hover:text-white transition-colors">
             <ArrowLeft className="w-5 h-5" />
-            <span>Volver a TestCraft</span>
+            <span>Volver a TestCraft AI</span>
           </Link>
         </div>
       </header>
@@ -155,31 +155,36 @@ export default function PricingPage() {
           <div className="space-y-4">
             <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5">
               <h3 className="text-white font-medium mb-2">¿Puedo cambiar de plan en cualquier momento?</h3>
-              <p className="text-slate-400 text-sm">Sí, podés actualizar o cancelar tu plan cuando quieras.</p>
+              <p className="text-slate-400 text-sm">Sí, podés actualizar o cancelar tu plan cuando quieras. Los cambios se aplican inmediatamente.</p>
             </div>
             <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5">
               <h3 className="text-white font-medium mb-2">¿Qué métodos de pago aceptan?</h3>
-              <p className="text-slate-400 text-sm">Aceptamos todas las tarjetas de crédito y débito principales a través de Stripe.</p>
+              <p className="text-slate-400 text-sm">Aceptamos todas las tarjetas de crédito y débito principales a través de Stripe, la plataforma de pagos más segura del mundo.</p>
             </div>
             <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5">
-              <h3 className="text-white font-medium mb-2">¿Hay período de prueba?</h3>
-              <p className="text-slate-400 text-sm">El plan Free es completamente funcional y no tiene límite de tiempo.</p>
+              <h3 className="text-white font-medium mb-2">¿El plan Free tiene límite de tiempo?</h3>
+              <p className="text-slate-400 text-sm">No, el plan Free es completamente gratuito y sin límite de tiempo. Podés usarlo indefinidamente con 20 generaciones diarias.</p>
+            </div>
+            <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5">
+              <h3 className="text-white font-medium mb-2">¿Qué pasa si supero el límite diario?</h3>
+              <p className="text-slate-400 text-sm">El contador se reinicia cada 24 horas. Si necesitás más generaciones, considerá actualizar al plan Pro para generaciones ilimitadas.</p>
             </div>
           </div>
         </div>
 
         <div className="mt-16 text-center">
-          <p className="text-slate-400 mb-4">¿Tenés preguntas? Escribinos a</p>
-          <a href="mailto:mescobar996@gmail.com" className="text-violet-400 hover:text-violet-300">mescobar996@gmail.com</a>
+          <p className="text-slate-400 mb-4">¿Tenés preguntas? Escribinos</p>
+          <a href="mailto:testcraftia@gmail.com" className="text-violet-400 hover:text-violet-300 font-medium">testcraftia@gmail.com</a>
         </div>
       </main>
 
       <footer className="border-t border-slate-800 py-8 mt-16">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-slate-500 text-sm">© 2024 TestCraft AI. Todos los derechos reservados.</p>
+          <p className="text-slate-500 text-sm">© 2025 TestCraft AI. Todos los derechos reservados.</p>
           <div className="flex items-center gap-6 text-sm">
             <Link href="/terms" className="text-slate-500 hover:text-white transition-colors">Términos</Link>
             <Link href="/privacy" className="text-slate-500 hover:text-white transition-colors">Privacidad</Link>
+            <Link href="/pricing" className="text-violet-400">Precios</Link>
           </div>
         </div>
       </footer>
