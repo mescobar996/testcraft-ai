@@ -44,9 +44,9 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-950">
+    <div className="fixed inset-0 z-[100] bg-white/10 backdrop-blur-md">
       {/* Header fijo */}
-      <div className="sticky top-0 bg-slate-900 border-b border-slate-800 z-10">
+      <div className="sticky top-0 bg-slate-900/95 border-b border-slate-700 z-10">
         <div className="flex items-center justify-between p-4 max-w-2xl mx-auto">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -61,7 +61,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             onClick={onClose} 
             variant="outline"
             size="sm"
-            className="border-slate-700 bg-slate-800 text-white hover:bg-slate-700"
+            className="border-slate-600 bg-slate-800 text-white hover:bg-slate-700"
           >
             <X className="w-4 h-4 mr-2" />
             Cerrar
@@ -85,7 +85,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         </div>
 
         {/* Features */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 mb-8">
+        <div className="bg-slate-900/90 border border-slate-700 rounded-xl p-6 mb-8">
           <h4 className="text-white font-semibold mb-4 text-lg">Todo incluido:</h4>
           <div className="space-y-4">
             <div className="flex items-start gap-4">
