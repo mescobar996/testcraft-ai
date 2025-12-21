@@ -108,61 +108,36 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
           role="dialog"
           aria-modal="true"
         >
-          {/* OVERLAY - Fondo blanco semi-transparente */}
+          {/* Overlay */}
           <div 
-            className="fixed inset-0 bg-white/25 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
           
-          {/* MODAL */}
-          {/* Mobile: pantalla completa | Desktop: 90% ancho, 85% alto, centrado */}
-          <div className="fixed inset-0 md:inset-auto md:top-[7.5%] md:left-[5%] md:right-[5%] md:bottom-[7.5%] bg-slate-900 md:rounded-2xl border-0 md:border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
+          {/* Modal - Mobile: fullscreen | Desktop: centrado */}
+          <div className="fixed inset-0 sm:inset-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-lg sm:max-h-[80vh] bg-slate-900 sm:rounded-2xl sm:border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
             
-            {/* HEADER */}
-            <div className="flex items-center justify-between p-4 md:p-5 border-b border-slate-700 bg-slate-900">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
-                  <Star className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg md:text-xl font-bold text-white">Casos Favoritos</h2>
-                  <p className="text-xs md:text-sm text-slate-400">{favorites.length} casos guardados</p>
-                </div>
-              </div>
+            {/* Header con gradiente amarillo/naranja */}
+            <div className="relative bg-gradient-to-br from-yellow-500 to-orange-500 p-5 sm:p-6 text-center flex-shrink-0">
+              <button 
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
               
-              <div className="flex items-center gap-2">
-                {favorites.length > 0 && (
-                  <button 
-                    onClick={() => {
-                      if (confirm('¿Eliminar todos los favoritos?')) {
-                        setFavorites([]);
-                        if (user) {
-                          localStorage.removeItem(`favorites_${user.id}`);
-                        }
-                      }
-                    }} 
-                    className="hidden md:flex items-center gap-2 px-3 py-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    <span className="text-sm">Eliminar todo</span>
-                  </button>
-                )}
-                
-                {/* BOTÓN CERRAR */}
-                <button 
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors font-medium"
-                >
-                  <X className="w-5 h-5" />
-                  <span className="text-sm">Cerrar</span>
-                </button>
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Star className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
               </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Casos Favoritos</h2>
+              <p className="text-yellow-100 text-sm">{favorites.length} casos guardados</p>
             </div>
 
-            {/* BÚSQUEDA */}
+            {/* Búsqueda */}
             {favorites.length > 3 && (
-              <div className="p-4 border-b border-slate-800">
+              <div className="p-4 border-b border-slate-800 flex-shrink-0">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <input
@@ -170,28 +145,28 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
                     placeholder="Buscar en favoritos..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm"
                   />
                 </div>
               </div>
             )}
 
-            {/* CONTENIDO */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-5">
+            {/* Contenido scrolleable */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5">
               {isLoading ? (
-                <div className="flex flex-col items-center justify-center h-full text-slate-400">
-                  <Loader2 className="w-12 h-12 animate-spin mb-4 text-yellow-500" />
-                  <p className="text-lg">Cargando favoritos...</p>
+                <div className="flex flex-col items-center justify-center h-48 text-slate-400">
+                  <Loader2 className="w-10 h-10 animate-spin mb-4 text-yellow-500" />
+                  <p>Cargando favoritos...</p>
                 </div>
               ) : filteredFavorites.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                  <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                    <Star className="w-10 h-10 text-slate-600" />
+                <div className="flex flex-col items-center justify-center h-48 text-center px-4">
+                  <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                    <Star className="w-8 h-8 text-slate-600" />
                   </div>
-                  <p className="text-white text-xl font-semibold mb-2">
+                  <p className="text-white text-lg font-semibold mb-1">
                     {searchQuery ? 'Sin resultados' : 'Sin favoritos'}
                   </p>
-                  <p className="text-slate-400">
+                  <p className="text-slate-400 text-sm">
                     {searchQuery 
                       ? `No hay resultados para "${searchQuery}"` 
                       : 'Marcá casos como favoritos para verlos aquí'}
@@ -203,52 +178,65 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
                     <div
                       key={record.id}
                       onClick={() => handleSelect(record)}
-                      className="group bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-yellow-500/50 rounded-xl p-4 cursor-pointer transition-all"
+                      className="flex items-center gap-3 sm:gap-4 p-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-yellow-500/50 rounded-xl cursor-pointer transition-all"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <FileText className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-                            <p className="text-white font-medium truncate">
-                              {record.test_case.title}
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2 text-sm">
-                            <span className="flex items-center gap-1 text-slate-400">
-                              <Calendar className="w-4 h-4" />
-                              {formatDate(record.created_at)}
-                            </span>
-                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                              record.test_case.type === 'Positivo' ? 'bg-green-500/20 text-green-400' :
-                              record.test_case.type === 'Negativo' ? 'bg-red-500/20 text-red-400' :
-                              'bg-yellow-500/20 text-yellow-400'
-                            }`}>
-                              {record.test_case.type}
-                            </span>
-                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                              record.test_case.priority === 'Alta' ? 'bg-red-500/20 text-red-400' :
-                              record.test_case.priority === 'Media' ? 'bg-yellow-500/20 text-yellow-400' :
-                              'bg-green-500/20 text-green-400'
-                            }`}>
-                              {record.test_case.priority}
-                            </span>
-                          </div>
+                      <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <FileText className="w-5 h-5 text-yellow-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-medium text-sm truncate">
+                          {record.test_case.title}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <span className="text-slate-400 text-xs flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {formatDate(record.created_at)}
+                          </span>
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                            record.test_case.type === 'Positivo' ? 'bg-green-500/20 text-green-400' :
+                            record.test_case.type === 'Negativo' ? 'bg-red-500/20 text-red-400' :
+                            'bg-yellow-500/20 text-yellow-400'
+                          }`}>
+                            {record.test_case.type}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => handleDelete(record.id, e)}
-                            className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                          <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-yellow-400 transition-colors" />
-                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={(e) => handleDelete(record.id, e)}
+                          className="p-2 text-slate-500 hover:text-red-400 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                        <ChevronRight className="w-4 h-4 text-slate-500" />
                       </div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
+
+            {/* Footer */}
+            {favorites.length > 0 && (
+              <div className="p-4 sm:p-5 border-t border-slate-800 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm('¿Eliminar todos los favoritos?')) {
+                      setFavorites([]);
+                      if (user) {
+                        localStorage.removeItem(`favorites_${user.id}`);
+                      }
+                    }
+                  }}
+                  className="w-full py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-colors text-sm font-medium"
+                >
+                  <Trash2 className="w-4 h-4 inline mr-2" />
+                  Eliminar todos los favoritos
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

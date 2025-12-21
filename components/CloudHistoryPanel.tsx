@@ -112,59 +112,36 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
           role="dialog"
           aria-modal="true"
         >
-          {/* OVERLAY - Fondo blanco semi-transparente */}
+          {/* Overlay */}
           <div 
-            className="fixed inset-0 bg-white/25 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
           
-          {/* MODAL */}
-          {/* Mobile: pantalla completa | Desktop: 90% ancho, 85% alto, centrado */}
-          <div className="fixed inset-0 md:inset-auto md:top-[7.5%] md:left-[5%] md:right-[5%] md:bottom-[7.5%] bg-slate-900 md:rounded-2xl border-0 md:border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
+          {/* Modal - Mobile: fullscreen | Desktop: centrado */}
+          <div className="fixed inset-0 sm:inset-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-lg sm:max-h-[80vh] bg-slate-900 sm:rounded-2xl sm:border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
             
-            {/* HEADER */}
-            <div className="flex items-center justify-between p-4 md:p-5 border-b border-slate-700 bg-slate-900">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-                  <Cloud className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg md:text-xl font-bold text-white">Historial en la Nube</h2>
-                  <p className="text-xs md:text-sm text-slate-400">{history.length} generaciones guardadas</p>
-                </div>
-              </div>
+            {/* Header con gradiente azul */}
+            <div className="relative bg-gradient-to-br from-blue-600 to-cyan-600 p-5 sm:p-6 text-center flex-shrink-0">
+              <button 
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
               
-              <div className="flex items-center gap-2">
-                {history.length > 0 && (
-                  <button 
-                    onClick={() => {
-                      if (confirm('¿Eliminar todo el historial?')) {
-                        history.forEach(h => deleteGeneration(user.id, h.id));
-                        setHistory([]);
-                      }
-                    }} 
-                    className="hidden md:flex items-center gap-2 px-3 py-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    <span className="text-sm">Eliminar todo</span>
-                  </button>
-                )}
-                
-                {/* BOTÓN CERRAR */}
-                <button 
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors font-medium"
-                >
-                  <X className="w-5 h-5" />
-                  <span className="text-sm">Cerrar</span>
-                </button>
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Cloud className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
               </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Historial en la Nube</h2>
+              <p className="text-blue-100 text-sm">{history.length} generaciones guardadas</p>
             </div>
 
-            {/* BÚSQUEDA */}
+            {/* Búsqueda */}
             {history.length > 3 && (
-              <div className="p-4 border-b border-slate-800">
+              <div className="p-4 border-b border-slate-800 flex-shrink-0">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <input
@@ -172,26 +149,26 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
                     placeholder="Buscar en historial..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   />
                 </div>
               </div>
             )}
 
-            {/* CONTENIDO */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-5">
+            {/* Contenido scrolleable */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5">
               {isLoading ? (
-                <div className="flex flex-col items-center justify-center h-full text-slate-400">
-                  <Loader2 className="w-12 h-12 animate-spin mb-4 text-blue-500" />
-                  <p className="text-lg">Cargando historial...</p>
+                <div className="flex flex-col items-center justify-center h-48 text-slate-400">
+                  <Loader2 className="w-10 h-10 animate-spin mb-4 text-blue-500" />
+                  <p>Cargando historial...</p>
                 </div>
               ) : filteredHistory.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                  <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                    <Clock className="w-10 h-10 text-slate-600" />
+                <div className="flex flex-col items-center justify-center h-48 text-center px-4">
+                  <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                    <Clock className="w-8 h-8 text-slate-600" />
                   </div>
-                  <p className="text-white text-xl font-semibold mb-2">{searchQuery ? 'Sin resultados' : 'Sin historial'}</p>
-                  <p className="text-slate-400">
+                  <p className="text-white text-lg font-semibold mb-1">{searchQuery ? 'Sin resultados' : 'Sin historial'}</p>
+                  <p className="text-slate-400 text-sm">
                     {searchQuery ? `No hay resultados para "${searchQuery}"` : 'Tus generaciones aparecerán aquí'}
                   </p>
                 </div>
@@ -201,43 +178,55 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
                     <div
                       key={record.id}
                       onClick={() => handleSelect(record)}
-                      className="group bg-slate-800/60 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-xl p-4 cursor-pointer transition-all"
+                      className="flex items-center gap-3 sm:gap-4 p-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-xl cursor-pointer transition-all"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <FileText className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                            <p className="text-white font-medium truncate">
-                              {record.requirement.split('\n')[0].substring(0, 70)}
-                              {record.requirement.length > 70 ? '...' : ''}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-slate-400">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              {formatDate(record.created_at)}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                              {record.result.testCases?.length || 0} casos
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => handleDelete(record.id, e)}
-                            className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                          <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-blue-400 transition-colors" />
-                        </div>
+                      <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <FileText className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-medium text-sm truncate">
+                          {record.requirement.split('\n')[0].substring(0, 50)}...
+                        </p>
+                        <p className="text-slate-400 text-xs flex items-center gap-2 mt-1">
+                          <Calendar className="w-3 h-3" />
+                          {formatDate(record.created_at)}
+                          <span className="text-green-400">• {record.result.testCases?.length || 0} casos</span>
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={(e) => handleDelete(record.id, e)}
+                          className="p-2 text-slate-500 hover:text-red-400 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                        <ChevronRight className="w-4 h-4 text-slate-500" />
                       </div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
+
+            {/* Footer */}
+            {history.length > 0 && (
+              <div className="p-4 sm:p-5 border-t border-slate-800 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm('¿Eliminar todo el historial?')) {
+                      history.forEach(h => deleteGeneration(user.id, h.id));
+                      setHistory([]);
+                    }
+                  }}
+                  className="w-full py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-colors text-sm font-medium"
+                >
+                  <Trash2 className="w-4 h-4 inline mr-2" />
+                  Eliminar todo el historial
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

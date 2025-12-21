@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Check, Loader2, Crown, Zap, Shield, Clock, Sparkles } from "lucide-react";
+import { X, Check, Loader2, Crown, Zap, Shield, Clock, Sparkles, Camera } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 interface UpgradeModalProps {
@@ -48,47 +48,53 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       role="dialog"
       aria-modal="true"
     >
-      {/* OVERLAY - Fondo blanco semi-transparente */}
+      {/* Overlay */}
       <div 
-        className="fixed inset-0 bg-white/25 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
       
-      {/* MODAL */}
-      {/* Mobile: pantalla completa | Desktop: centrado con max-width */}
-      <div className="fixed inset-0 md:inset-auto md:top-[10%] md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-lg md:max-h-[80vh] bg-slate-900 md:rounded-2xl border-0 md:border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
+      {/* Modal - Mobile: fullscreen | Desktop: centrado */}
+      <div className="fixed inset-0 sm:inset-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-lg sm:max-h-[80vh] bg-slate-900 sm:rounded-2xl sm:border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
         
-        {/* HEADER con gradiente */}
-        <div className="relative bg-gradient-to-br from-violet-600 to-purple-700 p-6 md:p-8 text-center">
-          {/* BOTÓN CERRAR */}
+        {/* Header con gradiente violeta */}
+        <div className="relative bg-gradient-to-br from-violet-600 to-purple-700 p-5 sm:p-6 text-center flex-shrink-0">
           <button 
+            type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
           
-          <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Crown className="w-8 h-8 text-white" />
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
+            <Crown className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-1">TestCraft AI Pro</h2>
-          <p className="text-violet-200">Desbloqueá todo el potencial</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">TestCraft AI Pro</h2>
+          <p className="text-violet-200 text-sm">Desbloqueá todo el potencial</p>
           
-          <div className="mt-4 flex items-center justify-center gap-1">
-            <span className="text-4xl font-bold text-white">$5</span>
+          <div className="mt-3 sm:mt-4 flex items-center justify-center gap-1">
+            <span className="text-3xl sm:text-4xl font-bold text-white">$5</span>
             <span className="text-violet-200">/mes</span>
           </div>
         </div>
 
-        {/* CONTENIDO */}
-        <div className="flex-1 overflow-y-auto p-5 md:p-6">
-          <div className="space-y-4">
+        {/* Contenido scrolleable */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5">
+          <div className="space-y-3 sm:space-y-4">
             <Feature 
               icon={<Zap className="w-5 h-5 text-green-400" />}
               title="Generaciones ilimitadas"
               description="Sin límites diarios"
               bgColor="bg-green-500/10"
+            />
+            <Feature 
+              icon={<Camera className="w-5 h-5 text-fuchsia-400" />}
+              title="Generación desde imagen"
+              description="Subí screenshots y generamos casos"
+              bgColor="bg-fuchsia-500/10"
+              isNew
             />
             <Feature 
               icon={<Clock className="w-5 h-5 text-blue-400" />}
@@ -104,25 +110,26 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             />
             <Feature 
               icon={<Sparkles className="w-5 h-5 text-yellow-400" />}
-              title="Generación desde imagen"
-              description="Subí screenshots"
+              title="Test Plan PDF profesional"
+              description="Formato ejecutivo"
               bgColor="bg-yellow-500/10"
             />
             <Feature 
               icon={<Check className="w-5 h-5 text-pink-400" />}
-              title="Test Plan PDF profesional"
-              description="Formato ejecutivo"
+              title="Soporte prioritario"
+              description="Respuesta en 24hs"
               bgColor="bg-pink-500/10"
             />
           </div>
         </div>
 
-        {/* FOOTER con CTA */}
-        <div className="p-5 md:p-6 border-t border-slate-800">
+        {/* Footer con CTA */}
+        <div className="p-4 sm:p-5 border-t border-slate-800 flex-shrink-0">
           <button
+            type="button"
             onClick={handleUpgrade}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 disabled:opacity-50 text-white py-4 text-lg font-semibold rounded-xl transition-all shadow-lg"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 disabled:opacity-50 text-white py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl transition-all shadow-lg"
           >
             {isLoading ? (
               <>
@@ -136,7 +143,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               </>
             )}
           </button>
-          <p className="text-center text-slate-500 text-sm mt-3">
+          <p className="text-center text-slate-500 text-xs sm:text-sm mt-3">
             Pago seguro con Stripe • Cancelá cuando quieras
           </p>
         </div>
@@ -145,15 +152,22 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   );
 }
 
-function Feature({ icon, title, description, bgColor }: { icon: React.ReactNode; title: string; description: string; bgColor: string }) {
+function Feature({ icon, title, description, bgColor, isNew }: { icon: React.ReactNode; title: string; description: string; bgColor: string; isNew?: boolean }) {
   return (
-    <div className="flex items-center gap-4">
-      <div className={`w-11 h-11 ${bgColor} rounded-xl flex items-center justify-center flex-shrink-0`}>
+    <div className="flex items-center gap-3 sm:gap-4 relative">
+      <div className={`w-10 h-10 sm:w-11 sm:h-11 ${bgColor} rounded-xl flex items-center justify-center flex-shrink-0`}>
         {icon}
       </div>
-      <div>
-        <p className="text-white font-medium">{title}</p>
-        <p className="text-slate-400 text-sm">{description}</p>
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          <p className="text-white font-medium text-sm sm:text-base">{title}</p>
+          {isNew && (
+            <span className="px-1.5 py-0.5 bg-gradient-to-r from-fuchsia-500 to-violet-500 rounded text-[10px] font-bold text-white">
+              NUEVO
+            </span>
+          )}
+        </div>
+        <p className="text-slate-400 text-xs sm:text-sm">{description}</p>
       </div>
     </div>
   );
