@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Check, Loader2, Crown, Zap, Shield, Clock, Sparkles, Camera } from "lucide-react";
+import { X, Check, Loader2, Crown, Zap, Shield, Clock, Sparkles, Camera, AlertCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 interface UpgradeModalProps {
@@ -12,11 +12,17 @@ interface UpgradeModalProps {
 export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleUpgrade = async () => {
-    if (!user) return;
+    if (!user) {
+      setError("Debés iniciar sesión para actualizar a Pro");
+      return;
+    }
     
     setIsLoading(true);
+    setError(null);
+    
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -26,15 +32,18 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       
       const data = await response.json();
       
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al crear la sesión de pago');
+      }
+      
       if (data.url) {
         window.location.href = data.url;
       } else {
-        console.error('No checkout URL returned');
-        alert('Error al iniciar el proceso de pago. Por favor intentá de nuevo.');
+        throw new Error('No se recibió URL de pago');
       }
-    } catch (error) {
-      console.error('Error creating checkout:', error);
-      alert('Error al conectar con el servidor de pagos.');
+    } catch (err) {
+      console.error('Error creating checkout:', err);
+      setError(err instanceof Error ? err.message : 'Error al conectar con el servidor de pagos. Intentá de nuevo más tarde.');
     } finally {
       setIsLoading(false);
     }
@@ -82,6 +91,14 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
         {/* Contenido scrolleable */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5">
+          {/* Error message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+          
           <div className="space-y-3 sm:space-y-4">
             <Feature 
               icon={<Zap className="w-5 h-5 text-green-400" />}
