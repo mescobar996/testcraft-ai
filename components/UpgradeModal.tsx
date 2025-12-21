@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Check, Loader2, Crown, Zap, Shield, Clock, Sparkles, Camera, AlertCircle } from "lucide-react";
+import { X, Check, Loader2, Crown, Zap, Shield, Clock, Sparkles, Camera, AlertCircle, LogIn } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 interface UpgradeModalProps {
@@ -10,15 +10,14 @@ interface UpgradeModalProps {
 }
 
 export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
-  const { user, signIn } = useAuth();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleUpgrade = async () => {
-    // Si no está logueado, iniciar sesión primero
+    // Si no está logueado, mostrar mensaje
     if (!user) {
-      onClose();
-      signIn();
+      setError("Debés iniciar sesión primero. Usá el botón de perfil en la esquina superior derecha.");
       return;
     }
     
@@ -93,11 +92,11 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
         {/* Contenido scrolleable */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5">
-          {/* Error message */}
+          {/* Error/Info message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-red-400 text-sm">{error}</p>
+            <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <p className="text-amber-400 text-sm">{error}</p>
             </div>
           )}
           
@@ -157,7 +156,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               </>
             ) : !user ? (
               <>
-                <Crown className="w-5 h-5" />
+                <LogIn className="w-5 h-5" />
                 Iniciar sesión para continuar
               </>
             ) : (
