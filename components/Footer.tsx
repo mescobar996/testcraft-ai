@@ -29,7 +29,7 @@ export function Footer() {
               </p>
             </div>
 
-            {/* Links */}
+            {/* Links Legales */}
             <div className="space-y-4">
               <h3 className="text-white font-semibold">Legal</h3>
               <ul className="space-y-2">

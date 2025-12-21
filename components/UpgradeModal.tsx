@@ -15,7 +15,6 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const [error, setError] = useState<string | null>(null);
 
   const handleUpgrade = async () => {
-    // Si no está logueado, mostrar mensaje
     if (!user) {
       setError("Debés iniciar sesión primero. Usá el botón de perfil en la esquina superior derecha.");
       return;
@@ -58,17 +57,14 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       role="dialog"
       aria-modal="true"
     >
-      {/* Overlay */}
       <div 
         className="fixed inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
       
-      {/* Modal - Mobile: fullscreen | Desktop: centrado */}
       <div className="fixed inset-0 sm:inset-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-lg sm:max-h-[80vh] bg-slate-900 sm:rounded-2xl sm:border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
         
-        {/* Header con gradiente violeta */}
         <div className="relative bg-gradient-to-br from-violet-600 to-purple-700 p-5 sm:p-6 text-center flex-shrink-0">
           <button 
             type="button"
@@ -90,9 +86,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           </div>
         </div>
 
-        {/* Contenido scrolleable */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5">
-          {/* Error/Info message */}
           {error && (
             <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
@@ -141,7 +135,6 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           </div>
         </div>
 
-        {/* Footer con CTA */}
         <div className="p-4 sm:p-5 border-t border-slate-800 flex-shrink-0">
           <button
             type="button"
