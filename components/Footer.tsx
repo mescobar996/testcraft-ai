@@ -17,7 +17,7 @@ export function Footer() {
     <>
       <footer className="border-t border-slate-800/50 bg-slate-950/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -47,6 +47,29 @@ export function Footer() {
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
                     Política de Privacidad
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Links Producto */}
+            <div className="space-y-4">
+              <h3 className="text-white font-semibold">Producto</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link 
+                    href="/pricing" 
+                    className="text-slate-400 hover:text-white text-sm transition-colors"
+                  >
+                    Precios
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    href="/pricing#faq" 
+                    className="text-slate-400 hover:text-white text-sm transition-colors"
+                  >
+                    Preguntas Frecuentes
                   </Link>
                 </li>
               </ul>

@@ -16,7 +16,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
   const handleUpgrade = async () => {
     if (!user) {
-      setError("Debés iniciar sesión primero. Usá el botón de perfil en la esquina superior derecha.");
+      setError("Para continuar con la compra, primero debés iniciar sesión con tu cuenta de Google usando el botón en la esquina superior derecha.");
       return;
     }
     
@@ -39,7 +39,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('No se recibió URL de pago. Stripe no está configurado.');
+        throw new Error('El sistema de pagos no está disponible en este momento. Por favor intentá más tarde.');
       }
     } catch (err) {
       console.error('Error creating checkout:', err);
@@ -87,8 +87,20 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-5">
+          {/* Mensaje para usuario no autenticado */}
+          {!user && !error && (
+            <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-start gap-3">
+              <LogIn className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-blue-400 font-medium text-sm">Iniciá sesión para continuar</p>
+                <p className="text-blue-300/70 text-xs mt-1">Usá el botón de Google en la esquina superior derecha</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Mensaje de error */}
           {error && (
-            <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-start gap-3">
+            <div className="mb-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
               <p className="text-amber-400 text-sm">{error}</p>
             </div>
@@ -140,7 +152,11 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             type="button"
             onClick={handleUpgrade}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 disabled:opacity-50 text-white py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl transition-all shadow-lg"
+            className={`w-full flex items-center justify-center gap-2 ${
+              !user 
+                ? 'bg-slate-700 hover:bg-slate-600' 
+                : 'bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700'
+            } disabled:opacity-50 text-white py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl transition-all shadow-lg`}
           >
             {isLoading ? (
               <>
@@ -150,7 +166,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             ) : !user ? (
               <>
                 <LogIn className="w-5 h-5" />
-                Iniciar sesión para continuar
+                Iniciar sesión para comprar
               </>
             ) : (
               <>
