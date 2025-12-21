@@ -10,13 +10,15 @@ interface UpgradeModalProps {
 }
 
 export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
-  const { user } = useAuth();
+  const { user, signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleUpgrade = async () => {
+    // Si no está logueado, iniciar sesión primero
     if (!user) {
-      setError("Debés iniciar sesión para actualizar a Pro");
+      onClose();
+      signIn();
       return;
     }
     
@@ -39,11 +41,11 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('No se recibió URL de pago');
+        throw new Error('No se recibió URL de pago. Stripe no está configurado.');
       }
     } catch (err) {
       console.error('Error creating checkout:', err);
-      setError(err instanceof Error ? err.message : 'Error al conectar con el servidor de pagos. Intentá de nuevo más tarde.');
+      setError(err instanceof Error ? err.message : 'Error al conectar con el servidor de pagos.');
     } finally {
       setIsLoading(false);
     }
@@ -152,6 +154,11 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
                 Procesando...
+              </>
+            ) : !user ? (
+              <>
+                <Crown className="w-5 h-5" />
+                Iniciar sesión para continuar
               </>
             ) : (
               <>
