@@ -38,7 +38,7 @@ export function Footer() {
                     href="/terms" 
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
-                    {t.termsOfService || "Términos de Servicio"}
+                    Términos de Servicio
                   </Link>
                 </li>
                 <li>
@@ -46,7 +46,7 @@ export function Footer() {
                     href="/privacy" 
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
-                    {t.privacyPolicy || "Política de Privacidad"}
+                    Política de Privacidad
                   </Link>
                 </li>
               </ul>
@@ -61,16 +61,16 @@ export function Footer() {
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-lg text-sm font-medium transition-all"
                 >
                   <Crown className="w-4 h-4" />
-                  {t.upgradeToPro || "Actualizar a Pro"}
+                  Actualizar a Pro
                 </button>
               ) : !user ? (
                 <p className="text-slate-400 text-sm">
-                  {t.signInForPro || "Iniciá sesión para acceder a Pro"}
+                  Iniciá sesión para acceder a Pro
                 </p>
               ) : (
                 <div className="flex items-center gap-2 text-violet-400">
                   <Crown className="w-4 h-4" />
-                  <span className="text-sm font-medium">{t.proActive || "Pro activo"}</span>
+                  <span className="text-sm font-medium">Pro activo</span>
                 </div>
               )}
             </div>
