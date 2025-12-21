@@ -38,7 +38,7 @@ export function Footer() {
                     href="/terms" 
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
-                    Términos de Servicio
+                    Terminos de Servicio
                   </Link>
                 </li>
                 <li>
@@ -46,7 +46,7 @@ export function Footer() {
                     href="/privacy" 
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
-                    Política de Privacidad
+                    Politica de Privacidad
                   </Link>
                 </li>
               </ul>
@@ -88,7 +88,7 @@ export function Footer() {
                 </button>
               ) : !user ? (
                 <p className="text-slate-400 text-sm">
-                  Iniciá sesión para acceder a Pro
+                  Inicia sesion para acceder a Pro
                 </p>
               ) : (
                 <div className="flex items-center gap-2 text-violet-400">

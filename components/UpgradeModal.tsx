@@ -16,7 +16,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
   const handleUpgrade = async () => {
     if (!user) {
-      setError("Para continuar con la compra, primero debés iniciar sesión con tu cuenta de Google usando el botón en la esquina superior derecha.");
+      setError("Para continuar con la compra, primero debes iniciar sesion con tu cuenta de Google usando el boton en la esquina superior derecha.");
       return;
     }
     
@@ -33,13 +33,13 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.error || 'Error al crear la sesión de pago');
+        throw new Error(data.error || 'Error al crear la sesion de pago');
       }
       
       if (data.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('El sistema de pagos no está disponible en este momento. Por favor intentá más tarde.');
+        throw new Error('El sistema de pagos no esta disponible. Stripe no esta configurado en el servidor.');
       }
     } catch (err) {
       console.error('Error creating checkout:', err);
@@ -78,7 +78,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             <Crown className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">TestCraft AI Pro</h2>
-          <p className="text-violet-200 text-sm">Desbloqueá todo el potencial</p>
+          <p className="text-violet-200 text-sm">Desbloquea todo el potencial</p>
           
           <div className="mt-3 sm:mt-4 flex items-center justify-center gap-1">
             <span className="text-3xl sm:text-4xl font-bold text-white">$5</span>
@@ -87,18 +87,16 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-5">
-          {/* Mensaje para usuario no autenticado */}
           {!user && !error && (
             <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-start gap-3">
               <LogIn className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-blue-400 font-medium text-sm">Iniciá sesión para continuar</p>
-                <p className="text-blue-300/70 text-xs mt-1">Usá el botón de Google en la esquina superior derecha</p>
+                <p className="text-blue-400 font-medium text-sm">Inicia sesion para continuar</p>
+                <p className="text-blue-300/70 text-xs mt-1">Usa el boton de Google en la esquina superior derecha</p>
               </div>
             </div>
           )}
           
-          {/* Mensaje de error */}
           {error && (
             <div className="mb-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
@@ -110,26 +108,26 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             <Feature 
               icon={<Zap className="w-5 h-5 text-green-400" />}
               title="Generaciones ilimitadas"
-              description="Sin límites diarios"
+              description="Sin limites diarios"
               bgColor="bg-green-500/10"
             />
             <Feature 
               icon={<Camera className="w-5 h-5 text-fuchsia-400" />}
-              title="Generación desde imagen"
-              description="Subí screenshots y generamos casos"
+              title="Generacion desde imagen"
+              description="Subi screenshots y generamos casos"
               bgColor="bg-fuchsia-500/10"
               isNew
             />
             <Feature 
               icon={<Clock className="w-5 h-5 text-blue-400" />}
-              title="Prioridad en generación"
-              description="Respuestas más rápidas"
+              title="Prioridad en generacion"
+              description="Respuestas mas rapidas"
               bgColor="bg-blue-500/10"
             />
             <Feature 
               icon={<Shield className="w-5 h-5 text-purple-400" />}
               title="Historial completo"
-              description="Guardá todo para siempre"
+              description="Guarda todo para siempre"
               bgColor="bg-purple-500/10"
             />
             <Feature 
@@ -166,7 +164,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             ) : !user ? (
               <>
                 <LogIn className="w-5 h-5" />
-                Iniciar sesión para comprar
+                Iniciar sesion para comprar
               </>
             ) : (
               <>
@@ -176,7 +174,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             )}
           </button>
           <p className="text-center text-slate-500 text-xs sm:text-sm mt-3">
-            Pago seguro con Stripe • Cancelá cuando quieras
+            Pago seguro con Stripe - Cancela cuando quieras
           </p>
         </div>
       </div>
