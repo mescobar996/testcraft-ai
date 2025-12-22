@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-11-17.clover",
+  apiVersion: "2025-12-15.clover",
 });
 
 const supabaseAdmin = createClient(
@@ -13,7 +13,11 @@ const supabaseAdmin = createClient(
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const signature = request.headers.get("stripe-signature")!;
+  const signature = request.headers.get("stripe-signature");
+
+  if (!signature) {
+    return NextResponse.json({ error: "No signature" }, { status: 400 });
+  }
 
   let event: Stripe.Event;
 
@@ -23,12 +27,9 @@ export async function POST(request: NextRequest) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-  } catch (error) {
-    console.error("Webhook signature verification failed:", error);
-    return NextResponse.json(
-      { error: "Webhook signature verification failed" },
-      { status: 400 }
-    );
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err);
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   try {
@@ -36,52 +37,61 @@ export async function POST(request: NextRequest) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.userId;
-        const customerId = session.customer as string;
-        const subscriptionId = session.subscription as string;
 
         if (userId) {
-          // Update user's subscription status in Supabase
-          await supabaseAdmin.from("subscriptions").upsert({
-            user_id: userId,
-            stripe_customer_id: customerId,
-            stripe_subscription_id: subscriptionId,
-            status: "active",
-            plan: "pro",
-            updated_at: new Date().toISOString(),
-          });
+          await supabaseAdmin
+            .from("users")
+            .update({
+              subscription_tier: "pro",
+              stripe_customer_id: session.customer as string,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", userId);
         }
         break;
       }
 
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
-        const userId = subscription.metadata?.userId;
+        const customerId = subscription.customer as string;
 
-        if (userId) {
+        const { data: user } = await supabaseAdmin
+          .from("users")
+          .select("id")
+          .eq("stripe_customer_id", customerId)
+          .single();
+
+        if (user) {
+          const tier = subscription.status === "active" ? "pro" : "free";
           await supabaseAdmin
-            .from("subscriptions")
+            .from("users")
             .update({
-              status: subscription.status,
+              subscription_tier: tier,
               updated_at: new Date().toISOString(),
             })
-            .eq("user_id", userId);
+            .eq("id", user.id);
         }
         break;
       }
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
-        const userId = subscription.metadata?.userId;
+        const customerId = subscription.customer as string;
 
-        if (userId) {
+        const { data: user } = await supabaseAdmin
+          .from("users")
+          .select("id")
+          .eq("stripe_customer_id", customerId)
+          .single();
+
+        if (user) {
           await supabaseAdmin
-            .from("subscriptions")
+            .from("users")
             .update({
-              status: "canceled",
-              plan: "free",
+              subscription_tier: "free",
               updated_at: new Date().toISOString(),
             })
-            .eq("user_id", userId);
+            .eq("id", user.id);
         }
         break;
       }
@@ -89,9 +99,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error("Error processing webhook:", error);
+    console.error("Webhook error:", error);
     return NextResponse.json(
-      { error: "Error processing webhook" },
+      { error: "Webhook handler failed" },
       { status: 500 }
     );
   }
