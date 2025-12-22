@@ -50,8 +50,8 @@ export async function GET(request: NextRequest) {
       subscription: {
         id: subscription.id,
         status: subscription.status,
-        currentPeriodEnd: subscription.current_period_end,
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        currentPeriodEnd: (subscription as any).current_period_end,
+        cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
       },
       tier: userData.subscription_tier || 'pro',
     });
@@ -106,7 +106,7 @@ export async function DELETE(request: NextRequest) {
     // Cancelar al final del periodo
     await stripe.subscriptions.update(subscriptions.data[0].id, {
       cancel_at_period_end: true,
-    });
+    } as any);
 
     return NextResponse.json({ success: true });
   } catch (error) {
