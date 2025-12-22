@@ -1,121 +1,121 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { stripe } from '@/lib/stripe';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const cookieStore = await cookies();
+    const supabase = createServerComponentClient({ cookies: () => cookieStore });
     
-    // Verificar autenticación
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
       return NextResponse.json(
-        { error: "Usuario no autenticado" },
+        { error: 'No autenticado' },
         { status: 401 }
-      )
+      );
     }
 
-    // Obtener información de suscripción
+    // Buscar usuario en la base de datos
     const { data: userData } = await supabase
       .from('users')
-      .select('subscription_tier, subscription_status, stripe_customer_id, stripe_subscription_id')
+      .select('stripe_customer_id, subscription_tier')
       .eq('id', user.id)
-      .single()
+      .single();
 
-    if (!userData) {
-      return NextResponse.json(
-        { error: "Usuario no encontrado" },
-        { status: 404 }
-      )
+    if (!userData?.stripe_customer_id) {
+      return NextResponse.json({
+        subscription: null,
+        tier: 'free',
+      });
     }
 
-    let subscriptionDetails = null
+    // Obtener suscripciones activas
+    const subscriptions = await stripe.subscriptions.list({
+      customer: userData.stripe_customer_id,
+      status: 'active',
+      limit: 1,
+    });
 
-    if (userData.stripe_subscription_id) {
-      try {
-        const subscription = await stripe.subscriptions.retrieve(
-          userData.stripe_subscription_id
-        )
-
-        subscriptionDetails = {
-          id: subscription.id,
-          status: subscription.status,
-          current_period_start: subscription.current_period_start,
-          current_period_end: subscription.current_period_end,
-          cancel_at_period_end: subscription.cancel_at_period_end,
-          price_id: subscription.items.data[0]?.price.id,
-        }
-      } catch (stripeError) {
-        console.error("Stripe error:", stripeError)
-        // Continuar sin detalles de Stripe
-      }
+    if (subscriptions.data.length === 0) {
+      return NextResponse.json({
+        subscription: null,
+        tier: 'free',
+      });
     }
+
+    const subscription = subscriptions.data[0];
 
     return NextResponse.json({
-      success: true,
       subscription: {
-        tier: userData.subscription_tier,
-        status: userData.subscription_status,
-        stripe_customer_id: userData.stripe_customer_id,
-        stripe_subscription_id: userData.stripe_subscription_id,
-        details: subscriptionDetails,
+        id: subscription.id,
+        status: subscription.status,
+        currentPeriodEnd: subscription.current_period_end,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
       },
-    })
-
+      tier: userData.subscription_tier || 'pro',
+    });
   } catch (error) {
-    console.error("Get subscription error:", error)
+    console.error('Error getting subscription:', error);
     return NextResponse.json(
-      { error: "Error interno del servidor" },
+      { error: error instanceof Error ? error.message : 'Error al obtener suscripcion' },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const cookieStore = await cookies();
+    const supabase = createServerComponentClient({ cookies: () => cookieStore });
     
-    // Verificar autenticación
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
       return NextResponse.json(
-        { error: "Usuario no autenticado" },
+        { error: 'No autenticado' },
         { status: 401 }
-      )
+      );
     }
 
-    // Obtener subscription ID
     const { data: userData } = await supabase
       .from('users')
-      .select('stripe_subscription_id')
+      .select('stripe_customer_id')
       .eq('id', user.id)
-      .single()
+      .single();
 
-    if (!userData?.stripe_subscription_id) {
+    if (!userData?.stripe_customer_id) {
       return NextResponse.json(
-        { error: "No hay suscripción activa" },
+        { error: 'No hay suscripcion activa' },
         { status: 400 }
-      )
+      );
     }
 
-    // Cancelar suscripción en Stripe
-    await stripe.subscriptions.update(userData.stripe_subscription_id, {
+    const subscriptions = await stripe.subscriptions.list({
+      customer: userData.stripe_customer_id,
+      status: 'active',
+      limit: 1,
+    });
+
+    if (subscriptions.data.length === 0) {
+      return NextResponse.json(
+        { error: 'No hay suscripcion activa' },
+        { status: 400 }
+      );
+    }
+
+    // Cancelar al final del periodo
+    await stripe.subscriptions.update(subscriptions.data[0].id, {
       cancel_at_period_end: true,
-    })
+    });
 
-    return NextResponse.json({
-      success: true,
-      message: "Suscripción cancelada. Se mantendrá activa hasta el final del período.",
-    })
-
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Cancel subscription error:", error)
+    console.error('Error canceling subscription:', error);
     return NextResponse.json(
-      { error: "Error al cancelar la suscripción" },
+      { error: error instanceof Error ? error.message : 'Error al cancelar suscripcion' },
       { status: 500 }
-    )
+    );
   }
 }

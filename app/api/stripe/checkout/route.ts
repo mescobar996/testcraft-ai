@@ -1,123 +1,66 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { NextRequest, NextResponse } from 'next/server'
-import { stripe, PLANS } from '@/lib/stripe'
-import { z } from 'zod'
-
-const CheckoutSchema = z.object({
-  priceId: z.string().min(1, "Price ID requerido"),
-  successUrl: z.string().url("URL de éxito inválida"),
-  cancelUrl: z.string().url("URL de cancelación inválida"),
-})
+import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { stripe, PLANS, getPlanByPriceId } from '@/lib/stripe';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const cookieStore = await cookies();
+    const supabase = createServerComponentClient({ cookies: () => cookieStore });
     
-    // Verificar autenticación
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
       return NextResponse.json(
-        { error: "Usuario no autenticado" },
+        { error: 'No autenticado' },
         { status: 401 }
-      )
+      );
     }
 
-    const body = await request.json()
-    
-    // Validar datos
-    const validationResult = CheckoutSchema.safeParse(body)
-    
-    if (!validationResult.success) {
-      const errors = validationResult.error.errors.map(err => ({
-        field: err.path.join('.'),
-        message: err.message
-      }))
-      
+    const body = await request.json();
+    const { priceId } = body;
+
+    if (!priceId) {
       return NextResponse.json(
-        { error: "Datos inválidos", details: errors },
+        { error: 'priceId es requerido' },
         { status: 400 }
-      )
+      );
     }
-
-    const { priceId, successUrl, cancelUrl } = validationResult.data
 
     // Verificar que el priceId existe
-    const plan = Object.values(PLANS).find(p => p.stripePriceId === priceId)
+    const plan = getPlanByPriceId(priceId);
     
     if (!plan) {
       return NextResponse.json(
-        { error: "Plan no encontrado" },
+        { error: 'Plan no encontrado' },
         { status: 404 }
-      )
+      );
     }
 
-    // Obtener o crear customer de Stripe
-    let { data: userData } = await supabase
-      .from('users')
-      .select('stripe_customer_id')
-      .eq('id', user.id)
-      .single()
-
-    let customerId = userData?.stripe_customer_id
-
-    if (!customerId) {
-      // Crear nuevo customer
-      const customer = await stripe.customers.create({
-        email: user.email,
-        name: user.user_metadata?.name,
-      })
-      
-      customerId = customer.id
-      
-      // Guardar customer ID en la base de datos
-      await supabase
-        .from('users')
-        .update({ stripe_customer_id: customerId })
-        .eq('id', user.id)
-    }
-
-    // Crear sesión de checkout
     const session = await stripe.checkout.sessions.create({
-      customer: customerId,
+      mode: 'subscription',
       payment_method_types: ['card'],
+      customer_email: user.email,
       line_items: [
         {
           price: priceId,
           quantity: 1,
         },
       ],
-      mode: 'subscription',
-      success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://testcraft-ai-five.vercel.app'}/billing?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://testcraft-ai-five.vercel.app'}/billing?canceled=true`,
       metadata: {
         userId: user.id,
         planId: plan.id,
       },
-    })
+    });
 
-    return NextResponse.json({
-      success: true,
-      sessionId: session.id,
-      url: session.url,
-    })
-
+    return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error("Stripe checkout error:", error)
-    
-    if (error instanceof Error) {
-      if (error.message.includes('price')) {
-        return NextResponse.json(
-          { error: "Price ID inválido" },
-          { status: 400 }
-        )
-      }
-    }
-    
+    console.error('Error creating checkout session:', error);
     return NextResponse.json(
-      { error: "Error interno del servidor" },
+      { error: error instanceof Error ? error.message : 'Error al crear sesion de pago' },
       { status: 500 }
-    )
+    );
   }
 }

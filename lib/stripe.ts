@@ -1,19 +1,17 @@
 import Stripe from 'stripe';
 
-// Inicializar Stripe
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-12-15.clover',
   typescript: true,
 });
 
-// Definir planes
 export type PlanId = 'free' | 'pro' | 'enterprise';
 
 export interface Plan {
   id: PlanId;
   name: string;
   price: number;
-  priceId: string | null;
+  stripePriceId: string | null;
   features: string[];
   limits: {
     generationsPerDay: number;
@@ -30,7 +28,7 @@ export const PLANS: Record<PlanId, Plan> = {
     id: 'free',
     name: 'Free',
     price: 0,
-    priceId: null,
+    stripePriceId: null,
     features: [
       '3 generaciones por dia',
       'Exportar a texto',
@@ -49,7 +47,7 @@ export const PLANS: Record<PlanId, Plan> = {
     id: 'pro',
     name: 'Pro',
     price: 5,
-    priceId: process.env.STRIPE_PRICE_ID || null,
+    stripePriceId: process.env.STRIPE_PRICE_ID || null,
     features: [
       'Generaciones ilimitadas',
       'Generacion desde imagen',
@@ -71,7 +69,7 @@ export const PLANS: Record<PlanId, Plan> = {
     id: 'enterprise',
     name: 'Enterprise',
     price: 99,
-    priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || null,
+    stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || null,
     features: [
       'Todo de Pro',
       'Integracion Jira/TestRail',
@@ -121,4 +119,8 @@ export function canGenerate(
 
 export function getPlan(planId: PlanId | string): Plan {
   return PLANS[planId as PlanId] || PLANS.free;
+}
+
+export function getPlanByPriceId(priceId: string): Plan | undefined {
+  return Object.values(PLANS).find(p => p.stripePriceId === priceId);
 }
