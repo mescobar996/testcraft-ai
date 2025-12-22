@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Settings, Save, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
-import { canUseFeature } from "@/lib/stripe"
+import { canUseFeature, PlanId } from "@/lib/stripe"
 
 interface IntegrationSettingsProps {
   userTier?: string
@@ -29,7 +29,7 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
   }, [])
 
   const loadJiraConfig = async () => {
-    if (!canUseFeature(userTier, 'PRO')) return
+    if (!canUseFeature(userTier, 'PRO' as PlanId)) return
 
     setIsLoading(true)
     try {
@@ -43,7 +43,6 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
       if (data.configured) {
         setIsConfigured(true)
         setProjects(data.projects || [])
-        // No cargamos los valores reales por seguridad
         setJiraConfig({
           domain: "✓ Configurado",
           email: "✓ Configurado", 
@@ -58,17 +57,15 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
   }
 
   const handleSaveJiraConfig = async () => {
-    if (!canUseFeature(userTier, 'PRO')) {
+    if (!canUseFeature(userTier, 'PRO' as PlanId)) {
       alert('La integración con Jira requiere un plan Pro o Enterprise')
       return
     }
 
-    // Si ya está configurado y no se ha cambiado nada, no hacer nada
     if (isConfigured && jiraConfig.apiToken === "••••••••••••••••") {
       return
     }
 
-    // Validar campos
     if (!jiraConfig.domain || !jiraConfig.email || !jiraConfig.apiToken) {
       setSaveStatus('error')
       setTimeout(() => setSaveStatus('idle'), 3000)
@@ -83,7 +80,6 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
       
       if (!user) return
 
-      // Guardar configuración en Supabase
       const { error } = await supabase
         .from('user_integrations')
         .upsert({
@@ -99,10 +95,8 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
       setSaveStatus('success')
       setIsConfigured(true)
       
-      // Probar conexión y cargar proyectos
       await loadJiraProjects()
 
-      // Limpiar campos después de guardar
       setTimeout(() => {
         setJiraConfig({
           domain: "✓ Configurado",
@@ -148,21 +142,20 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
 
   return (
     <div className="space-y-8">
-      {/* Jira Integration */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Settings className="w-6 h-6 text-violet-400" />
             <h2 className="text-2xl font-bold text-white">Integración con Jira</h2>
           </div>
-          {!canUseFeature(userTier, 'PRO') && (
+          {!canUseFeature(userTier, 'PRO' as PlanId) && (
             <span className="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-sm">
               Requiere Plan Pro
             </span>
           )}
         </div>
 
-        {!canUseFeature(userTier, 'PRO') ? (
+        {!canUseFeature(userTier, 'PRO' as PlanId) ? (
           <div className="bg-slate-800 rounded-lg p-6 text-center">
             <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
             <p className="text-slate-300 mb-4">
@@ -290,7 +283,6 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
               )}
             </div>
 
-            {/* Proyectos de Jira */}
             {projects.length > 0 && (
               <div className="mt-8 p-6 bg-slate-800 rounded-lg">
                 <h3 className="text-lg font-semibold text-white mb-4">Proyectos Disponibles</h3>
@@ -314,7 +306,6 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
         )}
       </div>
 
-      {/* TestRail Integration (Placeholder para Enterprise) */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -326,7 +317,7 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
           </span>
         </div>
 
-        {!canUseFeature(userTier, 'ENTERPRISE') ? (
+        {!canUseFeature(userTier, 'ENTERPRISE' as PlanId) ? (
           <div className="bg-slate-800 rounded-lg p-6 text-center">
             <AlertCircle className="w-12 h-12 text-fuchsia-400 mx-auto mb-4" />
             <p className="text-slate-300 mb-4">

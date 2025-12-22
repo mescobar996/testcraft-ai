@@ -185,7 +185,7 @@ export default async function BillingPage({
             </Link>
             {" "}o envía un email a{" "}
             <a href="mailto:support@testcraft-ai.com" className="text-violet-400 hover:text-violet-300">
-              testcraftia@gmail.com
+              support@testcraft-ai.com
             </a>
           </p>
         </div>

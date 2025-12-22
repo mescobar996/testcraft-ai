@@ -1,126 +1,69 @@
-import Stripe from 'stripe';
+import Stripe from 'stripe'
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-12-15.clover',
-  typescript: true,
-});
+  apiVersion: '2024-06-20',
+})
 
-export type PlanId = 'free' | 'pro' | 'enterprise';
-
-export interface Plan {
-  id: PlanId;
-  name: string;
-  price: number;
-  stripePriceId: string | null;
-  features: string[];
-  limits: {
-    generationsPerDay: number;
-    historyDays: number;
-    exportFormats: string[];
-    integrations: boolean;
-    imageGeneration: boolean;
-    testPlans: boolean;
-  };
-}
-
-export const PLANS: Record<PlanId, Plan> = {
-  free: {
+export const PLANS = {
+  FREE: {
     id: 'free',
-    name: 'Free',
+    name: 'Gratis',
     price: 0,
-    stripePriceId: null,
+    currency: 'usd',
     features: [
-      '3 generaciones por dia',
-      'Exportar a texto',
-      'Historial 7 dias',
+      '10 casos de prueba por mes',
+      'Exportación básica (Excel, PDF)',
+      'Plantillas predefinidas',
+      'Historial limitado (7 días)'
     ],
-    limits: {
-      generationsPerDay: 3,
-      historyDays: 7,
-      exportFormats: ['text', 'markdown'],
-      integrations: false,
-      imageGeneration: false,
-      testPlans: false,
-    },
+    maxUsage: 10,
+    stripePriceId: null,
   },
-  pro: {
+  PRO: {
     id: 'pro',
     name: 'Pro',
-    price: 5,
-    stripePriceId: process.env.STRIPE_PRICE_ID || null,
+    price: 29,
+    currency: 'usd',
     features: [
-      'Generaciones ilimitadas',
-      'Generacion desde imagen',
-      'Exportar a Excel, PDF, Gherkin',
+      '500 casos de prueba por mes',
+      'Exportación completa (Excel, PDF, Gherkin)',
+      'Plantillas personalizadas',
       'Historial completo',
-      'Prioridad en generacion',
-      'Soporte prioritario',
+      'Integración con Jira',
+      'Soporte prioritario'
     ],
-    limits: {
-      generationsPerDay: -1,
-      historyDays: -1,
-      exportFormats: ['text', 'markdown', 'excel', 'pdf', 'gherkin'],
-      integrations: false,
-      imageGeneration: true,
-      testPlans: true,
-    },
+    maxUsage: 500,
+    stripePriceId: process.env.STRIPE_PRO_PRICE_ID!,
   },
-  enterprise: {
+  ENTERPRISE: {
     id: 'enterprise',
     name: 'Enterprise',
     price: 99,
-    stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || null,
+    currency: 'usd',
     features: [
-      'Todo de Pro',
-      'Integracion Jira/TestRail',
-      'API dedicada',
+      'Casos de prueba ilimitados',
+      'Exportación completa + API',
+      'Plantillas ilimitadas',
+      'Historial ilimitado',
+      'Integraciones múltiples (Jira, TestRail, etc.)',
       'Soporte 24/7',
-      'Usuarios ilimitados',
+      'SLA garantizado'
     ],
-    limits: {
-      generationsPerDay: -1,
-      historyDays: -1,
-      exportFormats: ['text', 'markdown', 'excel', 'pdf', 'gherkin', 'json'],
-      integrations: true,
-      imageGeneration: true,
-      testPlans: true,
-    },
-  },
-};
+    maxUsage: -1, // -1 = ilimitado
+    stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID!,
+  }
+} as const
 
-export function canUseFeature(
-  userTier: PlanId | string | undefined,
-  feature: keyof Plan['limits']
-): boolean {
-  const tier = (userTier as PlanId) || 'free';
-  const plan = PLANS[tier] || PLANS.free;
+export type PlanId = keyof typeof PLANS
+
+export function getPlanById(id: string) {
+  return PLANS[id as PlanId] || PLANS.FREE
+}
+
+export function canUseFeature(userTier: string, requiredTier: PlanId = 'FREE'): boolean {
+  const planOrder = ['FREE', 'PRO', 'ENTERPRISE']
+  const userIndex = planOrder.indexOf(userTier as PlanId)
+  const requiredIndex = planOrder.indexOf(requiredTier)
   
-  const value = plan.limits[feature];
-  if (typeof value === 'boolean') return value;
-  if (typeof value === 'number') return value !== 0;
-  if (Array.isArray(value)) return value.length > 0;
-  return false;
-}
-
-export function getGenerationLimit(userTier: PlanId | string | undefined): number {
-  const tier = (userTier as PlanId) || 'free';
-  const plan = PLANS[tier] || PLANS.free;
-  return plan.limits.generationsPerDay;
-}
-
-export function canGenerate(
-  userTier: PlanId | string | undefined,
-  currentCount: number
-): boolean {
-  const limit = getGenerationLimit(userTier);
-  if (limit === -1) return true;
-  return currentCount < limit;
-}
-
-export function getPlan(planId: PlanId | string): Plan {
-  return PLANS[planId as PlanId] || PLANS.free;
-}
-
-export function getPlanByPriceId(priceId: string): Plan | undefined {
-  return Object.values(PLANS).find(p => p.stripePriceId === priceId);
+  return userIndex >= requiredIndex
 }
