@@ -5,6 +5,7 @@ import { TestCaseForm } from "@/components/TestCaseForm";
 import { TestCaseOutput } from "@/components/TestCaseOutput";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { AppIcon } from "@/components/AppIcon";
+import { Footer } from "@/components/Footer";
 import { UserMenu } from "@/components/UserMenu";
 import { UsageBanner } from "@/components/UsageBanner";
 import { UsageCounter } from "@/components/UsageCounter";
@@ -267,17 +268,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
         </div>
       </div>
 
-      <footer className="border-t border-slate-800/50 mt-16">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <AppIcon size="sm" />
-              <span className="text-slate-400 font-medium">{t.appName}</span>
-            </div>
-            <p className="text-slate-500 text-sm">{t.copyright}</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
