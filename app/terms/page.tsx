@@ -255,6 +255,7 @@ export default function TermsPage() {
             <Link href="/terms" className="text-violet-400">Términos</Link>
             <Link href="/privacy" className="text-slate-500 hover:text-white transition-colors">Privacidad</Link>
             <Link href="/pricing" className="text-slate-500 hover:text-white transition-colors">Precios</Link>
+            <Link href="/faq" className="text-slate-500 hover:text-white transition-colors">FAQ</Link>
           </div>
         </div>
       </footer>

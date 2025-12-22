@@ -150,27 +150,7 @@ export default function PricingPage() {
           ))}
         </div>
 
-        <div className="mt-20 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-white text-center mb-8">Preguntas Frecuentes</h2>
-          <div className="space-y-4">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5">
-              <h3 className="text-white font-medium mb-2">¿Puedo cambiar de plan en cualquier momento?</h3>
-              <p className="text-slate-400 text-sm">Sí, podés actualizar o cancelar tu plan cuando quieras. Los cambios se aplican inmediatamente.</p>
-            </div>
-            <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5">
-              <h3 className="text-white font-medium mb-2">¿Qué métodos de pago aceptan?</h3>
-              <p className="text-slate-400 text-sm">Aceptamos todas las tarjetas de crédito y débito principales a través de Stripe, la plataforma de pagos más segura del mundo.</p>
-            </div>
-            <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5">
-              <h3 className="text-white font-medium mb-2">¿El plan Free tiene límite de tiempo?</h3>
-              <p className="text-slate-400 text-sm">No, el plan Free es completamente gratuito y sin límite de tiempo. Podés usarlo indefinidamente con 20 generaciones diarias.</p>
-            </div>
-            <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5">
-              <h3 className="text-white font-medium mb-2">¿Qué pasa si supero el límite diario?</h3>
-              <p className="text-slate-400 text-sm">El contador se reinicia cada 24 horas. Si necesitás más generaciones, considerá actualizar al plan Pro para generaciones ilimitadas.</p>
-            </div>
-          </div>
-        </div>
+        
 
         <div className="mt-16 text-center">
           <p className="text-slate-400 mb-4">¿Tenés preguntas? Escribinos</p>
@@ -185,6 +165,7 @@ export default function PricingPage() {
             <Link href="/terms" className="text-slate-500 hover:text-white transition-colors">Términos</Link>
             <Link href="/privacy" className="text-slate-500 hover:text-white transition-colors">Privacidad</Link>
             <Link href="/pricing" className="text-violet-400">Precios</Link>
+            <Link href="/faq" className="text-slate-500 hover:text-white transition-colors">FAQ</Link>
           </div>
         </div>
       </footer>

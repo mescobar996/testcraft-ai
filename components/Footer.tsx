@@ -38,7 +38,7 @@ export function Footer() {
                     href="/terms" 
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
-                    Terminos de Servicio
+                    Términos y Condiciones
                   </Link>
                 </li>
                 <li>
@@ -66,10 +66,10 @@ export function Footer() {
                 </li>
                 <li>
                   <Link 
-                    href="/pricing#faq" 
+                    href="/faq" 
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
-                    Preguntas Frecuentes
+                    Preguntas Frecuentes (FAQ)
                   </Link>
                 </li>
               </ul>

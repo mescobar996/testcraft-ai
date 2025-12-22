@@ -27,7 +27,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, email: user.email }),
+        body: JSON.stringify({ userId: user.id, userEmail: user.email }),
       });
       
       const data = await response.json();
