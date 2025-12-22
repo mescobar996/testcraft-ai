@@ -39,6 +39,11 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth/login?redirect=' + encodeURIComponent(path), request.url))
     }
 
+    // Si está autenticado y va a pricing, redirigir a billing
+    if (session && path === '/pricing') {
+      return NextResponse.redirect(new URL('/billing', request.url))
+    }
+
     return response
 
   } catch (error) {
