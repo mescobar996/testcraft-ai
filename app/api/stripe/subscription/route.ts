@@ -6,10 +6,10 @@ import { stripe } from '@/lib/stripe'
 export async function GET(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    
+
     // Verificar autenticación
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no autenticado" },
@@ -76,10 +76,10 @@ export async function GET(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    
+
     // Verificar autenticación
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no autenticado" },
