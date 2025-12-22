@@ -1,12 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 
-export default function ResetPasswordPage() {
+// Componente separado que usa useSearchParams
+function ResetPasswordForm() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const supabase = createClientComponentClient()
+  
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -16,10 +21,6 @@ export default function ResetPasswordPage() {
   const [generalError, setGeneralError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
   const [isChecking, setIsChecking] = useState(true)
-  
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const supabase = createClientComponentClient()
 
   useEffect(() => {
     // Verificar que hay un token válido al cargar la página
@@ -145,6 +146,107 @@ export default function ResetPasswordPage() {
   }
 
   return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2">Nueva contraseña</h2>
+        <p className="text-slate-400">
+          Ingresa tu nueva contraseña
+        </p>
+      </div>
+
+      {generalError && (
+        <div className="bg-red-900/50 border border-red-700 rounded-lg p-3">
+          <p className="text-red-400 text-sm">{generalError}</p>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="bg-green-900/50 border border-green-700 rounded-lg p-3">
+          <p className="text-green-400 text-sm">{successMessage}</p>
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+          Nueva contraseña
+        </label>
+        <div className="relative">
+          <input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={`w-full px-4 py-3 pr-12 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
+              errors.password ? 'border-red-500' : 'border-slate-700'
+            }`}
+            placeholder="Mínimo 8 caracteres"
+            disabled={isLoading}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+          >
+            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          </button>
+        </div>
+        {errors.password && (
+          <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-2">
+          Confirmar contraseña
+        </label>
+        <div className="relative">
+          <input
+            id="confirmPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className={`w-full px-4 py-3 pr-12 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
+              errors.confirmPassword ? 'border-red-500' : 'border-slate-700'
+            }`}
+            placeholder="Repite tu contraseña"
+            disabled={isLoading}
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+            aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+          >
+            {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          </button>
+        </div>
+        {errors.confirmPassword && (
+          <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white py-3 px-4 rounded-lg font-medium hover:from-violet-700 hover:to-fuchsia-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+      >
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Actualizando...
+          </div>
+        ) : (
+          "Restablecer contraseña"
+        )}
+      </button>
+    </form>
+  )
+}
+
+// Componente principal con Suspense
+export default function ResetPasswordPage() {
+  return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-12">
       <div className="w-full max-w-md">
         {/* Logo */}
@@ -159,103 +261,16 @@ export default function ResetPasswordPage() {
           </Link>
         </div>
 
-        {/* Card */}
+        {/* Card con Suspense */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-white mb-2">Nueva contraseña</h2>
-              <p className="text-slate-400">
-                Ingresa tu nueva contraseña
-              </p>
+          <Suspense fallback={
+            <div className="text-center">
+              <div className="w-8 h-8 border-2 border-violet-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-slate-400">Cargando...</p>
             </div>
-
-            {generalError && (
-              <div className="bg-red-900/50 border border-red-700 rounded-lg p-3">
-                <p className="text-red-400 text-sm">{generalError}</p>
-              </div>
-            )}
-
-            {successMessage && (
-              <div className="bg-green-900/50 border border-green-700 rounded-lg p-3">
-                <p className="text-green-400 text-sm">{successMessage}</p>
-              </div>
-            )}
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-                Nueva contraseña
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full px-4 py-3 pr-12 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
-                    errors.password ? 'border-red-500' : 'border-slate-700'
-                  }`}
-                  placeholder="Mínimo 8 caracteres"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-400">{errors.password}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-2">
-                Confirmar contraseña
-              </label>
-              <div className="relative">
-                <input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full px-4 py-3 pr-12 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
-                    errors.confirmPassword ? 'border-red-500' : 'border-slate-700'
-                  }`}
-                  placeholder="Repite tu contraseña"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-                  aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white py-3 px-4 rounded-lg font-medium hover:from-violet-700 hover:to-fuchsia-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Actualizando...
-                </div>
-              ) : (
-                "Restablecer contraseña"
-              )}
-            </button>
-          </form>
+          }>
+            <ResetPasswordForm />
+          </Suspense>
         </div>
 
         {/* Footer */}

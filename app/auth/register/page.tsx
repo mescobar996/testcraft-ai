@@ -1,27 +1,15 @@
 import { Metadata } from "next"
 import Link from "next/link"
 import { RegisterForm } from "@/components/RegisterForm"
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
-import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
   title: "Registrarse - TestCraft AI",
   description: "Crea tu cuenta en TestCraft AI y comienza a generar casos de prueba profesionales con IA.",
 }
 
-export default async function RegisterPage() {
-  const supabase = createServerComponentClient({ cookies })
-  
-  // Si el usuario ya está autenticado, redirigir al dashboard
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+export const dynamic = 'force-dynamic' // Importante: fuerza renderizado dinámico
 
-  if (session) {
-    redirect("/")
-  }
-
+export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-12">
       <div className="w-full max-w-md">
