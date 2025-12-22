@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 
 // Inicializar Stripe
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-12-15.clover',
   typescript: true,
 });
 
@@ -59,8 +59,8 @@ export const PLANS: Record<PlanId, Plan> = {
       'Soporte prioritario',
     ],
     limits: {
-      generationsPerDay: -1, // ilimitado
-      historyDays: -1, // ilimitado
+      generationsPerDay: -1,
+      historyDays: -1,
       exportFormats: ['text', 'markdown', 'excel', 'pdf', 'gherkin'],
       integrations: false,
       imageGeneration: true,
@@ -90,7 +90,6 @@ export const PLANS: Record<PlanId, Plan> = {
   },
 };
 
-// Verificar si un usuario puede usar una feature
 export function canUseFeature(
   userTier: PlanId | string | undefined,
   feature: keyof Plan['limits']
@@ -105,24 +104,21 @@ export function canUseFeature(
   return false;
 }
 
-// Obtener limite de generaciones
 export function getGenerationLimit(userTier: PlanId | string | undefined): number {
   const tier = (userTier as PlanId) || 'free';
   const plan = PLANS[tier] || PLANS.free;
   return plan.limits.generationsPerDay;
 }
 
-// Verificar si el usuario puede generar
 export function canGenerate(
   userTier: PlanId | string | undefined,
   currentCount: number
 ): boolean {
   const limit = getGenerationLimit(userTier);
-  if (limit === -1) return true; // ilimitado
+  if (limit === -1) return true;
   return currentCount < limit;
 }
 
-// Obtener plan por ID
 export function getPlan(planId: PlanId | string): Plan {
   return PLANS[planId as PlanId] || PLANS.free;
 }
