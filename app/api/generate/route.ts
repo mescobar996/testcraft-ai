@@ -1,28 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { checkRateLimit, getClientIdentifier } from "@/lib/rate-limit";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
-// Esquema de validación con Zod
-const GenerateRequestSchema = z.object({
-  requirement: z
-    .string()
-    .min(10, "El requisito debe tener al menos 10 caracteres")
-    .max(5000, "El requisito no puede exceder 5000 caracteres")
-    .trim(),
-  context: z
-    .string()
-    .max(2000, "El contexto no puede exceder 2000 caracteres")
-    .optional()
-    .transform(val => val?.trim()),
-  format: z
-    .enum(["table", "gherkin", "both"])
-    .optional()
-    .default("table"),
 });
 
 const SYSTEM_PROMPT = `Eres un experto QA Engineer con más de 10 años de experiencia en testing de software. Tu tarea es generar casos de prueba exhaustivos y profesionales a partir de requisitos o historias de usuario.
@@ -61,59 +41,20 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura exacta:
       "type": "Positivo|Negativo|Borde"
     }
   ],
-  "gherkin": "Feature: ...\nScenario: ...\nGiven...\nWhen...\nThen...",
+  "gherkin": "Feature: ...\\nScenario: ...\\nGiven...\\nWhen...\\nThen...",
   "summary": "Resumen breve de la cobertura generada"
 }`;
 
 export async function POST(request: NextRequest) {
   try {
-    // Check rate limit
-    const identifier = getClientIdentifier(request);
-    const rateLimitResult = checkRateLimit(identifier);
+    const { requirement, context } = await request.json();
 
-    if (!rateLimitResult.success) {
-      const resetDate = rateLimitResult.resetTime 
-        ? new Date(rateLimitResult.resetTime).toISOString()
-        : null;
-        
+    if (!requirement) {
       return NextResponse.json(
-        { 
-          error: "Has excedido el límite de requests. Por favor, intenta más tarde.",
-          retryAfter: resetDate
-        },
-        { 
-          status: 429,
-          headers: {
-            'X-RateLimit-Limit': '10',
-            'X-RateLimit-Window': '15 minutes',
-            ...(resetDate && { 'Retry-After': resetDate })
-          }
-        }
-      );
-    }
-
-    // Parse and validate request body
-    const body = await request.json();
-    
-    // Validar con Zod
-    const validationResult = GenerateRequestSchema.safeParse(body);
-    
-    if (!validationResult.success) {
-      const errors = validationResult.error.errors.map(err => ({
-        field: err.path.join('.'),
-        message: err.message
-      }));
-      
-      return NextResponse.json(
-        { 
-          error: "Datos de entrada inválidos",
-          details: errors 
-        },
+        { error: "El requisito es obligatorio" },
         { status: 400 }
       );
     }
-
-    const { requirement, context, format } = validationResult.data;
 
     const userMessage = `
 REQUISITO/HISTORIA DE USUARIO:
@@ -125,7 +66,7 @@ Genera casos de prueba completos para este requisito. Incluye casos positivos, n
 Responde SOLO con el JSON, sin texto adicional ni markdown.`;
 
     const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
+      model: "claude-sonnet-4-20250514",
       max_tokens: 4096,
       messages: [
         {
@@ -157,60 +98,16 @@ Responde SOLO con el JSON, sin texto adicional ni markdown.`;
         cleanedText = cleanedText.slice(0, -3);
       }
       jsonResponse = JSON.parse(cleanedText.trim());
-    } catch (parseError) {
+    } catch {
       console.error("Error parsing JSON:", textContent.text);
-      return NextResponse.json(
-        { 
-          error: "Error al procesar la respuesta de la IA",
-          details: "La respuesta no es un JSON válido"
-        },
-        { status: 502 }
-      );
-    }
-
-    // Validar que la respuesta tiene la estructura esperada
-    if (!jsonResponse.testCases || !Array.isArray(jsonResponse.testCases)) {
-      return NextResponse.json(
-        { 
-          error: "Respuesta de IA inválida",
-          details: "No se encontraron casos de prueba en la respuesta"
-        },
-        { status: 502 }
-      );
+      throw new Error("Error al procesar la respuesta de la IA");
     }
 
     return NextResponse.json(jsonResponse);
   } catch (error) {
     console.error("Error in generate API:", error);
-    
-    // Manejo de errores específicos
-    if (error instanceof Error) {
-      if (error.message.includes("API key")) {
-        return NextResponse.json(
-          { 
-            error: "Error de configuración del servicio de IA",
-            details: "Por favor, contacta al soporte técnico"
-          },
-          { status: 503 }
-        );
-      }
-      
-      if (error.message.includes("rate limit")) {
-        return NextResponse.json(
-          { 
-            error: "Límite de uso excedido",
-            details: "El servicio de IA está sobrecargado. Intenta más tarde."
-          },
-          { status: 503 }
-        );
-      }
-    }
-    
     return NextResponse.json(
-      { 
-        error: "Error interno del servidor",
-        details: process.env.NODE_ENV === 'development' ? error : undefined
-      },
+      { error: error instanceof Error ? error.message : "Error interno del servidor" },
       { status: 500 }
     );
   }

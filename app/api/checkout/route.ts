@@ -1,41 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe, PLANS } from "@/lib/stripe";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-11-17.clover",
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { userId, email } = body;
+    const { userId, userEmail } = await request.json();
 
-    if (!userId || !email) {
+    if (!userId || !userEmail) {
       return NextResponse.json(
-        { error: "userId y email son requeridos" },
-        { status: 400 }
+        { error: "Usuario no autenticado" },
+        { status: 401 }
       );
     }
 
-    const priceId = process.env.STRIPE_PRICE_ID;
-    
-    if (!priceId) {
-      return NextResponse.json(
-        { error: "STRIPE_PRICE_ID no esta configurado en el servidor" },
-        { status: 500 }
-      );
-    }
-
+    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
       payment_method_types: ["card"],
-      customer_email: email,
+      mode: "subscription",
+      customer_email: userEmail,
       line_items: [
         {
-          price: priceId,
+          price: process.env.STRIPE_PRICE_ID!,
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://testcraft-ai-five.vercel.app'}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://testcraft-ai-five.vercel.app'}/?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
       metadata: {
-        userId,
+        userId: userId,
+      },
+      subscription_data: {
+        metadata: {
+          userId: userId,
+        },
       },
     });
 
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error creating checkout session:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Error al crear sesion de pago" },
+      { error: "Error al crear sesión de pago" },
       { status: 500 }
     );
   }
