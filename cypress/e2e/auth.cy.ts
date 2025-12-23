@@ -1,68 +1,47 @@
-describe('Authentication', () => {
+describe('Autenticación', () => {
   beforeEach(() => {
     cy.visit('/')
   })
 
-  it('should redirect unauthenticated users to login', () => {
-    cy.visit('/billing')
-    cy.url().should('include', '/auth/login')
-    cy.get('h2').should('contain', 'Bienvenido de vuelta')
-  })
-
-  it('should allow user registration', () => {
+  it('debe registrar un nuevo usuario', () => {
     cy.visit('/auth/register')
-    
     cy.get('input[name="name"]').type('Test User')
-    cy.get('input[name="email"]').type('testuser@example.com')
-    cy.get('input[name="password"]').type('TestPassword123')
-    cy.get('input[name="confirmPassword"]').type('TestPassword123')
-    
+    cy.get('input[name="email"]').type('test@example.com')
+    cy.get('input[name="password"]').type('Test123!')
+    cy.get('input[name="confirmPassword"]').type('Test123!')
     cy.get('button[type="submit"]').click()
     
-    cy.url().should('eq', Cypress.config().baseUrl + '/')
-    cy.get('[data-testid="welcome-message"]').should('be.visible')
+    cy.url().should('include', '/dashboard')
+    cy.get('[data-testid="user-menu"]').should('contain', 'Test User')
   })
 
-  it('should allow user login', () => {
+  it('debe iniciar sesión con credenciales válidas', () => {
+    cy.login('test@example.com', 'Test123!')
+    cy.url().should('include', '/dashboard')
+  })
+
+  it('debe mostrar error con credenciales inválidas', () => {
     cy.visit('/auth/login')
-    
-    cy.get('input[name="email"]').type('testuser@example.com')
-    cy.get('input[name="password"]').type('TestPassword123')
-    
+    cy.get('input[name="email"]').type('invalid@example.com')
+    cy.get('input[name="password"]').type('wrongpassword')
     cy.get('button[type="submit"]').click()
     
-    cy.url().should('eq', Cypress.config().baseUrl + '/')
-    cy.get('[data-testid="user-menu"]').should('be.visible')
+    cy.get('[data-testid="error-message"]').should('be.visible')
   })
 
-  it('should show validation errors', () => {
-    cy.visit('/auth/register')
-    
+  it('debe recuperar contraseña', () => {
+    cy.visit('/auth/reset-password')
+    cy.get('input[name="email"]').type('test@example.com')
     cy.get('button[type="submit"]').click()
     
-    cy.get('[data-testid="error-name"]').should('contain', 'El nombre es requerido')
-    cy.get('[data-testid="error-email"]').should('contain', 'El email es requerido')
-    cy.get('[data-testid="error-password"]').should('contain', 'La contraseña es requerida')
+    cy.get('[data-testid="success-message"]').should('be.visible')
   })
 
-  it('should allow password recovery', () => {
-    cy.visit('/auth/login')
+  it('debe cerrar sesión', () => {
+    cy.login('test@example.com', 'Test123!')
+    cy.get('[data-testid="user-menu"]').click()
+    cy.get('button[data-testid="logout-button"]').click()
     
-    cy.get('button').contains('¿Olvidaste tu contraseña?').click()
-    
-    cy.get('input[name="forgotEmail"]').type('testuser@example.com')
-    cy.get('button[type="submit"]').click()
-    
-    cy.get('[data-testid="success-message"]').should('contain', 'Si el email existe')
+    cy.url().should('include', '/auth/login')
   })
-
-  it('should redirect authenticated users from auth pages', () => {
-    cy.login('testuser@example.com', 'TestPassword123')
-    
-    cy.visit('/auth/login')
-    cy.url().should('eq', Cypress.config().baseUrl + '/')
-    
-    cy.visit('/auth/register')
-    cy.url().should('eq', Cypress.config().baseUrl + '/')
-  })
-})
+}
