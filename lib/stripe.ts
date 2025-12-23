@@ -5,7 +5,8 @@ export function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY)
 }
 
-export const PLANS = {
+// Definición base de planes (sin información sensible del servidor)
+const PLANS_BASE = {
   FREE: {
     id: 'free',
     name: 'Gratis',
@@ -18,7 +19,6 @@ export const PLANS = {
       'Historial limitado (7 días)'
     ],
     maxUsage: 10,
-    stripePriceId: null,
   },
   PRO: {
     id: 'pro',
@@ -34,7 +34,6 @@ export const PLANS = {
       'Soporte prioritario'
     ],
     maxUsage: 500,
-    stripePriceId: process.env.STRIPE_PRO_PRICE_ID || null,
   },
   ENTERPRISE: {
     id: 'enterprise',
@@ -51,6 +50,24 @@ export const PLANS = {
       'SLA garantizado'
     ],
     maxUsage: -1, // -1 = ilimitado
+  }
+} as const
+
+// Exportar versión pública para componentes cliente
+export const PLANS = PLANS_BASE
+
+// Versión completa con Price IDs para uso en servidor
+export const PLANS_SERVER = {
+  FREE: {
+    ...PLANS_BASE.FREE,
+    stripePriceId: null,
+  },
+  PRO: {
+    ...PLANS_BASE.PRO,
+    stripePriceId: process.env.STRIPE_PRO_PRICE_ID || null,
+  },
+  ENTERPRISE: {
+    ...PLANS_BASE.ENTERPRISE,
     stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || null,
   }
 } as const

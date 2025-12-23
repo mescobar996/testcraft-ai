@@ -1,7 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
-import { getStripe, PLANS } from '@/lib/stripe'
+import { getStripe, PLANS_SERVER } from '@/lib/stripe'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic';
@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
 
     const { planId, successUrl, cancelUrl } = validationResult.data
 
-    // Obtener el plan y su Price ID
-    const plan = PLANS[planId]
+    // Obtener el plan y su Price ID desde la versión del servidor
+    const plan = PLANS_SERVER[planId]
 
     if (!plan.stripePriceId) {
       return NextResponse.json(
