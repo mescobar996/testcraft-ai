@@ -44,4 +44,4 @@ describe('Autenticación', () => {
     
     cy.url().should('include', '/auth/login')
   })
-}
+})
