@@ -30,4 +30,4 @@ describe('Billing y Suscripciones', () => {
     cy.get('[data-testid="billing-history"]').should('be.visible')
     cy.get('[data-testid="invoice-item"]').should('have.length.at.least', 1)
   })
-}
+})
