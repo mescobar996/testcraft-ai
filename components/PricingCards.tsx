@@ -51,20 +51,14 @@ export function PricingCards({ userSubscription }: PricingCardsProps) {
         return
       }
 
-      const plan = PLANS[planId]
-      
-      if (!plan.stripePriceId) {
-        throw new Error('Price ID no configurado')
-      }
-
-      // Crear sesión de checkout
+      // Crear sesión de checkout - el servidor validará el plan
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          priceId: plan.stripePriceId,
+          planId: planId,
           successUrl: `${window.location.origin}/billing?success=true`,
           cancelUrl: `${window.location.origin}/billing?canceled=true`,
         }),

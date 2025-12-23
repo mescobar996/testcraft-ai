@@ -7,7 +7,9 @@ import { z } from 'zod'
 export const dynamic = 'force-dynamic';
 
 const CheckoutSchema = z.object({
-  priceId: z.string().min(1, "Price ID requerido"),
+  planId: z.enum(['PRO', 'ENTERPRISE'], {
+    errorMap: () => ({ message: "Plan ID debe ser PRO o ENTERPRISE" })
+  }),
   successUrl: z.string().url("URL de éxito inválida"),
   cancelUrl: z.string().url("URL de cancelación inválida"),
 })
@@ -43,17 +45,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { priceId, successUrl, cancelUrl } = validationResult.data
+    const { planId, successUrl, cancelUrl } = validationResult.data
 
-    // Verificar que el priceId existe
-    const plan = Object.values(PLANS).find(p => p.stripePriceId === priceId)
-    
-    if (!plan) {
+    // Obtener el plan y su Price ID
+    const plan = PLANS[planId]
+
+    if (!plan.stripePriceId) {
       return NextResponse.json(
-        { error: "Plan no encontrado" },
-        { status: 404 }
+        { error: "Payment configuration error" },
+        { status: 500 }
       )
     }
+
+    const priceId = plan.stripePriceId
 
     // Obtener o crear customer de Stripe
     const stripeClient = getStripe()
