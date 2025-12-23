@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
       subscription: {
         id: subscription.id,
         status: subscription.status,
-        start: subscription.start,
-        end: subscription.end,
+        current_period_start: subscription.current_period_start,
+        current_period_end: subscription.current_period_end,
         cancel_at_period_end: subscription.cancel_at_period_end,
         price_id: subscription.items.data[0]?.price.id,
       },
