@@ -56,4 +56,4 @@ describe('Generación de Casos de Prueba', () => {
     cy.get('button[data-testid="save-favorite"]').click()
     cy.get('[data-testid="favorite-success"]').should('be.visible')
   })
-}
+})
