@@ -1,56 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import Stripe from 'stripe';
 
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-12-15.clover',
 });
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const userId = request.nextUrl.searchParams.get("userId");
 
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!userId) {
+      return NextResponse.json({ isPro: false, plan: "free" });
     }
 
-    const { data: subscriptionData } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', user.id)
+    const { data, error } = await supabaseAdmin
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("status", "active")
       .single();
 
-    if (!subscriptionData) {
-      return NextResponse.json({
-        subscription: null,
-        isActive: false
-      });
+    if (error || !data) {
+      return NextResponse.json({ isPro: false, plan: "free" });
     }
 
-    const subscription = await stripe.subscriptions.retrieve(subscriptionData.stripe_subscription_id);
-
-    // Fix: Access properties with proper typing
-    const sub: any = subscription;
-
     return NextResponse.json({
-      subscription: {
-        id: subscription.id,
-        status: subscription.status,
-        current_period_start: sub.current_period_start,
-        current_period_end: sub.current_period_end,
-        cancel_at_period_end: sub.cancel_at_period_end,
-        price_id: subscription.items.data[0]?.price.id,
-      },
-      isActive: subscription.status === 'active'
+      isPro: data.plan === "pro",
+      plan: data.plan,
+      status: data.status,
     });
-
   } catch (error) {
-    console.error('Error fetching subscription:', error);
-    return NextResponse.json({
-      error: 'Failed to fetch subscription'
-    }, { status: 500 });
+    console.error("Error checking subscription:", error);
+    return NextResponse.json({ isPro: false, plan: "free" });
   }
 }
