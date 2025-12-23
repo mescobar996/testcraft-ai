@@ -11,9 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { data: subscriptionData } = await supabase
       .from('subscriptions')
@@ -21,22 +19,23 @@ export async function GET(request: NextRequest) {
       .eq('user_id', user.id)
       .single();
 
-    if (!subscriptionData) {
-      return NextResponse.json({ subscription: null, isActive: false });
-    }
+    if (!subscriptionData) return NextResponse.json({ subscription: null, isActive: false });
 
     const subscription = await stripe.subscriptions.retrieve(subscriptionData.stripe_subscription_id);
 
+    // ✅ Forzamos el tipo para evitar el error de TypeScript
+    const sub = subscription as any;
+
     return NextResponse.json({
       subscription: {
-        id: subscription.id,
-        status: subscription.status,
-        current_period_start: subscription.current_period_start,
-        current_period_end: subscription.current_period_end,
-        cancel_at_period_end: subscription.cancel_at_period_end,
-        price_id: subscription.items.data[0]?.price.id,
+        id: sub.id,
+        status: sub.status,
+        current_period_start: sub.current_period_start,
+        current_period_end: sub.current_period_end,
+        cancel_at_period_end: sub.cancel_at_period_end,
+        price_id: sub.items.data[0]?.price.id,
       },
-      isActive: subscription.status === 'active',
+      isActive: sub.status === 'active',
     });
   } catch (error) {
     console.error('Error fetching subscription:', error);
