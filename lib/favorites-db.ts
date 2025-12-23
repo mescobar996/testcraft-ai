@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase';
 import { TestCase } from '@/app/page';
 
 export interface FavoriteCase {
@@ -15,6 +15,9 @@ export async function addFavorite(
   testCase: TestCase,
   requirementTitle: string
 ): Promise<FavoriteCase | null> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return null;
+
   const { data, error } = await supabase
     .from('favorites')
     .insert({
@@ -35,6 +38,9 @@ export async function addFavorite(
 
 // Obtener favoritos del usuario
 export async function getFavorites(userId: string): Promise<FavoriteCase[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('favorites')
     .select('*')
@@ -54,6 +60,9 @@ export async function removeFavorite(
   userId: string,
   favoriteId: string
 ): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return false;
+
   const { error } = await supabase
     .from('favorites')
     .delete()
@@ -73,6 +82,9 @@ export async function isFavorite(
   userId: string,
   testCaseId: string
 ): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return false;
+
   const { data, error } = await supabase
     .from('favorites')
     .select('id')

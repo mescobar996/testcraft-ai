@@ -19,7 +19,7 @@
 import './commands'
 
 // Comando para login
-Cypress.Commands.add('login', (email: string, password: string): Cypress.Chainable<void> => {
+Cypress.Commands.add('login', (email: string, password: string): Cypress.Chainable<any> => {
   return cy.session([email, password], () => {
     cy.visit('/auth/login')
     cy.get('input[name="email"]').type(email)
@@ -30,7 +30,7 @@ Cypress.Commands.add('login', (email: string, password: string): Cypress.Chainab
 })
 
 // Comando para logout
-Cypress.Commands.add('logout', (): Cypress.Chainable<void> => {
+Cypress.Commands.add('logout', (): Cypress.Chainable<any> => {
   return cy.visit('/').then(() => {
     cy.get('button[data-testid="logout-button"]').click({ force: true })
     cy.url().should('include', '/auth/login')
@@ -38,26 +38,26 @@ Cypress.Commands.add('logout', (): Cypress.Chainable<void> => {
 })
 
 // Comando para generar casos de prueba
-Cypress.Commands.add('generateTestCases', (description: string): Cypress.Chainable<void> => {
+Cypress.Commands.add('generateTestCases', (description: string): Cypress.Chainable<any> => {
   return cy.get('textarea[name="description"]').type(description)
     .get('button[type="submit"]').click()
     .get('[data-testid="test-cases-list"]').should('be.visible')
 })
 
 // Comando para exportar a Excel
-Cypress.Commands.add('exportToExcel', (): Cypress.Chainable<void> => {
+Cypress.Commands.add('exportToExcel', (): Cypress.Chainable<any> => {
   return cy.get('button[data-testid="export-excel"]').click()
     .get('a[data-testid="download-link"]').should('be.visible')
 })
 
 // Comando para exportar a PDF
-Cypress.Commands.add('exportToPDF', (): Cypress.Chainable<void> => {
+Cypress.Commands.add('exportToPDF', (): Cypress.Chainable<any> => {
   return cy.get('button[data-testid="export-pdf"]').click()
     .get('a[data-testid="download-link"]').should('be.visible')
 })
 
 // Comando para cambiar de plan
-Cypress.Commands.add('changePlan', (plan: string): Cypress.Chainable<void> => {
+Cypress.Commands.add('changePlan', (plan: string): Cypress.Chainable<any> => {
   return cy.visit('/billing')
     .get(`button[data-plan="${plan}"]`).click()
     .get('button[data-testid="confirm-change"]').click()
@@ -65,7 +65,7 @@ Cypress.Commands.add('changePlan', (plan: string): Cypress.Chainable<void> => {
 })
 
 // Comando para crear integración
-Cypress.Commands.add('createIntegration', (type: string, config: any): Cypress.Chainable<void> => {
+Cypress.Commands.add('createIntegration', (type: string, config: any): Cypress.Chainable<any> => {
   return cy.visit('/settings/integrations')
     .get(`button[data-integration="${type}"]`).click()
     .get('input[name="apiKey"]').type(config.apiKey)
@@ -75,14 +75,14 @@ Cypress.Commands.add('createIntegration', (type: string, config: any): Cypress.C
 })
 
 // Comando para generar plan de prueba
-Cypress.Commands.add('generateTestPlan', (requirements: string): Cypress.Chainable<void> => {
+Cypress.Commands.add('generateTestPlan', (requirements: string): Cypress.Chainable<any> => {
   return cy.get('textarea[name="requirements"]').type(requirements)
     .get('button[data-testid="generate-plan"]').click()
     .get('[data-testid="test-plan-result"]').should('be.visible')
 })
 
 // Comando para exportar plan de prueba
-Cypress.Commands.add('exportTestPlan', (format: string): Cypress.Chainable<void> => {
+Cypress.Commands.add('exportTestPlan', (format: string): Cypress.Chainable<any> => {
   return cy.get(`button[data-format="${format}"]`).click()
     .get('[data-testid="export-success"]').should('be.visible')
 })
@@ -90,15 +90,15 @@ Cypress.Commands.add('exportTestPlan', (format: string): Cypress.Chainable<void>
 declare global {
   namespace Cypress {
     interface Chainable {
-      login(email: string, password: string): Chainable<void>
-      logout(): Chainable<void>
-      generateTestCases(description: string): Chainable<void>
-      exportToExcel(): Chainable<void>
-      exportToPDF(): Chainable<void>
-      changePlan(plan: string): Chainable<void>
-      createIntegration(type: string, config: any): Chainable<void>
-      generateTestPlan(requirements: string): Chainable<void>
-      exportTestPlan(format: string): Chainable<void>
+      login(email: string, password: string): Chainable<any>
+      logout(): Chainable<any>
+      generateTestCases(description: string): Chainable<any>
+      exportToExcel(): Chainable<any>
+      exportToPDF(): Chainable<any>
+      changePlan(plan: string): Chainable<any>
+      createIntegration(type: string, config: any): Chainable<any>
+      generateTestPlan(requirements: string): Chainable<any>
+      exportTestPlan(format: string): Chainable<any>
     }
   }
 }

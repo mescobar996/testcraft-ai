@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createApiKey, getUserApiKeys, deleteApiKey, toggleApiKey } from '@/lib/api-keys';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Get authenticated user from request
 async function getAuthenticatedUser(request: NextRequest) {
@@ -13,6 +13,8 @@ async function getAuthenticatedUser(request: NextRequest) {
   }
 
   const token = authHeader.substring(7);
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     global: { headers: { Authorization: `Bearer ${token}` } },
   });

@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase';
 import { GenerationResult } from '@/app/page';
 
 export interface HistoryRecord {
@@ -17,6 +17,9 @@ export async function saveGeneration(
   context: string,
   result: GenerationResult
 ): Promise<HistoryRecord | null> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return null;
+
   const { data, error } = await supabase
     .from('generations')
     .insert({
@@ -41,6 +44,9 @@ export async function getGenerations(
   userId: string,
   limit: number = 50
 ): Promise<HistoryRecord[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('generations')
     .select('*')
@@ -61,6 +67,9 @@ export async function deleteGeneration(
   userId: string,
   generationId: string
 ): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return false;
+
   const { error } = await supabase
     .from('generations')
     .delete()
@@ -77,6 +86,9 @@ export async function deleteGeneration(
 
 // Eliminar todo el historial del usuario
 export async function clearAllGenerations(userId: string): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return false;
+
   const { error } = await supabase
     .from('generations')
     .delete()

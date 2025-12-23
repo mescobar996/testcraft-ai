@@ -69,7 +69,7 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
     if (triggerGenerate && triggerGenerate > 0 && requirement.trim()) {
       onGenerate(requirement, context, format);
     }
-  }, [triggerGenerate]);
+  }, [triggerGenerate, requirement, context, format, onGenerate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

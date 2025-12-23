@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
@@ -60,16 +61,19 @@ export function UserMenu() {
           className="flex items-center gap-2 p-1.5 pr-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 rounded-full transition-all duration-300"
         >
           {user.user_metadata?.avatar_url ? (
-            <img 
-              src={user.user_metadata.avatar_url} 
-              alt="Avatar" 
-              className="w-7 h-7 rounded-full"
+            <Image
+              src={user.user_metadata.avatar_url}
+              alt="Avatar"
+              width={28}
+              height={28}
+              className="rounded-full"
+              unoptimized
             />
           ) : (
             <div className="w-7 h-7 bg-violet-500 rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-white" />
             </div>
-          )}
+          )} 
           <span className="text-sm text-slate-300 hidden sm:block max-w-[100px] truncate">
             {user.user_metadata?.full_name?.split(' ')[0] || 'Usuario'}
           </span>
@@ -91,10 +95,13 @@ export function UserMenu() {
               <div className="p-4 border-b border-slate-700">
                 <div className="flex items-center gap-3">
                   {user.user_metadata?.avatar_url ? (
-                    <img 
-                      src={user.user_metadata.avatar_url} 
-                      alt="Avatar" 
-                      className="w-10 h-10 rounded-full"
+                    <Image
+                      src={user.user_metadata.avatar_url}
+                      alt="Avatar"
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-10 h-10 bg-violet-500 rounded-full flex items-center justify-center">

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import '@testing-library/jest-dom'
 
 // Mock next/navigation
@@ -29,13 +30,10 @@ jest.mock('next/navigation', () => ({
 }))
 
 // Mock next/link
+const React = require('react')
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => {
-    return (
-      <a href={href} {...props}>
-        {children}
-      </a>
-    )
+  return ({ children, href, ...props }) => {
+    return React.createElement('a', { href, ...props }, children)
   }
 })
 
@@ -86,4 +84,4 @@ global.IntersectionObserver = class IntersectionObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-} as any
+};

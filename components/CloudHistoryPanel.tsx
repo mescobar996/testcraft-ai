@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Cloud,
@@ -29,22 +29,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    if (user && isOpen) {
-      loadHistory();
-    }
-  }, [user, isOpen]);
-
-  useEffect(() => {
-    if (onNewGeneration) {
-      const exists = history.some(h => h.id === onNewGeneration.id);
-      if (!exists) {
-        setHistory(prev => [onNewGeneration, ...prev]);
-      }
-    }
-  }, [onNewGeneration]);
-
-  const loadHistory = async () => {
+  const loadHistory = useCallback(async () => {
     if (!user) return;
     setIsLoading(true);
     try {
@@ -55,7 +40,22 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user && isOpen) {
+      loadHistory();
+    }
+  }, [user, isOpen, loadHistory]);
+
+  useEffect(() => {
+    if (onNewGeneration) {
+      const exists = history.some(h => h.id === onNewGeneration.id);
+      if (!exists) {
+        setHistory(prev => [onNewGeneration, ...prev]);
+      }
+    }
+  }, [onNewGeneration, history]);
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();

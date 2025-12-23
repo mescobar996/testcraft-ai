@@ -1,9 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+function getSupabaseAdmin() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseServiceKey) return null;
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 export interface IntegrationConfig {
   id: string;
@@ -21,6 +23,12 @@ export async function saveIntegrationConfig(
   config: Record<string, string>
 ): Promise<boolean> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) {
+      console.warn('Supabase admin client not configured. Skipping saveIntegrationConfig.');
+      return false;
+    }
+
     const { error } = await supabaseAdmin
       .from('user_integrations')
       .upsert({
@@ -46,6 +54,9 @@ export async function getIntegrationConfig(
   integrationId: string
 ): Promise<IntegrationConfig | null> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) return null;
+
     const { data, error } = await supabaseAdmin
       .from('user_integrations')
       .select('*')
@@ -62,6 +73,9 @@ export async function getIntegrationConfig(
 
 export async function getUserIntegrations(userId: string): Promise<IntegrationConfig[]> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) return [];
+
     const { data, error } = await supabaseAdmin
       .from('user_integrations')
       .select('*')
@@ -81,6 +95,9 @@ export async function deleteIntegration(
   integrationId: string
 ): Promise<boolean> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) return false;
+
     const { error } = await supabaseAdmin
       .from('user_integrations')
       .delete()
@@ -103,6 +120,9 @@ export async function logIntegrationAction(
   details?: Record<string, any>
 ): Promise<void> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) return;
+
     await supabaseAdmin
       .from('integration_logs')
       .insert({

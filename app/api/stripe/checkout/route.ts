@@ -1,8 +1,10 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe, PLANS } from '@/lib/stripe'
+import { getStripe, PLANS } from '@/lib/stripe'
 import { z } from 'zod'
+
+export const dynamic = 'force-dynamic';
 
 const CheckoutSchema = z.object({
   priceId: z.string().min(1, "Price ID requerido"),
@@ -54,6 +56,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Obtener o crear customer de Stripe
+    const stripeClient = getStripe()
+    if (!stripeClient) {
+      return NextResponse.json(
+        { error: 'Stripe configurado incorrectamente' },
+        { status: 500 }
+      )
+    }
+
     let { data: userData } = await supabase
       .from('users')
       .select('stripe_customer_id')
@@ -64,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     if (!customerId) {
       // Crear nuevo customer
-      const customer = await stripe.customers.create({
+      const customer = await stripeClient.customers.create({
         email: user.email,
         name: user.user_metadata?.name,
       })
@@ -79,7 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Crear sesión de checkout
-    const session = await stripe.checkout.sessions.create({
+    const session = await stripeClient.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       line_items: [

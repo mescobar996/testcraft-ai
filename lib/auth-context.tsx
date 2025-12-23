@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // Check subscription status
-  const checkSubscription = async () => {
+  const checkSubscription = useCallback(async () => {
     if (!user) {
       setIsPro(false);
       return;
@@ -62,29 +62,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Error checking subscription:', error);
       setIsPro(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-      }
-    );
+      });
+
+      // Listen for auth changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
+      );
+
+      return () => subscription.unsubscribe();
+    } else {
+      setLoading(false);
+    }
 
     // Check daily usage
     checkDailyUsage();
-
-    return () => subscription.unsubscribe();
   }, []);
 
   // Check subscription when user changes
@@ -94,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setIsPro(false);
     }
-  }, [user]);
+  }, [user, checkSubscription]);
 
   // Check for successful payment on page load
   useEffect(() => {
@@ -107,9 +112,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Clean URL
       window.history.replaceState({}, '', '/');
     }
-  }, [user]);
+  }, [user, checkSubscription]);
 
   const signInWithGoogle = async () => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.warn('Supabase client not configured');
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -120,6 +131,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+
     const { error } = await supabase.auth.signOut();
     if (error) console.error('Error signing out:', error);
     setIsPro(false);

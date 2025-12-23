@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +29,7 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
 
-  const handleFileSelect = (file: File) => {
+  const handleFileSelect = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) {
       showToast("Por favor selecciona una imagen válida", "error");
       return;
@@ -42,7 +43,7 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
     setSelectedImage(file);
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
-  };
+  }, [showToast]);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -62,7 +63,7 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileSelect(e.dataTransfer.files[0]);
     }
-  }, []);
+  }, [handleFileSelect]);
 
   const handleGenerate = async () => {
     if (!selectedImage) return;
@@ -189,11 +190,13 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
                 </div>
               ) : (
                 /* Preview */
-                <div className="relative">
-                  <img
-                    src={previewUrl}
+                <div className="relative w-full h-64 bg-slate-800 rounded-xl">
+                  <Image
+                    src={previewUrl!}
                     alt="Preview"
-                    className="w-full h-64 object-contain bg-slate-800 rounded-xl"
+                    fill
+                    className="object-contain rounded-xl"
+                    unoptimized
                   />
                   <button
                     onClick={clearImage}

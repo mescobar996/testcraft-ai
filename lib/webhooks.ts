@@ -1,10 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+function getSupabaseAdmin() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseServiceKey) return null;
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 export interface Webhook {
   id: string;
@@ -64,6 +66,12 @@ export async function createWebhook(
   url: string,
   events: string[] = ['generation.completed']
 ): Promise<Webhook | null> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) {
+    console.warn('Supabase admin client not configured. Skipping createWebhook.');
+    return null;
+  }
+
   const secret = generateWebhookSecret();
   
   const { data, error } = await supabaseAdmin
@@ -88,6 +96,9 @@ export async function createWebhook(
 
 // Get user's webhooks
 export async function getUserWebhooks(userId: string): Promise<Webhook[]> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return [];
+
   const { data, error } = await supabaseAdmin
     .from('webhooks')
     .select('*')
@@ -104,6 +115,9 @@ export async function getUserWebhooks(userId: string): Promise<Webhook[]> {
 
 // Delete webhook
 export async function deleteWebhook(userId: string, webhookId: string): Promise<boolean> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return false;
+
   const { error } = await supabaseAdmin
     .from('webhooks')
     .delete()
@@ -115,6 +129,9 @@ export async function deleteWebhook(userId: string, webhookId: string): Promise<
 
 // Toggle webhook active status
 export async function toggleWebhook(userId: string, webhookId: string, isActive: boolean): Promise<boolean> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return false;
+
   const { error } = await supabaseAdmin
     .from('webhooks')
     .update({ is_active: isActive })
@@ -130,6 +147,9 @@ export async function triggerWebhooks(
   event: string,
   payload: WebhookPayload
 ): Promise<void> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return;
+
   // Get active webhooks for this user and event
   const { data: webhooks } = await supabaseAdmin
     .from('webhooks')
@@ -209,25 +229,28 @@ async function sendWebhook(webhook: Webhook, payload: WebhookPayload): Promise<v
   }
 
   // Log delivery
-  await supabaseAdmin.from('webhook_deliveries').insert({
-    webhook_id: webhook.id,
-    event_type: payload.event,
-    payload,
-    response_status: statusCode,
-    response_body: responseBody?.substring(0, 1000),
-    response_time_ms: responseTimeMs,
-    success,
-    error_message: lastError,
-  });
+  const supabaseAdmin = getSupabaseAdmin();
+  if (supabaseAdmin) {
+    await supabaseAdmin.from('webhook_deliveries').insert({
+      webhook_id: webhook.id,
+      event_type: payload.event,
+      payload,
+      response_status: statusCode,
+      response_body: responseBody?.substring(0, 1000),
+      response_time_ms: responseTimeMs,
+      success,
+      error_message: lastError,
+    });
 
-  // Update webhook stats
-  await supabaseAdmin
-    .from('webhooks')
-    .update({
-      last_triggered_at: new Date().toISOString(),
-      last_status_code: statusCode,
-      total_deliveries: webhook.total_deliveries + 1,
-      failed_deliveries: success ? webhook.failed_deliveries : webhook.failed_deliveries + 1,
-    })
-    .eq('id', webhook.id);
+    // Update webhook stats
+    await supabaseAdmin
+      .from('webhooks')
+      .update({
+        last_triggered_at: new Date().toISOString(),
+        last_status_code: statusCode,
+        total_deliveries: webhook.total_deliveries + 1,
+        failed_deliveries: success ? webhook.failed_deliveries : webhook.failed_deliveries + 1,
+      })
+      .eq('id', webhook.id);
+  }
 }

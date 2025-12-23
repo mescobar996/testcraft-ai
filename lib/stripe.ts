@@ -1,8 +1,9 @@
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-})
+export function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) return null
+  return new Stripe(process.env.STRIPE_SECRET_KEY)
+}
 
 export const PLANS = {
   FREE: {
@@ -33,7 +34,7 @@ export const PLANS = {
       'Soporte prioritario'
     ],
     maxUsage: 500,
-    stripePriceId: process.env.STRIPE_PRO_PRICE_ID!,
+    stripePriceId: process.env.STRIPE_PRO_PRICE_ID || null,
   },
   ENTERPRISE: {
     id: 'enterprise',
@@ -50,7 +51,7 @@ export const PLANS = {
       'SLA garantizado'
     ],
     maxUsage: -1, // -1 = ilimitado
-    stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID!,
+    stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || null,
   }
 } as const
 

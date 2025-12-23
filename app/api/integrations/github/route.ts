@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { getIntegrationConfig, logIntegrationAction } from '@/lib/integrations-db';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 interface TestCase {
   id: string;
@@ -19,9 +19,15 @@ async function getUser(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
   if (!authHeader) return null;
   const token = authHeader.replace('Bearer ', '');
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-  const { data: { user } } = await supabase.auth.getUser(token);
-  return user;
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+  try {
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const { data: { user } } = await supabase.auth.getUser(token);
+    return user;
+  } catch (e) {
+    console.warn('Supabase auth unavailable:', e);
+    return null;
+  }
 }
 
 // POST - Crear issues en GitHub

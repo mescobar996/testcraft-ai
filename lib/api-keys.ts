@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Use service role for API operations
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+function getSupabaseAdmin() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseServiceKey) return null;
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 export interface ApiKey {
   id: string;
@@ -45,6 +46,12 @@ export async function createApiKey(
   name: string,
   permissions?: { generate: boolean; history: boolean }
 ): Promise<{ apiKey: ApiKey; rawKey: string } | null> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) {
+    console.warn('Supabase admin client not configured. Skipping createApiKey.');
+    return null;
+  }
+
   const { key, hash, prefix } = generateApiKey();
   
   const { data, error } = await supabaseAdmin
@@ -76,6 +83,9 @@ export async function validateApiKey(key: string): Promise<{
   if (!key || !key.startsWith('tc_live_')) {
     return { valid: false, error: 'Invalid API key format' };
   }
+
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return { valid: false, error: 'Server not configured' };
 
   const hash = hashApiKey(key);
   
@@ -132,6 +142,9 @@ export async function logApiRequest(
   requestBody?: object,
   errorMessage?: string
 ): Promise<void> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return;
+
   await supabaseAdmin.from('api_requests').insert({
     api_key_id: apiKeyId,
     endpoint,
@@ -147,6 +160,9 @@ export async function logApiRequest(
 
 // Get user's API keys
 export async function getUserApiKeys(userId: string): Promise<ApiKey[]> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return [];
+
   const { data, error } = await supabaseAdmin
     .from('api_keys')
     .select('*')
@@ -163,6 +179,9 @@ export async function getUserApiKeys(userId: string): Promise<ApiKey[]> {
 
 // Delete API key
 export async function deleteApiKey(userId: string, keyId: string): Promise<boolean> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return false;
+
   const { error } = await supabaseAdmin
     .from('api_keys')
     .delete()
@@ -174,6 +193,9 @@ export async function deleteApiKey(userId: string, keyId: string): Promise<boole
 
 // Toggle API key active status
 export async function toggleApiKey(userId: string, keyId: string, isActive: boolean): Promise<boolean> {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) return false;
+
   const { error } = await supabaseAdmin
     .from('api_keys')
     .update({ is_active: isActive })

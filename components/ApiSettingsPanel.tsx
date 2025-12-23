@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -74,7 +74,7 @@ export function ApiSettingsPanel() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Fetch API keys
-  const fetchApiKeys = async () => {
+  const fetchApiKeys = useCallback(async () => {
     if (!session?.access_token) return;
     
     setLoadingKeys(true);
@@ -89,10 +89,10 @@ export function ApiSettingsPanel() {
     } finally {
       setLoadingKeys(false);
     }
-  };
+  }, [session]);
 
   // Fetch webhooks
-  const fetchWebhooks = async () => {
+  const fetchWebhooks = useCallback(async () => {
     if (!session?.access_token) return;
     
     setLoadingWebhooks(true);
@@ -107,14 +107,14 @@ export function ApiSettingsPanel() {
     } finally {
       setLoadingWebhooks(false);
     }
-  };
+  }, [session]);
 
   useEffect(() => {
     if (isOpen && user) {
       fetchApiKeys();
       fetchWebhooks();
     }
-  }, [isOpen, user]);
+  }, [isOpen, user, fetchApiKeys, fetchWebhooks]);
 
   // Create API key
   const handleCreateKey = async () => {

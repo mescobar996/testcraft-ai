@@ -1,23 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import Stripe from 'stripe';
+import type Stripe from 'stripe';
+import { getSupabaseAdminClient } from '@/lib/supabase';
+import { getStripe } from '@/lib/stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-12-15.clover',
-});
-
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const stripe = getStripe();
 
 export async function POST(req: NextRequest) {
   try {
+    if (!stripe) {
+      console.error('Stripe not configured');
+      return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
+    }
+
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.error('Stripe webhook secret not configured');
+      return NextResponse.json({ error: 'Stripe webhook secret not configured' }, { status: 500 });
+    }
+
     const body = await req.text();
     const signature = req.headers.get('stripe-signature')!;
     const event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabase = getSupabaseAdminClient();
+    if (!supabase) {
+      console.error('Supabase admin not configured');
+      return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 });
+    }
 
     switch (event.type) {
       case 'checkout.session.completed': {

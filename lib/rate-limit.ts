@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 
 // Simple in-memory store for rate limiting (en producción usar Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();

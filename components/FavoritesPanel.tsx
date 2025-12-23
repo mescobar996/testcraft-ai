@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Star,
@@ -33,13 +33,7 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    if (user && isOpen) {
-      loadFavorites();
-    }
-  }, [user, isOpen]);
-
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     if (!user) return;
     setIsLoading(true);
     try {
@@ -52,7 +46,13 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user && isOpen) {
+      loadFavorites();
+    }
+  }, [user, isOpen, loadFavorites]);
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();

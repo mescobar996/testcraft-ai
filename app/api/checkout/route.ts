@@ -1,19 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+import { getStripe } from '@/lib/stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-12-15.clover",
-});
+const stripe = getStripe();
 
 export async function POST(request: NextRequest) {
   try {
     const { userId, userEmail } = await request.json();
+
+    if (!stripe) {
+      console.error('Stripe is not configured');
+      return NextResponse.json({ error: 'Payment provider not configured' }, { status: 500 });
+    }
 
     if (!userId || !userEmail) {
       return NextResponse.json(
         { error: "Usuario no autenticado" },
         { status: 401 }
       );
+    }
+
+    const priceId = process.env.STRIPE_PRICE_ID;
+    if (!priceId) {
+      console.error('Stripe price ID not configured');
+      return NextResponse.json({ error: 'Payment configuration error' }, { status: 500 });
     }
 
     // Create Stripe checkout session
@@ -23,7 +32,7 @@ export async function POST(request: NextRequest) {
       customer_email: userEmail,
       line_items: [
         {
-          price: process.env.STRIPE_PRICE_ID!,
+          price: priceId,
           quantity: 1,
         },
       ],

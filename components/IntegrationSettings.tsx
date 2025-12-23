@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Settings, Save, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
 import { canUseFeature, PlanId } from "@/lib/stripe"
@@ -22,13 +22,9 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
   const [isLoadingProjects, setIsLoadingProjects] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
   
-  const supabase = createClientComponentClient()
+  const supabase = useMemo(() => createClientComponentClient(), [])
 
-  useEffect(() => {
-    loadJiraConfig()
-  }, [])
-
-  const loadJiraConfig = async () => {
+  const loadJiraConfig = useCallback(async () => {
     if (!canUseFeature(userTier, 'PRO' as PlanId)) return
 
     setIsLoading(true)
@@ -54,7 +50,11 @@ export function IntegrationSettings({ userTier = 'free' }: IntegrationSettingsPr
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [userTier, supabase]);
+
+  useEffect(() => {
+    loadJiraConfig()
+  }, [loadJiraConfig])
 
   const handleSaveJiraConfig = async () => {
     if (!canUseFeature(userTier, 'PRO' as PlanId)) {

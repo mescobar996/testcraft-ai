@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -132,14 +132,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
 
-  // Cargar integraciones conectadas al abrir
-  useEffect(() => {
-    if (isOpen && user && session) {
-      loadIntegrations();
-    }
-  }, [isOpen, user, session]);
-
-  const loadIntegrations = async () => {
+  const loadIntegrations = useCallback(async () => {
     if (!session?.access_token) return;
     
     setIsLoading(true);
@@ -164,7 +157,14 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [session]);
+
+  // Cargar integraciones conectadas al abrir
+  useEffect(() => {
+    if (isOpen && user && session) {
+      loadIntegrations();
+    }
+  }, [isOpen, user, session, loadIntegrations]);
 
   const handleConnect = async () => {
     if (!selectedIntegration || !session?.access_token) return;
