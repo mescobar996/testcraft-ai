@@ -16,26 +16,29 @@ const CheckoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    const supabase = createRouteHandlerClient({ cookies })
 
-    // Verificar autenticación
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    // Verificar autenticación - Primero obtener la sesión
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
     // Log detallado para debugging
-    console.log('[CHECKOUT] Auth check:', {
-      hasUser: !!user,
-      userId: user?.id,
-      userEmail: user?.email,
-      authError: authError?.message
+    console.log('[CHECKOUT] Session check:', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      userId: session?.user?.id,
+      userEmail: session?.user?.email,
+      sessionError: sessionError?.message
     })
 
-    if (!user) {
+    if (!session?.user) {
+      console.error('[CHECKOUT] No session found')
       return NextResponse.json(
         { error: "Usuario no autenticado" },
         { status: 401 }
       )
     }
+
+    const user = session.user
 
     const body = await request.json()
     
