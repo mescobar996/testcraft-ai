@@ -19,18 +19,18 @@ export async function POST(request: NextRequest) {
     const supabase = createRouteHandlerClient({ cookies })
 
     // Verificar autenticación - Primero obtener la sesión
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    const { data: { session: authSession }, error: sessionError } = await supabase.auth.getSession()
 
     // Log detallado para debugging
     console.log('[CHECKOUT] Session check:', {
-      hasSession: !!session,
-      hasUser: !!session?.user,
-      userId: session?.user?.id,
-      userEmail: session?.user?.email,
+      hasSession: !!authSession,
+      hasUser: !!authSession?.user,
+      userId: authSession?.user?.id,
+      userEmail: authSession?.user?.email,
       sessionError: sessionError?.message
     })
 
-    if (!session?.user) {
+    if (!authSession?.user) {
       console.error('[CHECKOUT] No session found')
       return NextResponse.json(
         { error: "Usuario no autenticado" },
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const user = session.user
+    const user = authSession.user
 
     const body = await request.json()
     
