@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Check, Loader2, Crown, Zap, Shield, Clock, Sparkles, Camera, AlertCircle, LogIn } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -24,10 +25,21 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
     setError(null);
 
     try {
+      // Obtener el token de acceso desde Supabase
+      const supabase = createClientComponentClient()
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session?.access_token) {
+        throw new Error('No se pudo obtener el token de autenticación. Por favor, inicia sesión nuevamente.')
+      }
+
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Incluir cookies de sesión
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}` // Enviar token en header
+        },
+        credentials: 'include',
         body: JSON.stringify({
           planId: 'PRO',
           successUrl: `${window.location.origin}/billing?success=true`,

@@ -51,13 +51,21 @@ export function PricingCards({ userSubscription }: PricingCardsProps) {
         return
       }
 
+      // Obtener token de sesión
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session?.access_token) {
+        throw new Error('No se pudo obtener el token de autenticación')
+      }
+
       // Crear sesión de checkout - el servidor validará el plan
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
         },
-        credentials: 'include', // Incluir cookies de sesión
+        credentials: 'include',
         body: JSON.stringify({
           planId: planId,
           successUrl: `${window.location.origin}/billing?success=true`,

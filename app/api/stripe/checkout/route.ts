@@ -18,27 +18,44 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies })
 
-    // Verificar autenticación - Primero obtener la sesión
-    const { data: { session: authSession }, error: sessionError } = await supabase.auth.getSession()
+    // Intentar obtener el token del header Authorization
+    const authHeader = request.headers.get('Authorization')
+    let user = null
 
-    // Log detallado para debugging
-    console.log('[CHECKOUT] Session check:', {
-      hasSession: !!authSession,
-      hasUser: !!authSession?.user,
-      userId: authSession?.user?.id,
-      userEmail: authSession?.user?.email,
-      sessionError: sessionError?.message
-    })
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.substring(7)
+      const { data: { user: tokenUser }, error: tokenError } = await supabase.auth.getUser(token)
 
-    if (!authSession?.user) {
-      console.error('[CHECKOUT] No session found')
+      console.log('[CHECKOUT] Token auth:', {
+        hasToken: !!token,
+        hasUser: !!tokenUser,
+        userId: tokenUser?.id,
+        tokenError: tokenError?.message
+      })
+
+      user = tokenUser
+    }
+
+    // Si no hay token, intentar con cookies (fallback)
+    if (!user) {
+      const { data: { session: authSession }, error: sessionError } = await supabase.auth.getSession()
+
+      console.log('[CHECKOUT] Cookie auth:', {
+        hasSession: !!authSession,
+        hasUser: !!authSession?.user,
+        sessionError: sessionError?.message
+      })
+
+      user = authSession?.user
+    }
+
+    if (!user) {
+      console.error('[CHECKOUT] No authentication found')
       return NextResponse.json(
         { error: "Usuario no autenticado" },
         { status: 401 }
       )
     }
-
-    const user = authSession.user
 
     const body = await request.json()
     
