@@ -27,6 +27,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Incluir cookies de sesión
         body: JSON.stringify({
           planId: 'PRO',
           successUrl: `${window.location.origin}/billing?success=true`,

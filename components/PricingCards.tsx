@@ -57,6 +57,7 @@ export function PricingCards({ userSubscription }: PricingCardsProps) {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Incluir cookies de sesión
         body: JSON.stringify({
           planId: planId,
           successUrl: `${window.location.origin}/billing?success=true`,
