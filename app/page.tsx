@@ -168,18 +168,17 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
   useKeyboardShortcuts(shortcuts);
 
   return (
-    <main className="min-h-screen relative">
-      <header className="border-b border-white/5 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40 shadow-2xl shadow-violet-500/5">
-        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 via-transparent to-fuchsia-500/5" />
-        <div className="container mx-auto px-4 py-4 relative">
+    <main className="min-h-screen relative bg-black">
+      <header className="border-b border-white/[0.03] bg-black/95 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 group">
-              <div className="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+              <div className="transition-transform duration-200 group-hover:scale-105">
                 <AppIcon size="lg" withGlow />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white transition-all duration-300 group-hover:text-violet-300">{t.appName}</h1>
-                <p className="text-xs text-slate-400 transition-all duration-300 group-hover:text-slate-300">{t.appSubtitle}</p>
+                <h1 className="text-xl font-bold text-white">{t.appName}</h1>
+                <p className="text-xs text-zinc-500">{t.appSubtitle}</p>
               </div>
             </div>
 
@@ -275,17 +274,17 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
 function FeatureCard({ icon, title, description, isNew }: { icon: React.ReactNode; title: string; description: string; isNew?: boolean }) {
   return (
-    <div className={`bg-slate-900/50 border rounded-xl p-6 hover:border-violet-500/50 hover:shadow-2xl hover:shadow-violet-500/20 hover:-translate-y-1 transition-all duration-300 group relative backdrop-blur-sm ${isNew ? 'border-fuchsia-500/50' : 'border-slate-800'}`}>
+    <div className={`bg-zinc-950/50 border rounded-lg p-6 hover:border-violet-500/20 transition-all duration-200 group relative ${isNew ? 'border-violet-500/30' : 'border-white/[0.03]'}`}>
       {isNew && (
-        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-fuchsia-500 to-violet-500 rounded-full text-xs font-bold text-white shadow-lg shadow-fuchsia-500/50 animate-pulse-slow">
+        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-violet-600/90 rounded text-[10px] font-semibold text-white">
           NUEVO
         </div>
       )}
-      <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:bg-slate-700">
+      <div className="w-10 h-10 bg-zinc-900/50 rounded flex items-center justify-center mb-4">
         {icon}
       </div>
-      <h3 className="text-white font-semibold mb-2 group-hover:text-violet-300 transition-colors duration-300">{title}</h3>
-      <p className="text-slate-400 text-sm group-hover:text-slate-300 transition-colors duration-300">{description}</p>
+      <h3 className="text-white font-semibold mb-2 text-sm">{title}</h3>
+      <p className="text-zinc-500 text-xs leading-relaxed">{description}</p>
     </div>
   );
 }

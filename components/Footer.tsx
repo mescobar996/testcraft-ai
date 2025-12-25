@@ -15,31 +15,28 @@ export function Footer() {
 
   return (
     <>
-      <footer className="border-t border-white/5 bg-slate-950/80 backdrop-blur-xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-violet-500/5 via-transparent to-transparent pointer-events-none" />
-        <div className="container mx-auto px-4 py-12 relative">
+      <footer className="border-t border-white/[0.03] bg-black">
+        <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 group">
-                <div className="transition-transform duration-300 group-hover:scale-110">
-                  <AppIcon size="md" />
-                </div>
-                <span className="text-white font-bold text-lg group-hover:text-violet-300 transition-colors">{t.appName}</span>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <AppIcon size="md" />
+                <span className="text-white font-semibold text-base">{t.appName}</span>
               </div>
-              <p className="text-slate-400 text-sm max-w-xs">
+              <p className="text-zinc-600 text-xs max-w-xs leading-relaxed">
                 {t.appSubtitle}
               </p>
             </div>
 
-            {/* Links Producto - MOVIDO ARRIBA */}
-            <div className="space-y-4">
-              <h3 className="text-white font-semibold">Producto</h3>
+            {/* Links Producto */}
+            <div className="space-y-3">
+              <h3 className="text-white font-semibold text-sm">Producto</h3>
               <ul className="space-y-2">
                 <li>
                   <Link
                     href="/pricing"
-                    className="text-slate-400 hover:text-violet-400 text-sm transition-all duration-300 hover:translate-x-1 inline-block"
+                    className="text-zinc-600 hover:text-white text-xs transition-colors"
                   >
                     Precios
                   </Link>
@@ -47,22 +44,22 @@ export function Footer() {
                 <li>
                   <Link
                     href="/faq"
-                    className="text-slate-400 hover:text-violet-400 text-sm transition-all duration-300 hover:translate-x-1 inline-block"
+                    className="text-zinc-600 hover:text-white text-xs transition-colors"
                   >
-                    Preguntas Frecuentes (FAQ)
+                    Preguntas Frecuentes
                   </Link>
                 </li>
               </ul>
             </div>
 
             {/* Links Legales */}
-            <div className="space-y-4">
-              <h3 className="text-white font-semibold">Legal</h3>
+            <div className="space-y-3">
+              <h3 className="text-white font-semibold text-sm">Legal</h3>
               <ul className="space-y-2">
                 <li>
                   <Link
                     href="/terms"
-                    className="text-slate-400 hover:text-violet-400 text-sm transition-all duration-300 hover:translate-x-1 inline-block"
+                    className="text-zinc-600 hover:text-white text-xs transition-colors"
                   >
                     Términos y Condiciones
                   </Link>
@@ -70,43 +67,43 @@ export function Footer() {
                 <li>
                   <Link
                     href="/privacy"
-                    className="text-slate-400 hover:text-violet-400 text-sm transition-all duration-300 hover:translate-x-1 inline-block"
+                    className="text-zinc-600 hover:text-white text-xs transition-colors"
                   >
-                    Politica de Privacidad
+                    Política de Privacidad
                   </Link>
                 </li>
               </ul>
             </div>
 
             {/* Pro Upgrade */}
-            <div className="space-y-4">
-              <h3 className="text-white font-semibold">Pro</h3>
+            <div className="space-y-3">
+              <h3 className="text-white font-semibold text-sm">Pro</h3>
               {user && !isPro ? (
                 <button
                   onClick={() => setShowUpgrade(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-lg text-sm font-medium transition-all hover:shadow-lg hover:shadow-violet-500/50 hover:scale-105"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white rounded text-xs font-medium transition-colors"
                 >
-                  <Crown className="w-4 h-4" />
+                  <Crown className="w-3 h-3" />
                   Actualizar a Pro
                 </button>
               ) : !user ? (
-                <p className="text-slate-400 text-sm">
-                  Inicia sesion para acceder a Pro
+                <p className="text-zinc-600 text-xs">
+                  Inicia sesión para acceder a Pro
                 </p>
               ) : (
                 <div className="flex items-center gap-2 text-violet-400">
-                  <Crown className="w-4 h-4" />
-                  <span className="text-sm font-medium">Pro activo</span>
+                  <Crown className="w-3 h-3" />
+                  <span className="text-xs font-medium">Pro activo</span>
                 </div>
               )}
             </div>
           </div>
 
           {/* Bottom */}
-          <div className="border-t border-slate-800 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-slate-500 text-sm">{t.copyright}</p>
+          <div className="border-t border-white/[0.03] mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-zinc-700 text-xs">{t.copyright}</p>
             <div className="flex items-center gap-4">
-              <span className="text-slate-600 text-xs">
+              <span className="text-zinc-700 text-xs">
                 Powered by Claude AI
               </span>
             </div>

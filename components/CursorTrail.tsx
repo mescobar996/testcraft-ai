@@ -24,17 +24,14 @@ export function CursorTrail() {
       }
 
       setDots(prevDots => {
-        // Agregar nuevo punto
         const updated = [...prevDots, newDot]
-        // Limitar a 15 puntos
-        return updated.slice(-15)
+        return updated.slice(-8) // Solo 8 puntos muy sutiles
       })
     }
 
-    // Limpiar puntos antiguos cada 100ms
     const cleanupInterval = setInterval(() => {
       setDots(prevDots =>
-        prevDots.filter(dot => Date.now() - dot.timestamp < 500)
+        prevDots.filter(dot => Date.now() - dot.timestamp < 400)
       )
     }, 100)
 
@@ -48,27 +45,19 @@ export function CursorTrail() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50">
-      {dots.map((dot, index) => {
+      {dots.map((dot) => {
         const age = Date.now() - dot.timestamp
-        const opacity = Math.max(0, 1 - age / 500)
-        const scale = 1 - age / 1000
+        const opacity = Math.max(0, (1 - age / 400) * 0.15) // Muy sutil: max 15% opacity
 
         return (
           <div
             key={dot.id}
-            className="absolute w-2 h-2 rounded-full"
+            className="absolute w-1 h-1 rounded-full bg-violet-500"
             style={{
-              left: dot.x - 4,
-              top: dot.y - 4,
+              left: dot.x,
+              top: dot.y,
               opacity: opacity,
-              transform: `scale(${scale})`,
-              background: index % 3 === 0
-                ? 'radial-gradient(circle, rgba(139, 92, 246, 0.8) 0%, rgba(139, 92, 246, 0) 70%)'
-                : index % 3 === 1
-                ? 'radial-gradient(circle, rgba(217, 70, 239, 0.8) 0%, rgba(217, 70, 239, 0) 70%)'
-                : 'radial-gradient(circle, rgba(168, 85, 247, 0.8) 0%, rgba(168, 85, 247, 0) 70%)',
-              boxShadow: '0 0 10px rgba(139, 92, 246, 0.6)',
-              transition: 'opacity 0.1s ease-out, transform 0.1s ease-out'
+              transition: 'opacity 0.1s ease-out'
             }}
           />
         )
