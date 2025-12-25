@@ -50,9 +50,28 @@ export async function POST(request: NextRequest) {
     // Obtener el plan y su Price ID desde la versión del servidor
     const plan = PLANS_SERVER[planId]
 
+    // Logging detallado para diagnóstico
+    console.log('[CHECKOUT] Plan seleccionado:', {
+      planId,
+      planExists: !!plan,
+      stripePriceId: plan?.stripePriceId,
+      envVarName: planId === 'PRO' ? 'STRIPE_PRO_PRICE_ID' : 'STRIPE_ENTERPRISE_PRICE_ID',
+      envVarValue: planId === 'PRO' ? process.env.STRIPE_PRO_PRICE_ID : process.env.STRIPE_ENTERPRISE_PRICE_ID,
+    })
+
     if (!plan.stripePriceId) {
+      console.error('[CHECKOUT] stripePriceId es null para plan:', planId)
+      console.error('[CHECKOUT] Variable de entorno:', planId === 'PRO' ? process.env.STRIPE_PRO_PRICE_ID : process.env.STRIPE_ENTERPRISE_PRICE_ID)
+
       return NextResponse.json(
-        { error: "Payment configuration error" },
+        {
+          error: "Payment configuration error",
+          debug: process.env.NODE_ENV === 'development' ? {
+            planId,
+            message: `La variable de entorno ${planId === 'PRO' ? 'STRIPE_PRO_PRICE_ID' : 'STRIPE_ENTERPRISE_PRICE_ID'} no está configurada`,
+            stripePriceId: plan.stripePriceId,
+          } : undefined
+        },
         { status: 500 }
       )
     }
