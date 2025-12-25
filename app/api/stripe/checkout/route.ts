@@ -16,11 +16,20 @@ const CheckoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-    
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+
     // Verificar autenticación
-    const { data: { user } } = await supabase.auth.getUser()
-    
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    // Log detallado para debugging
+    console.log('[CHECKOUT] Auth check:', {
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      authError: authError?.message
+    })
+
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no autenticado" },
