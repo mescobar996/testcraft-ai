@@ -19,23 +19,27 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       setError("Para continuar con la compra, primero debes iniciar sesion con tu cuenta de Google usando el boton en la esquina superior derecha.");
       return;
     }
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const response = await fetch('/api/checkout', {
+      const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, userEmail: user.email }),
+        body: JSON.stringify({
+          planId: 'PRO',
+          successUrl: `${window.location.origin}/billing?success=true`,
+          cancelUrl: `${window.location.origin}/billing?canceled=true`,
+        }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Error al crear la sesion de pago');
       }
-      
+
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -81,7 +85,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           <p className="text-violet-200 text-sm">Desbloquea todo el potencial</p>
           
           <div className="mt-3 sm:mt-4 flex items-center justify-center gap-1">
-            <span className="text-3xl sm:text-4xl font-bold text-white">$5</span>
+            <span className="text-3xl sm:text-4xl font-bold text-white">$29</span>
             <span className="text-violet-200">/mes</span>
           </div>
         </div>
