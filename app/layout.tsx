@@ -4,6 +4,8 @@ import './globals.css'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Providers } from '@/components/Providers'
+import { CursorTrail } from '@/components/CursorTrail'
+import { AnimatedBackground } from '@/components/AnimatedBackground'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -139,6 +141,8 @@ export default function RootLayout({
         )}
       </head>
       <body className={inter.className}>
+        <CursorTrail />
+        <AnimatedBackground />
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />
