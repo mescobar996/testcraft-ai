@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react"
+import { GoogleOAuthButton } from "./GoogleOAuthButton"
 
 interface LoginFormProps {
   onSuccess?: () => void
@@ -204,6 +205,18 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <p className="text-slate-400">
           Inicia sesión en tu cuenta de TestCraft AI
         </p>
+      </div>
+
+      {/* Google OAuth Button */}
+      <GoogleOAuthButton text="Continuar con Google" />
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-700"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-slate-900 text-slate-400">o continúa con email</span>
+        </div>
       </div>
 
       {generalError && (

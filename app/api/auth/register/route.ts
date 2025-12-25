@@ -16,7 +16,8 @@ const RegisterSchema = z.object({
     .min(8, "La contraseña debe tener al menos 8 caracteres")
     .regex(/[A-Z]/, "La contraseña debe tener al menos una mayúscula")
     .regex(/[a-z]/, "La contraseña debe tener al menos una minúscula")
-    .regex(/[0-9]/, "La contraseña debe tener al menos un número"),
+    .regex(/[0-9]/, "La contraseña debe tener al menos un número")
+    .regex(/[@$!%*?&#]/, "La contraseña debe tener al menos un carácter especial (@$!%*?&#)"),
   name: z
     .string()
     .min(2, "El nombre debe tener al menos 2 caracteres")

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { GoogleOAuthButton } from "./GoogleOAuthButton"
+import { PasswordStrengthMeter, calculatePasswordStrength } from "./PasswordStrengthMeter"
 
 interface RegisterFormProps {
   onSuccess?: () => void
@@ -54,10 +56,12 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
     if (!formData.password) {
       newErrors.password = "La contraseña es requerida"
-    } else if (formData.password.length < 8) {
-      newErrors.password = "La contraseña debe tener al menos 8 caracteres"
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(formData.password)) {
-      newErrors.password = "La contraseña debe tener mayúsculas, minúsculas y números"
+    } else {
+      const { requirements } = calculatePasswordStrength(formData.password)
+      const allMet = requirements.every(r => r.met)
+      if (!allMet) {
+        newErrors.password = "La contraseña no cumple con todos los requisitos de seguridad"
+      }
     }
 
     if (!formData.confirmPassword) {
@@ -144,6 +148,18 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         </p>
       </div>
 
+      {/* Google OAuth Button */}
+      <GoogleOAuthButton text="Registrarse con Google" />
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-700"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-slate-900 text-slate-400">o continúa con email</span>
+        </div>
+      </div>
+
       {generalError && (
         <div className="bg-red-900/50 border border-red-700 rounded-lg p-3">
           <p className="text-red-400 text-sm">{generalError}</p>
@@ -227,6 +243,10 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         {errors.password && (
           <p className="mt-1 text-sm text-red-400">{errors.password}</p>
         )}
+        {/* Password Strength Meter */}
+        <div className="mt-3">
+          <PasswordStrengthMeter password={formData.password} />
+        </div>
       </div>
 
       <div>
