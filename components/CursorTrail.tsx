@@ -1,114 +1,78 @@
 "use client"
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 
-interface Particle {
+interface TrailDot {
+  id: number
   x: number
   y: number
-  size: number
-  speedX: number
-  speedY: number
-  life: number
-  color: string
+  timestamp: number
 }
 
 export function CursorTrail() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const particlesRef = useRef<Particle[]>([])
-  const mouseRef = useRef({ x: 0, y: 0 })
-  const animationFrameRef = useRef<number>()
+  const [dots, setDots] = useState<TrailDot[]>([])
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    let dotId = 0
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    // Configurar canvas para que ocupe toda la pantalla
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-    resizeCanvas()
-    window.addEventListener('resize', resizeCanvas)
-
-    // Colores del tema (violeta/fucsia)
-    const colors = [
-      'rgba(139, 92, 246, 0.6)',  // violet-500
-      'rgba(217, 70, 239, 0.6)',  // fuchsia-500
-      'rgba(168, 85, 247, 0.6)',  // purple-500
-      'rgba(192, 132, 252, 0.6)', // purple-400
-    ]
-
-    // Manejar movimiento del mouse
     const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY }
-
-      // Crear nuevas partículas
-      for (let i = 0; i < 3; i++) {
-        particlesRef.current.push({
-          x: e.clientX,
-          y: e.clientY,
-          size: Math.random() * 4 + 2,
-          speedX: (Math.random() - 0.5) * 2,
-          speedY: (Math.random() - 0.5) * 2,
-          life: 1,
-          color: colors[Math.floor(Math.random() * colors.length)]
-        })
+      const newDot: TrailDot = {
+        id: dotId++,
+        x: e.clientX,
+        y: e.clientY,
+        timestamp: Date.now()
       }
 
-      // Limitar número de partículas
-      if (particlesRef.current.length > 100) {
-        particlesRef.current = particlesRef.current.slice(-100)
-      }
-    }
-
-    // Animar partículas
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      // Actualizar y dibujar partículas
-      particlesRef.current = particlesRef.current.filter(particle => {
-        // Actualizar posición
-        particle.x += particle.speedX
-        particle.y += particle.speedY
-        particle.life -= 0.02
-
-        // Dibujar partícula
-        if (particle.life > 0) {
-          ctx.save()
-          ctx.globalAlpha = particle.life
-          ctx.fillStyle = particle.color
-          ctx.beginPath()
-          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
-          ctx.fill()
-          ctx.restore()
-          return true
-        }
-        return false
+      setDots(prevDots => {
+        // Agregar nuevo punto
+        const updated = [...prevDots, newDot]
+        // Limitar a 15 puntos
+        return updated.slice(-15)
       })
-
-      animationFrameRef.current = requestAnimationFrame(animate)
     }
+
+    // Limpiar puntos antiguos cada 100ms
+    const cleanupInterval = setInterval(() => {
+      setDots(prevDots =>
+        prevDots.filter(dot => Date.now() - dot.timestamp < 500)
+      )
+    }, 100)
 
     window.addEventListener('mousemove', handleMouseMove)
-    animate()
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas)
       window.removeEventListener('mousemove', handleMouseMove)
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
+      clearInterval(cleanupInterval)
     }
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-50"
-      style={{ mixBlendMode: 'screen' }}
-    />
+    <div className="fixed inset-0 pointer-events-none z-50">
+      {dots.map((dot, index) => {
+        const age = Date.now() - dot.timestamp
+        const opacity = Math.max(0, 1 - age / 500)
+        const scale = 1 - age / 1000
+
+        return (
+          <div
+            key={dot.id}
+            className="absolute w-2 h-2 rounded-full"
+            style={{
+              left: dot.x - 4,
+              top: dot.y - 4,
+              opacity: opacity,
+              transform: `scale(${scale})`,
+              background: index % 3 === 0
+                ? 'radial-gradient(circle, rgba(139, 92, 246, 0.8) 0%, rgba(139, 92, 246, 0) 70%)'
+                : index % 3 === 1
+                ? 'radial-gradient(circle, rgba(217, 70, 239, 0.8) 0%, rgba(217, 70, 239, 0) 70%)'
+                : 'radial-gradient(circle, rgba(168, 85, 247, 0.8) 0%, rgba(168, 85, 247, 0) 70%)',
+              boxShadow: '0 0 10px rgba(139, 92, 246, 0.6)',
+              transition: 'opacity 0.1s ease-out, transform 0.1s ease-out'
+            }}
+          />
+        )
+      })}
+    </div>
   )
 }
