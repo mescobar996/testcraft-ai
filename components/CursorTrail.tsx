@@ -45,19 +45,27 @@ export function CursorTrail() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50">
-      {dots.map((dot) => {
+      {dots.map((dot, index) => {
         const age = Date.now() - dot.timestamp
-        const opacity = Math.max(0, (1 - age / 400) * 0.15) // Muy sutil: max 15% opacity
+        const opacity = Math.max(0, (1 - age / 400) * 0.6) // Vibrante: max 60% opacity
+        const scale = 1 - age / 800
 
         return (
           <div
             key={dot.id}
-            className="absolute w-1 h-1 rounded-full bg-violet-500"
+            className="absolute w-3 h-3 rounded-full"
             style={{
-              left: dot.x,
-              top: dot.y,
+              left: dot.x - 6,
+              top: dot.y - 6,
               opacity: opacity,
-              transition: 'opacity 0.1s ease-out'
+              transform: `scale(${scale})`,
+              background: index % 3 === 0
+                ? 'radial-gradient(circle, rgba(139, 92, 246, 0.9) 0%, rgba(139, 92, 246, 0) 70%)'
+                : index % 3 === 1
+                ? 'radial-gradient(circle, rgba(217, 70, 239, 0.9) 0%, rgba(217, 70, 239, 0) 70%)'
+                : 'radial-gradient(circle, rgba(168, 85, 247, 0.9) 0%, rgba(168, 85, 247, 0) 70%)',
+              boxShadow: '0 0 20px rgba(139, 92, 246, 0.8)',
+              transition: 'opacity 0.1s ease-out, transform 0.1s ease-out'
             }}
           />
         )

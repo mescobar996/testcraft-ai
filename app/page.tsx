@@ -168,8 +168,8 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
   useKeyboardShortcuts(shortcuts);
 
   return (
-    <main className="min-h-screen relative bg-black">
-      <header className="border-b border-white/[0.03] bg-black/95 backdrop-blur-sm sticky top-0 z-40">
+    <main className="min-h-screen relative">
+      <header className="border-b border-violet-500/20 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40 shadow-xl shadow-violet-500/10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 group">
