@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-12">
+    <div className="min-h-screen px-4 py-12">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
@@ -34,7 +34,7 @@ export default function PricingPage() {
             Compara todas las características
           </h2>
           
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -91,7 +91,7 @@ export default function PricingPage() {
           </h2>
           
           <div className="max-w-4xl mx-auto space-y-8">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6">
               <h3 className="text-xl font-semibold text-white mb-3">
                 ¿Puedo cambiar de plan en cualquier momento?
               </h3>
@@ -101,17 +101,17 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6">
               <h3 className="text-xl font-semibold text-white mb-3">
                 ¿Qué métodos de pago aceptan?
               </h3>
               <p className="text-slate-400">
-                Aceptamos todas las principales tarjetas de crédito y débito (Visa, Mastercard, American Express) 
+                Aceptamos todas las principales tarjetas de crédito y débito (Visa, Mastercard, American Express)
                 a través de Stripe, nuestra pasarela de pago segura y certificada PCI DSS.
               </p>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6">
               <h3 className="text-xl font-semibold text-white mb-3">
                 ¿Puedo cancelar mi suscripción Pro?
               </h3>

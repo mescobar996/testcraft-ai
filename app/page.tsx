@@ -251,17 +251,17 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center p-6 bg-zinc-900/20 border border-zinc-800/30 rounded-lg">
-              <div className="text-4xl font-bold text-violet-500 mb-2">10K+</div>
-              <div className="text-zinc-400 text-sm">Casos Generados</div>
+            <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg">
+              <div className="text-4xl font-bold text-violet-400 mb-2">10K+</div>
+              <div className="text-gray-300 text-sm">Casos Generados</div>
             </div>
-            <div className="text-center p-6 bg-zinc-900/20 border border-zinc-800/30 rounded-lg">
-              <div className="text-4xl font-bold text-violet-500 mb-2">500+</div>
-              <div className="text-zinc-400 text-sm">Usuarios Activos</div>
+            <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg">
+              <div className="text-4xl font-bold text-violet-400 mb-2">500+</div>
+              <div className="text-gray-300 text-sm">Usuarios Activos</div>
             </div>
-            <div className="text-center p-6 bg-zinc-900/20 border border-zinc-800/30 rounded-lg">
-              <div className="text-4xl font-bold text-violet-500 mb-2">24/7</div>
-              <div className="text-zinc-400 text-sm">Disponibilidad</div>
+            <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg">
+              <div className="text-4xl font-bold text-violet-400 mb-2">24/7</div>
+              <div className="text-gray-300 text-sm">Disponibilidad</div>
             </div>
           </div>
         </section>
@@ -365,7 +365,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
 function SkillTag({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/30 border border-zinc-800/40 rounded text-zinc-300 text-xs font-medium hover:border-violet-500/40 transition-colors">
+    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded text-gray-300 text-xs font-medium hover:border-violet-400/50 transition-colors">
       {icon}
       {children}
     </div>
@@ -374,17 +374,17 @@ function SkillTag({ children, icon }: { children: React.ReactNode; icon?: React.
 
 function ProjectCard({ title, description, tags, isNew }: { title: string; description: string; tags: string[]; isNew?: boolean }) {
   return (
-    <div className="bg-zinc-900/20 border border-zinc-800/30 rounded-lg p-6 hover:border-zinc-700/50 transition-colors relative">
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 hover:border-white/20 transition-colors relative">
       {isNew && (
-        <div className="absolute -top-2 -right-2 px-2 py-1 bg-violet-600 rounded text-[10px] font-bold text-white uppercase">
+        <div className="absolute -top-2 -right-2 px-2 py-1 bg-violet-500 rounded text-[10px] font-bold text-white uppercase">
           Nuevo
         </div>
       )}
       <h3 className="text-white font-semibold mb-3 text-lg">{title}</h3>
-      <p className="text-zinc-400 text-sm mb-4 leading-relaxed">{description}</p>
+      <p className="text-gray-300 text-sm mb-4 leading-relaxed">{description}</p>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <span key={tag} className="px-2 py-1 bg-zinc-800/40 text-zinc-400 text-xs rounded">
+          <span key={tag} className="px-2 py-1 bg-white/10 text-gray-400 text-xs rounded">
             {tag}
           </span>
         ))}
