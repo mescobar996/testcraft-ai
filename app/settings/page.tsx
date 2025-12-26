@@ -5,6 +5,7 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import { IntegrationSettings } from "@/components/IntegrationSettings"
 import { AnalyticsSection } from "@/components/AnalyticsSection"
+import { ReferralPanel } from "@/components/ReferralPanel"
 import { Settings, User, Bell, Shield, CreditCard, BarChart3 } from "lucide-react"
 
 export const metadata: Metadata = {
@@ -170,6 +171,11 @@ export default async function SettingsPage() {
               </div>
 
               <IntegrationSettings userTier={user.tier} />
+            </section>
+
+            {/* Referral Section */}
+            <section id="referrals">
+              <ReferralPanel />
             </section>
 
             {/* Account Actions */}
