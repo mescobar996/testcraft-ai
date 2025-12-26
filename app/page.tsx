@@ -20,6 +20,7 @@ import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
+import { trackGeneration } from "@/lib/analytics";
 import { Zap, Shield, Clock, Camera } from "lucide-react";
 
 export interface TestCase {
@@ -72,6 +73,9 @@ export default function Home() {
       setResult(data);
       incrementUsage();
 
+      // Track analytics
+      trackGeneration(user?.id || null, false);
+
       if (user) {
         const saved = await saveGeneration(user.id, requirement, context, data);
         if (saved) setNewGeneration(saved);
@@ -88,6 +92,9 @@ export default function Home() {
     setCurrentRequirement("Generado desde imagen");
     setError(null);
     incrementUsage();
+
+    // Track analytics para generación desde imagen
+    trackGeneration(user?.id || null, true);
   };
 
   const handleRegenerateCase = async (testCase: TestCase): Promise<TestCase | null> => {

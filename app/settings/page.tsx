@@ -4,7 +4,8 @@ import { redirect } from "next/navigation"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import { IntegrationSettings } from "@/components/IntegrationSettings"
-import { Settings, User, Bell, Shield, CreditCard } from "lucide-react"
+import { AnalyticsSection } from "@/components/AnalyticsSection"
+import { Settings, User, Bell, Shield, CreditCard, BarChart3 } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Configuración - TestCraft AI",
@@ -54,8 +55,17 @@ export default async function SettingsPage() {
               <ul className="space-y-2">
                 <li>
                   <Link
-                    href="/settings#profile"
+                    href="/settings#analytics"
                     className="flex items-center gap-3 px-4 py-3 rounded-lg bg-violet-600 text-white"
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                    <span>Analytics</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/settings#profile"
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                   >
                     <User className="w-4 h-4" />
                     <span>Perfil</span>
@@ -85,6 +95,9 @@ export default async function SettingsPage() {
 
           {/* Content */}
           <div className="lg:col-span-3 space-y-8">
+            {/* Analytics Section */}
+            <AnalyticsSection />
+
             {/* Profile Section */}
             <section id="profile" className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
               <div className="flex items-center gap-3 mb-6">
