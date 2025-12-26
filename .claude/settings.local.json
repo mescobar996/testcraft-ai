@@ -12,7 +12,9 @@
       "Bash(else echo \"No existe .env.local\")",
       "Bash(fi)",
       "Bash(curl:*)",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(Select-String -Pattern \"\\(Compiled|error|Error\\)\")",
+      "Bash(Select-Object -First 5)"
     ]
   }
 }
