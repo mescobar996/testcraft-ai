@@ -345,6 +345,7 @@ interface Translations {
   timeoutError: string;
   sessionExpiredError: string;
   noPermissionsError: string;
+  retry: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -689,6 +690,7 @@ const translations: Record<Language, Translations> = {
     timeoutError: "Tiempo de espera agotado. Verifica tu conexión a internet.",
     sessionExpiredError: "Sesión expirada. Por favor, cierra sesión e inicia sesión nuevamente.",
     noPermissionsError: "Sin permisos para acceder al historial. Verifica tu autenticación.",
+    retry: "Reintentar",
   },
   en: {
     appName: "TestCraft AI",
@@ -1031,6 +1033,7 @@ const translations: Record<Language, Translations> = {
     timeoutError: "Request timed out. Please check your internet connection.",
     sessionExpiredError: "Session expired. Please sign out and sign in again.",
     noPermissionsError: "No permissions to access history. Please verify your authentication.",
+    retry: "Retry",
   }
 };
 

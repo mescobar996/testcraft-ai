@@ -14,6 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useLanguage } from "@/lib/language-context";
 import { getGenerations, deleteGeneration, HistoryRecord } from "@/lib/history-db";
 import { GenerationResult } from "@/app/page";
 
@@ -24,6 +25,7 @@ interface CloudHistoryPanelProps {
 
 export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPanelProps) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [history, setHistory] = useState<HistoryRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
 
   const loadHistory = useCallback(async () => {
     if (!user) {
-      setError("Debes iniciar sesión para ver tu historial");
+      setError(t.mustSignInToViewHistory);
       return;
     }
 
@@ -44,7 +46,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
     const timeoutId = setTimeout(() => {
       timeoutReached = true;
       setIsLoading(false);
-      setError("Tiempo de espera agotado. Verifica tu conexión a internet.");
+      setError(t.timeoutError);
     }, 10000);
 
     try {
@@ -64,11 +66,11 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
 
         // Mensajes de error más específicos
         if (error?.message?.includes('JWT')) {
-          setError("Sesión expirada. Por favor, cierra sesión e inicia sesión nuevamente.");
+          setError(t.sessionExpiredError);
         } else if (error?.code === 'PGRST116') {
           setError("La tabla 'generations' no existe. Contacta al soporte.");
         } else if (error?.message?.includes('permission')) {
-          setError("Sin permisos para acceder al historial. Verifica tu autenticación.");
+          setError(t.noPermissionsError);
         } else {
           setError(`Error al cargar el historial: ${error?.message || 'Desconocido'}`);
         }
@@ -76,7 +78,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
         setIsLoading(false);
       }
     }
-  }, [user]);
+  }, [user, t]);
 
   useEffect(() => {
     if (user && isOpen) {
@@ -116,17 +118,17 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
-    if (days === 0) return `Hoy ${date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
-    if (days === 1) return `Ayer ${date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
-    if (days < 7) return `Hace ${days} días`;
+
+    if (days === 0) return `${t.today} ${date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
+    if (days === 1) return `${t.yesterday} ${date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
+    if (days < 7) return `${days} ${t.daysAgo}`;
     return date.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
   };
 
   if (!user) {
     return (
       <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white" onClick={() => setIsOpen(true)}>
-        <Cloud className="w-4 h-4 mr-2" /> Historial
+        <Cloud className="w-4 h-4 mr-2" /> {t.cloudHistory2}
       </Button>
     );
   }
@@ -134,7 +136,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
   return (
     <>
       <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white relative" onClick={() => setIsOpen(true)}>
-        <Cloud className="w-4 h-4 mr-2" /> Historial
+        <Cloud className="w-4 h-4 mr-2" /> {t.cloudHistory2}
         {history.length > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-violet-500 rounded-full text-xs flex items-center justify-center text-white">
             {history.length > 99 ? '99+' : history.length}
@@ -171,8 +173,8 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
               <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <Cloud className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Historial en la Nube</h2>
-              <p className="text-blue-100 text-sm">{history.length} generaciones guardadas</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">{t.cloudHistory2}</h2>
+              <p className="text-blue-100 text-sm">{history.length} {t.generationsSaved}</p>
             </div>
 
             {/* Búsqueda */}
@@ -182,7 +184,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <input
                     type="text"
-                    placeholder="Buscar en historial..."
+                    placeholder={t.searchInHistory}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-11 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
@@ -204,22 +206,22 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
                     onClick={loadHistory}
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors text-sm font-medium"
                   >
-                    Reintentar
+                    {t.retry}
                   </button>
                 </div>
               ) : isLoading ? (
                 <div className="flex flex-col items-center justify-center h-48 text-slate-400">
                   <Loader2 className="w-10 h-10 animate-spin mb-4 text-blue-500" />
-                  <p>Cargando historial...</p>
+                  <p>{t.loadingHistory}</p>
                 </div>
               ) : filteredHistory.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-48 text-center px-4">
                   <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
                     <Clock className="w-8 h-8 text-slate-600" />
                   </div>
-                  <p className="text-white text-lg font-semibold mb-1">{searchQuery ? 'Sin resultados' : 'Sin historial'}</p>
+                  <p className="text-white text-lg font-semibold mb-1">{searchQuery ? t.noResults : t.noHistory}</p>
                   <p className="text-slate-400 text-sm">
-                    {searchQuery ? `No hay resultados para "${searchQuery}"` : 'Tus generaciones aparecerán aquí'}
+                    {searchQuery ? `${t.noResults} "${searchQuery}"` : t.yourGenerationsWillAppearHere}
                   </p>
                 </div>
               ) : (
@@ -240,7 +242,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
                         <p className="text-slate-400 text-xs flex items-center gap-2 mt-1">
                           <Calendar className="w-3 h-3" />
                           {formatDate(record.created_at)}
-                          <span className="text-green-400">• {record.result.testCases?.length || 0} casos</span>
+                          <span className="text-green-400">• {record.result.testCases?.length || 0} {t.cases}</span>
                         </p>
                       </div>
                       <div className="flex items-center gap-1">
@@ -265,7 +267,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
                 <button
                   type="button"
                   onClick={() => {
-                    if (confirm('¿Eliminar todo el historial?')) {
+                    if (confirm(t.deleteAllHistoryConfirm)) {
                       history.forEach(h => deleteGeneration(user.id, h.id));
                       setHistory([]);
                     }
@@ -273,7 +275,7 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
                   className="w-full py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-colors text-sm font-medium"
                 >
                   <Trash2 className="w-4 h-4 inline mr-2" />
-                  Eliminar todo el historial
+                  {t.deleteAllHistory}
                 </button>
               </div>
             )}
