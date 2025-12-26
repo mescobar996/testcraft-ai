@@ -121,6 +121,21 @@ interface Translations {
   tagFast: string;
   tagCloud: string;
   tagHistory: string;
+  // ImageUploader
+  generateFromImage: string;
+  generateFromImageTitle: string;
+  generateFromImageSubtitle: string;
+  dragImageHere: string;
+  orClickToSelect: string;
+  selectImage: string;
+  maxFileSize: string;
+  additionalContext: string;
+  additionalContextPlaceholder: string;
+  imageUploaderTips: string;
+  analyzingImage: string;
+  imageGenerated: string;
+  selectValidImage: string;
+  imageTooLarge: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -241,6 +256,21 @@ const translations: Record<Language, Translations> = {
     tagFast: "Generación Rápida",
     tagCloud: "Cloud Storage",
     tagHistory: "Historial",
+    // ImageUploader
+    generateFromImage: "Generar desde Imagen",
+    generateFromImageTitle: "Generar desde Imagen",
+    generateFromImageSubtitle: "Subí un screenshot y generamos los casos",
+    dragImageHere: "Arrastrá una imagen aquí",
+    orClickToSelect: "o hacé click para seleccionar",
+    selectImage: "Seleccionar imagen",
+    maxFileSize: "PNG, JPG, GIF o WebP • Máximo 10MB",
+    additionalContext: "Contexto adicional (opcional)",
+    additionalContextPlaceholder: "Ej: Es un formulario de login para una app bancaria, debe validar email y contraseña segura...",
+    imageUploaderTips: "💡 Tips: Subí screenshots de formularios, pantallas de login, dashboards, o cualquier UI. La IA detectará los elementos y generará casos de prueba automáticamente.",
+    analyzingImage: "Analizando imagen...",
+    imageGenerated: "Casos generados desde imagen",
+    selectValidImage: "Por favor selecciona una imagen válida",
+    imageTooLarge: "La imagen debe ser menor a 10MB",
   },
   en: {
     appName: "TestCraft AI",
@@ -359,6 +389,21 @@ const translations: Record<Language, Translations> = {
     tagFast: "Fast Generation",
     tagCloud: "Cloud Storage",
     tagHistory: "History",
+    // ImageUploader
+    generateFromImage: "Generate from Image",
+    generateFromImageTitle: "Generate from Image",
+    generateFromImageSubtitle: "Upload a screenshot and we'll generate the cases",
+    dragImageHere: "Drag an image here",
+    orClickToSelect: "or click to select",
+    selectImage: "Select image",
+    maxFileSize: "PNG, JPG, GIF or WebP • Max 10MB",
+    additionalContext: "Additional context (optional)",
+    additionalContextPlaceholder: "E.g.: It's a login form for a banking app, must validate email and secure password...",
+    imageUploaderTips: "💡 Tips: Upload screenshots of forms, login screens, dashboards, or any UI. The AI will detect the elements and generate test cases automatically.",
+    analyzingImage: "Analyzing image...",
+    imageGenerated: "Cases generated from image",
+    selectValidImage: "Please select a valid image",
+    imageTooLarge: "Image must be less than 10MB",
   }
 };
 

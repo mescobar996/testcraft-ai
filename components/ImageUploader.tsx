@@ -13,6 +13,7 @@ import {
   Eye,
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
+import { useLanguage } from "@/lib/language-context";
 
 interface ImageUploaderProps {
   onGenerateFromImage: (result: any) => void;
@@ -21,6 +22,7 @@ interface ImageUploaderProps {
 }
 
 export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: ImageUploaderProps) {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -31,19 +33,19 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
 
   const handleFileSelect = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) {
-      showToast("Por favor selecciona una imagen válida", "error");
+      showToast(t.selectValidImage, "error");
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      showToast("La imagen debe ser menor a 10MB", "error");
+      showToast(t.imageTooLarge, "error");
       return;
     }
 
     setSelectedImage(file);
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
-  }, [showToast]);
+  }, [showToast, t.selectValidImage, t.imageTooLarge]);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -89,7 +91,7 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
       const result = await response.json();
       onGenerateFromImage(result);
       setIsOpen(false);
-      showToast("Casos generados desde imagen", "success");
+      showToast(t.imageGenerated, "success");
       
       // Reset
       setSelectedImage(null);
@@ -118,7 +120,7 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
         className="border-violet-500/50 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 hover:text-violet-200"
       >
         <Camera className="w-4 h-4 mr-2" />
-        Generar desde Imagen
+        {t.generateFromImage}
       </Button>
 
       {isOpen && (
@@ -131,8 +133,8 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
                   <Camera className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-white">Generar desde Imagen</h2>
-                  <p className="text-sm text-slate-400">Subí un screenshot y generamos los casos</p>
+                  <h2 className="text-lg font-semibold text-white">{t.generateFromImageTitle}</h2>
+                  <p className="text-sm text-slate-400">{t.generateFromImageSubtitle}</p>
                 </div>
               </div>
               <button
@@ -163,10 +165,10 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
                       <Upload className="w-8 h-8 text-slate-400" />
                     </div>
                     <p className="text-white font-medium mb-1">
-                      Arrastrá una imagen aquí
+                      {t.dragImageHere}
                     </p>
                     <p className="text-slate-400 text-sm mb-4">
-                      o hacé click para seleccionar
+                      {t.orClickToSelect}
                     </p>
                     <input
                       ref={fileInputRef}
@@ -181,10 +183,10 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
                       className="border-slate-700 text-slate-300"
                     >
                       <ImageIcon className="w-4 h-4 mr-2" />
-                      Seleccionar imagen
+                      {t.selectImage}
                     </Button>
                     <p className="text-xs text-slate-500 mt-3">
-                      PNG, JPG, GIF o WebP • Máximo 10MB
+                      {t.maxFileSize}
                     </p>
                   </div>
                 </div>
@@ -214,23 +216,19 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
               {/* Context input */}
               <div>
                 <label className="text-sm text-slate-300 mb-2 block">
-                  Contexto adicional (opcional)
+                  {t.additionalContext}
                 </label>
                 <textarea
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
-                  placeholder="Ej: Es un formulario de login para una app bancaria, debe validar email y contraseña segura..."
+                  placeholder={t.additionalContextPlaceholder}
                   className="w-full h-20 px-3 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 resize-none text-sm"
                 />
               </div>
 
               {/* Tips */}
               <div className="bg-slate-800/30 border border-slate-800 rounded-lg p-3">
-                <p className="text-xs text-slate-400">
-                  💡 <strong className="text-slate-300">Tips:</strong> Subí screenshots de formularios, 
-                  pantallas de login, dashboards, o cualquier UI. La IA detectará los elementos 
-                  y generará casos de prueba automáticamente.
-                </p>
+                <p className="text-xs text-slate-400" dangerouslySetInnerHTML={{ __html: t.imageUploaderTips }} />
               </div>
             </div>
 
@@ -241,7 +239,7 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
                 variant="ghost"
                 className="text-slate-400"
               >
-                Cancelar
+                {t.cancel}
               </Button>
               <Button
                 onClick={handleGenerate}
@@ -251,12 +249,12 @@ export function ImageUploader({ onGenerateFromImage, isLoading, setIsLoading }: 
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Analizando imagen...
+                    {t.analyzingImage}
                   </>
                 ) : (
                   <>
                     <Wand2 className="w-4 h-4 mr-2" />
-                    Generar Casos de Prueba
+                    {t.generateButton}
                   </>
                 )}
               </Button>
