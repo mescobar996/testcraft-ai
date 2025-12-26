@@ -27,6 +27,8 @@ interface Translations {
   templatesAvailable: string;
   templatesAll: string;
   templatesTip: string;
+  predefinedTemplates: string;
+  advancedOptions: string;
   compareTitle: string;
   compareSubtitle: string;
   compareV1: string;
@@ -145,6 +147,8 @@ const translations: Record<Language, Translations> = {
     templatesAvailable: "disponibles",
     templatesAll: "Todos",
     templatesTip: "Hacé click en un template para cargar el requisito automáticamente",
+    predefinedTemplates: "Plantillas Predefinidas",
+    advancedOptions: "Opciones Avanzadas",
     compareTitle: "Modo Comparación",
     compareSubtitle: "Comparar 2 versiones",
     compareV1: "Requisito Original",
@@ -261,6 +265,8 @@ const translations: Record<Language, Translations> = {
     templatesAvailable: "available",
     templatesAll: "All",
     templatesTip: "Click a template to load the requirement automatically",
+    predefinedTemplates: "Predefined Templates",
+    advancedOptions: "Advanced Options",
     compareTitle: "Compare Mode",
     compareSubtitle: "Compare 2 versions",
     compareV1: "Original Requirement",
