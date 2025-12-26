@@ -289,6 +289,30 @@ interface Translations {
   documentation: string;
   support: string;
   signOut: string;
+  // Footer
+  product: string;
+  pricing: string;
+  faq: string;
+  legal: string;
+  terms: string;
+  privacy: string;
+  proSection: string;
+  upgradeToPROFooter: string;
+  signInToAccessPro: string;
+  proActive: string;
+  poweredBy: string;
+  // Stats Cards
+  totalCases: string;
+  positiveCases: string;
+  negativeCases: string;
+  edgeCases: string;
+  // History Panel
+  history: string;
+  cases: string;
+  timeAgoMoment: string;
+  timeAgoMinutes: string;
+  timeAgoHours: string;
+  timeAgoDays: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -577,6 +601,30 @@ const translations: Record<Language, Translations> = {
     documentation: "Documentación",
     support: "Soporte",
     signOut: "Cerrar sesión",
+    // Footer
+    product: "Producto",
+    pricing: "Precios",
+    faq: "Preguntas Frecuentes",
+    legal: "Legal",
+    terms: "Términos y Condiciones",
+    privacy: "Política de Privacidad",
+    proSection: "Pro",
+    upgradeToPROFooter: "Actualizar a Pro",
+    signInToAccessPro: "Inicia sesión para acceder a Pro",
+    proActive: "Pro activo",
+    poweredBy: "Desarrollado con Claude AI",
+    // Stats Cards
+    totalCases: "Total",
+    positiveCases: "Positivos",
+    negativeCases: "Negativos",
+    edgeCases: "Borde",
+    // History Panel
+    history: "Historial",
+    cases: "casos",
+    timeAgoMoment: "Hace un momento",
+    timeAgoMinutes: "min",
+    timeAgoHours: "horas",
+    timeAgoDays: "días",
   },
   en: {
     appName: "TestCraft AI",
@@ -863,6 +911,30 @@ const translations: Record<Language, Translations> = {
     documentation: "Documentation",
     support: "Support",
     signOut: "Sign out",
+    // Footer
+    product: "Product",
+    pricing: "Pricing",
+    faq: "FAQ",
+    legal: "Legal",
+    terms: "Terms and Conditions",
+    privacy: "Privacy Policy",
+    proSection: "Pro",
+    upgradeToPROFooter: "Upgrade to Pro",
+    signInToAccessPro: "Sign in to access Pro",
+    proActive: "Pro active",
+    poweredBy: "Powered by Claude AI",
+    // Stats Cards
+    totalCases: "Total",
+    positiveCases: "Positive",
+    negativeCases: "Negative",
+    edgeCases: "Edge",
+    // History Panel
+    history: "History",
+    cases: "cases",
+    timeAgoMoment: "Just now",
+    timeAgoMinutes: "min",
+    timeAgoHours: "hours",
+    timeAgoDays: "days",
   }
 };
 

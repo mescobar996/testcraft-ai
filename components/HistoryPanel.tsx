@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { 
-  History, 
-  ChevronRight, 
-  Trash2, 
+import {
+  History,
+  ChevronRight,
+  Trash2,
   Clock,
   FileText,
   X
 } from "lucide-react";
 import { GenerationResult } from "@/app/page";
+import { useLanguage } from "@/lib/language-context";
 
 export interface HistoryItem {
   id: string;
@@ -28,6 +29,7 @@ interface HistoryPanelProps {
 
 export function HistoryPanel({ history, onSelect, onDelete, onClear }: HistoryPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   if (history.length === 0) {
     return null;
@@ -43,7 +45,7 @@ export function HistoryPanel({ history, onSelect, onDelete, onClear }: HistoryPa
         className="fixed left-4 top-1/2 -translate-y-1/2 z-40 border-slate-700 bg-slate-900/90 backdrop-blur-sm text-slate-300 hover:bg-slate-800 hover:text-white shadow-lg"
       >
         <History className="w-4 h-4 mr-2" />
-        <span className="hidden sm:inline">Historial</span>
+        <span className="hidden sm:inline">{t.history}</span>
         <span className="ml-1 px-1.5 py-0.5 bg-violet-500/20 text-violet-400 text-xs rounded-full">
           {history.length}
         </span>
@@ -60,7 +62,7 @@ export function HistoryPanel({ history, onSelect, onDelete, onClear }: HistoryPa
         <div className="flex items-center justify-between p-4 border-b border-slate-800">
           <div className="flex items-center gap-2">
             <History className="w-5 h-5 text-violet-400" />
-            <h2 className="font-semibold text-white">Historial</h2>
+            <h2 className="font-semibold text-white">{t.history}</h2>
           </div>
           <div className="flex items-center gap-2">
             {history.length > 0 && (
@@ -95,6 +97,7 @@ export function HistoryPanel({ history, onSelect, onDelete, onClear }: HistoryPa
                 setIsOpen(false);
               }}
               onDelete={() => onDelete(item.id)}
+              t={t}
             />
           ))}
         </div>
@@ -115,10 +118,11 @@ interface HistoryCardProps {
   item: HistoryItem;
   onSelect: () => void;
   onDelete: () => void;
+  t: any;
 }
 
-function HistoryCard({ item, onSelect, onDelete }: HistoryCardProps) {
-  const timeAgo = getTimeAgo(item.timestamp);
+function HistoryCard({ item, onSelect, onDelete, t }: HistoryCardProps) {
+  const timeAgo = getTimeAgo(item.timestamp, t);
   const preview = item.requirement.slice(0, 80) + (item.requirement.length > 80 ? '...' : '');
 
   return (
@@ -139,7 +143,7 @@ function HistoryCard({ item, onSelect, onDelete }: HistoryCardProps) {
         <div className="flex items-center gap-3 text-xs">
           <span className="flex items-center gap-1 text-slate-400">
             <FileText className="w-3 h-3" />
-            {item.result.testCases.length} casos
+            {item.result.testCases.length} {t.cases}
           </span>
           <ChevronRight className="w-4 h-4 text-slate-500 ml-auto group-hover:text-violet-400 transition-colors" />
         </div>
@@ -159,12 +163,12 @@ function HistoryCard({ item, onSelect, onDelete }: HistoryCardProps) {
   );
 }
 
-function getTimeAgo(date: Date): string {
+function getTimeAgo(date: Date, t: any): string {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - new Date(date).getTime()) / 1000);
 
-  if (diffInSeconds < 60) return 'Hace un momento';
-  if (diffInSeconds < 3600) return `Hace ${Math.floor(diffInSeconds / 60)} min`;
-  if (diffInSeconds < 86400) return `Hace ${Math.floor(diffInSeconds / 3600)} horas`;
-  return `Hace ${Math.floor(diffInSeconds / 86400)} días`;
+  if (diffInSeconds < 60) return t.timeAgoMoment;
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} ${t.timeAgoMinutes}`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} ${t.timeAgoHours}`;
+  return `${Math.floor(diffInSeconds / 86400)} ${t.timeAgoDays}`;
 }

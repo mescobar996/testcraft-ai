@@ -31,14 +31,14 @@ export function Footer() {
 
             {/* Links Producto */}
             <div className="space-y-3">
-              <h3 className="text-white font-semibold text-sm">Producto</h3>
+              <h3 className="text-white font-semibold text-sm">{t.product}</h3>
               <ul className="space-y-2">
                 <li>
                   <Link
                     href="/pricing"
                     className="text-gray-400 hover:text-white text-xs transition-colors"
                   >
-                    Precios
+                    {t.pricing}
                   </Link>
                 </li>
                 <li>
@@ -46,7 +46,7 @@ export function Footer() {
                     href="/faq"
                     className="text-gray-400 hover:text-white text-xs transition-colors"
                   >
-                    Preguntas Frecuentes
+                    {t.faq}
                   </Link>
                 </li>
               </ul>
@@ -54,14 +54,14 @@ export function Footer() {
 
             {/* Links Legales */}
             <div className="space-y-3">
-              <h3 className="text-white font-semibold text-sm">Legal</h3>
+              <h3 className="text-white font-semibold text-sm">{t.legal}</h3>
               <ul className="space-y-2">
                 <li>
                   <Link
                     href="/terms"
                     className="text-gray-400 hover:text-white text-xs transition-colors"
                   >
-                    Términos y Condiciones
+                    {t.terms}
                   </Link>
                 </li>
                 <li>
@@ -69,7 +69,7 @@ export function Footer() {
                     href="/privacy"
                     className="text-gray-400 hover:text-white text-xs transition-colors"
                   >
-                    Política de Privacidad
+                    {t.privacy}
                   </Link>
                 </li>
               </ul>
@@ -77,23 +77,23 @@ export function Footer() {
 
             {/* Pro Upgrade */}
             <div className="space-y-3">
-              <h3 className="text-white font-semibold text-sm">Pro</h3>
+              <h3 className="text-white font-semibold text-sm">{t.proSection}</h3>
               {user && !isPro ? (
                 <button
                   onClick={() => setShowUpgrade(true)}
                   className="flex items-center gap-2 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white rounded text-xs font-medium transition-colors"
                 >
                   <Crown className="w-3 h-3" />
-                  Actualizar a Pro
+                  {t.upgradeToPROFooter}
                 </button>
               ) : !user ? (
                 <p className="text-gray-400 text-xs">
-                  Inicia sesión para acceder a Pro
+                  {t.signInToAccessPro}
                 </p>
               ) : (
                 <div className="flex items-center gap-2 text-violet-400">
                   <Crown className="w-3 h-3" />
-                  <span className="text-xs font-medium">Pro activo</span>
+                  <span className="text-xs font-medium">{t.proActive}</span>
                 </div>
               )}
             </div>
@@ -104,7 +104,7 @@ export function Footer() {
             <p className="text-gray-500 text-sm">{t.copyright}</p>
             <div className="flex items-center gap-4">
               <span className="text-gray-500 text-sm">
-                Powered by Claude AI
+                {t.poweredBy}
               </span>
             </div>
           </div>

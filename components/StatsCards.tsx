@@ -2,12 +2,14 @@
 
 import { TestCase } from "@/app/page";
 import { CheckCircle2, XCircle, AlertTriangle, BarChart3 } from "lucide-react";
+import { useLanguage } from "@/lib/language-context";
 
 interface StatsCardsProps {
   testCases: TestCase[];
 }
 
 export function StatsCards({ testCases }: StatsCardsProps) {
+  const { t } = useLanguage();
   const stats = {
     total: testCases.length,
     positive: testCases.filter(tc => tc.type === "Positivo").length,
@@ -20,25 +22,25 @@ export function StatsCards({ testCases }: StatsCardsProps) {
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
       <StatCard
         icon={<BarChart3 className="w-4 h-4" />}
-        label="Total"
+        label={t.totalCases}
         value={stats.total}
         color="violet"
       />
       <StatCard
         icon={<CheckCircle2 className="w-4 h-4" />}
-        label="Positivos"
+        label={t.positiveCases}
         value={stats.positive}
         color="green"
       />
       <StatCard
         icon={<XCircle className="w-4 h-4" />}
-        label="Negativos"
+        label={t.negativeCases}
         value={stats.negative}
         color="red"
       />
       <StatCard
         icon={<AlertTriangle className="w-4 h-4" />}
-        label="Borde"
+        label={t.edgeCases}
         value={stats.edge}
         color="yellow"
       />
