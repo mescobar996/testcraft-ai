@@ -202,6 +202,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 }
 
 function Feature({ icon, title, description, bgColor, isNew }: { icon: React.ReactNode; title: string; description: string; bgColor: string; isNew?: boolean }) {
+  const { t } = useLanguage();
   return (
     <div className="flex items-center gap-3 sm:gap-4 relative">
       <div className={`w-10 h-10 sm:w-11 sm:h-11 ${bgColor} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -211,8 +212,8 @@ function Feature({ icon, title, description, bgColor, isNew }: { icon: React.Rea
         <div className="flex items-center gap-2">
           <p className="text-white font-medium text-sm sm:text-base">{title}</p>
           {isNew && (
-            <span className="px-1.5 py-0.5 bg-gradient-to-r from-fuchsia-500 to-violet-500 rounded text-[10px] font-bold text-white">
-              NUEVO
+            <span className="px-1.5 py-0.5 bg-gradient-to-r from-fuchsia-500 to-violet-500 rounded text-[10px] font-bold text-white uppercase">
+              {t.new}
             </span>
           )}
         </div>

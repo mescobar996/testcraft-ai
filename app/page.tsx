@@ -412,11 +412,12 @@ function SkillTag({ children, icon }: { children: React.ReactNode; icon?: React.
 }
 
 function ProjectCard({ title, description, tags, isNew }: { title: string; description: string; tags: string[]; isNew?: boolean }) {
+  const { t } = useLanguage();
   return (
     <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 sm:p-5 md:p-6 hover:border-white/20 transition-colors relative">
       {isNew && (
         <div className="absolute -top-2 -right-2 px-2 py-1 bg-violet-500 rounded text-[9px] sm:text-[10px] font-bold text-white uppercase">
-          Nuevo
+          {t.new}
         </div>
       )}
       <h3 className="text-white font-semibold mb-2 sm:mb-3 text-base sm:text-lg">{title}</h3>

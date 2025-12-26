@@ -13,6 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useLanguage } from "@/lib/language-context";
 import { TestCase } from "@/app/page";
 
 interface FavoriteRecord {
@@ -28,6 +29,7 @@ interface FavoritesPanelProps {
 
 export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [favorites, setFavorites] = useState<FavoriteRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -79,22 +81,22 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
-    if (days === 0) return "Hoy";
-    if (days === 1) return "Ayer";
-    if (days < 7) return `Hace ${days} días`;
+
+    if (days === 0) return t.today;
+    if (days === 1) return t.yesterday;
+    if (days < 7) return `${days} ${t.daysAgo}`;
     return date.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
   };
 
   return (
     <>
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className="text-slate-400 hover:text-white relative" 
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-slate-400 hover:text-white relative"
         onClick={() => setIsOpen(true)}
       >
-        <Star className="w-4 h-4 mr-2" /> Favoritos
+        <Star className="w-4 h-4 mr-2" /> {t.favorites}
         {favorites.length > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full text-xs flex items-center justify-center text-black font-medium">
             {favorites.length > 99 ? '99+' : favorites.length}
@@ -131,8 +133,8 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
               <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <Star className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Casos Favoritos</h2>
-              <p className="text-yellow-100 text-sm">{favorites.length} casos guardados</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">{t.favoriteCases}</h2>
+              <p className="text-yellow-100 text-sm">{favorites.length} {t.savedCases}</p>
             </div>
 
             {/* Búsqueda */}
@@ -142,7 +144,7 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <input
                     type="text"
-                    placeholder="Buscar en favoritos..."
+                    placeholder={t.searchInFavorites}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-11 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm"
@@ -156,7 +158,7 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center h-48 text-slate-400">
                   <Loader2 className="w-10 h-10 animate-spin mb-4 text-yellow-500" />
-                  <p>Cargando favoritos...</p>
+                  <p>{t.loadingFavorites}</p>
                 </div>
               ) : filteredFavorites.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-48 text-center px-4">
@@ -164,12 +166,12 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
                     <Star className="w-8 h-8 text-slate-600" />
                   </div>
                   <p className="text-white text-lg font-semibold mb-1">
-                    {searchQuery ? 'Sin resultados' : 'Sin favoritos'}
+                    {searchQuery ? t.noResults : t.noFavorites}
                   </p>
                   <p className="text-slate-400 text-sm">
-                    {searchQuery 
-                      ? `No hay resultados para "${searchQuery}"` 
-                      : 'Marcá casos como favoritos para verlos aquí'}
+                    {searchQuery
+                      ? `${t.noResults} "${searchQuery}"`
+                      : t.markCasesAsFavorites}
                   </p>
                 </div>
               ) : (
@@ -223,7 +225,7 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    if (confirm('¿Eliminar todos los favoritos?')) {
+                    if (confirm(t.deleteAllFavoritesConfirm)) {
                       setFavorites([]);
                       if (user) {
                         localStorage.removeItem(`favorites_${user.id}`);
@@ -233,7 +235,7 @@ export function FavoritesPanel({ onSelectCase }: FavoritesPanelProps) {
                   className="w-full py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-colors text-sm font-medium"
                 >
                   <Trash2 className="w-4 h-4 inline mr-2" />
-                  Eliminar todos los favoritos
+                  {t.deleteAllFavorites}
                 </button>
               </div>
             )}

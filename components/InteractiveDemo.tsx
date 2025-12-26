@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Sparkles, CheckCircle2, FileText, Download } from "lucide-react";
+import { useLanguage } from "@/lib/language-context";
 
 export function InteractiveDemo() {
+  const { t } = useLanguage();
   const [step, setStep] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [typedText, setTypedText] = useState("");
@@ -92,7 +94,7 @@ export function InteractiveDemo() {
       <div className="flex items-center justify-center gap-2 mb-6">
         <div className="px-3 py-1 bg-violet-500/10 border border-violet-500/30 rounded-full text-violet-400 text-sm font-medium flex items-center gap-2">
           <Sparkles className="w-4 h-4" />
-          Demo Interactivo
+          {t.interactiveDemo}
         </div>
       </div>
 
@@ -101,7 +103,7 @@ export function InteractiveDemo() {
         {/* Input Section */}
         <div className="p-6 border-b border-slate-800">
           <label className="block text-sm font-medium text-slate-400 mb-3">
-            Requisito o Historia de Usuario
+            {t.requirementOrUserStory}
           </label>
           <div className="bg-slate-950 border border-slate-700 rounded-lg p-4 min-h-[100px] font-mono text-sm text-white">
             {typedText}
@@ -118,7 +120,7 @@ export function InteractiveDemo() {
               }`}
             >
               <Sparkles className={`w-4 h-4 ${step === 2 ? 'animate-spin' : ''}`} />
-              {step === 2 ? 'Generando...' : 'Generar Casos de Prueba'}
+              {step === 2 ? t.generating : t.generateTestCases}
             </button>
 
             {step >= 2 && (

@@ -313,6 +313,38 @@ interface Translations {
   timeAgoMinutes: string;
   timeAgoHours: string;
   timeAgoDays: string;
+  // Interactive Demo
+  interactiveDemo: string;
+  requirementOrUserStory: string;
+  generateTestCases: string;
+  // Badges
+  new: string;
+  // Favorites Panel
+  favorites: string;
+  favoriteCases: string;
+  savedCases: string;
+  searchInFavorites: string;
+  loadingFavorites: string;
+  noFavorites: string;
+  markCasesAsFavorites: string;
+  deleteAllFavoritesConfirm: string;
+  deleteAllFavorites: string;
+  today: string;
+  yesterday: string;
+  daysAgo: string;
+  // Cloud History Panel
+  cloudHistory2: string;
+  generationsSaved: string;
+  searchInHistory: string;
+  loadingHistory: string;
+  noHistory: string;
+  yourGenerationsWillAppearHere: string;
+  deleteAllHistoryConfirm: string;
+  deleteAllHistory: string;
+  mustSignInToViewHistory: string;
+  timeoutError: string;
+  sessionExpiredError: string;
+  noPermissionsError: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -625,6 +657,38 @@ const translations: Record<Language, Translations> = {
     timeAgoMinutes: "min",
     timeAgoHours: "horas",
     timeAgoDays: "días",
+    // Interactive Demo
+    interactiveDemo: "Demo Interactivo",
+    requirementOrUserStory: "Requisito o Historia de Usuario",
+    generateTestCases: "Generar Casos de Prueba",
+    // Badges
+    new: "Nuevo",
+    // Favorites Panel
+    favorites: "Favoritos",
+    favoriteCases: "Casos Favoritos",
+    savedCases: "casos guardados",
+    searchInFavorites: "Buscar en favoritos...",
+    loadingFavorites: "Cargando favoritos...",
+    noFavorites: "Sin favoritos",
+    markCasesAsFavorites: "Marcá casos como favoritos para verlos aquí",
+    deleteAllFavoritesConfirm: "¿Eliminar todos los favoritos?",
+    deleteAllFavorites: "Eliminar todos los favoritos",
+    today: "Hoy",
+    yesterday: "Ayer",
+    daysAgo: "días",
+    // Cloud History Panel
+    cloudHistory2: "Historial en la Nube",
+    generationsSaved: "generaciones guardadas",
+    searchInHistory: "Buscar en historial...",
+    loadingHistory: "Cargando historial...",
+    noHistory: "Sin historial",
+    yourGenerationsWillAppearHere: "Tus generaciones aparecerán aquí",
+    deleteAllHistoryConfirm: "¿Eliminar todo el historial?",
+    deleteAllHistory: "Eliminar todo el historial",
+    mustSignInToViewHistory: "Debes iniciar sesión para ver tu historial",
+    timeoutError: "Tiempo de espera agotado. Verifica tu conexión a internet.",
+    sessionExpiredError: "Sesión expirada. Por favor, cierra sesión e inicia sesión nuevamente.",
+    noPermissionsError: "Sin permisos para acceder al historial. Verifica tu autenticación.",
   },
   en: {
     appName: "TestCraft AI",
@@ -935,6 +999,38 @@ const translations: Record<Language, Translations> = {
     timeAgoMinutes: "min",
     timeAgoHours: "hours",
     timeAgoDays: "days",
+    // Interactive Demo
+    interactiveDemo: "Interactive Demo",
+    requirementOrUserStory: "Requirement or User Story",
+    generateTestCases: "Generate Test Cases",
+    // Badges
+    new: "New",
+    // Favorites Panel
+    favorites: "Favorites",
+    favoriteCases: "Favorite Cases",
+    savedCases: "saved cases",
+    searchInFavorites: "Search in favorites...",
+    loadingFavorites: "Loading favorites...",
+    noFavorites: "No favorites",
+    markCasesAsFavorites: "Mark cases as favorites to see them here",
+    deleteAllFavoritesConfirm: "Delete all favorites?",
+    deleteAllFavorites: "Delete all favorites",
+    today: "Today",
+    yesterday: "Yesterday",
+    daysAgo: "days",
+    // Cloud History Panel
+    cloudHistory2: "Cloud History",
+    generationsSaved: "generations saved",
+    searchInHistory: "Search in history...",
+    loadingHistory: "Loading history...",
+    noHistory: "No history",
+    yourGenerationsWillAppearHere: "Your generations will appear here",
+    deleteAllHistoryConfirm: "Delete all history?",
+    deleteAllHistory: "Delete all history",
+    mustSignInToViewHistory: "You must sign in to view your history",
+    timeoutError: "Request timed out. Please check your internet connection.",
+    sessionExpiredError: "Session expired. Please sign out and sign in again.",
+    noPermissionsError: "No permissions to access history. Please verify your authentication.",
   }
 };
 
