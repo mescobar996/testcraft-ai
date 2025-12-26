@@ -31,26 +31,39 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
   const [error, setError] = useState<string | null>(null);
 
   const loadHistory = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setError("Debes iniciar sesión para ver tu historial");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
+    let timeoutReached = false;
 
     // Timeout después de 10 segundos
     const timeoutId = setTimeout(() => {
+      timeoutReached = true;
       setIsLoading(false);
-      setError("Tiempo de espera agotado. Por favor, intenta de nuevo.");
+      setError("Tiempo de espera agotado. Verifica tu conexión a internet.");
     }, 10000);
 
     try {
       const data = await getGenerations(user.id);
-      clearTimeout(timeoutId);
-      setHistory(data);
+
+      // Solo actualizar si no llegó al timeout
+      if (!timeoutReached) {
+        clearTimeout(timeoutId);
+        setHistory(data);
+        setIsLoading(false);
+      }
     } catch (error) {
       clearTimeout(timeoutId);
-      console.error("Error loading history:", error);
-      setError("Error al cargar el historial. Por favor, intenta de nuevo.");
-    } finally {
-      setIsLoading(false);
+
+      if (!timeoutReached) {
+        console.error("Error loading history:", error);
+        setError("Error al cargar el historial. Verifica que Supabase esté configurado.");
+        setIsLoading(false);
+      }
     }
   }, [user]);
 
