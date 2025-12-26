@@ -20,6 +20,8 @@ interface AuthContextType {
   incrementUsage: () => void;
   checkSubscription: () => Promise<void>;
   startTrial: () => boolean;
+  addBonusGenerations: (amount: number) => void;
+  bonusGenerations: number;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,12 +30,14 @@ const FREE_DAILY_LIMIT = 5;
 const REGISTERED_MONTHLY_LIMIT = 10;
 const USAGE_KEY = 'testcraft-monthly-usage';
 const USAGE_DATE_KEY = 'testcraft-usage-month';
+const BONUS_KEY = 'testcraft-bonus-generations';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [usageCount, setUsageCount] = useState(0);
+  const [bonusGenerations, setBonusGenerations] = useState(0);
   const [isPro, setIsPro] = useState(false);
   const [trialInfo, setTrialInfo] = useState<TrialInfo | null>(null);
 
@@ -45,10 +49,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (savedMonth !== currentMonth) {
       localStorage.setItem(USAGE_DATE_KEY, currentMonth);
       localStorage.setItem(USAGE_KEY, '0');
+      localStorage.setItem(BONUS_KEY, '0'); // Reset bonus también
       setUsageCount(0);
+      setBonusGenerations(0);
     } else {
       const saved = localStorage.getItem(USAGE_KEY);
       setUsageCount(saved ? parseInt(saved) : 0);
+
+      const bonus = localStorage.getItem(BONUS_KEY);
+      setBonusGenerations(bonus ? parseInt(bonus) : 0);
     }
   };
 
@@ -148,6 +157,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(USAGE_KEY, newCount.toString());
   };
 
+  const addBonusGenerations = (amount: number) => {
+    const newBonus = bonusGenerations + amount;
+    setBonusGenerations(newBonus);
+    localStorage.setItem(BONUS_KEY, newBonus.toString());
+  };
+
   const startTrial = (): boolean => {
     if (!user) return false;
 
@@ -162,8 +177,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Determinar si el usuario tiene acceso a features Pro (vía trial o subscription)
   const isProTrial = trialInfo?.isActive ?? false;
 
-  // Calculate limits based on plan
-  const maxUsage = (isPro || isProTrial) ? Infinity : (user ? REGISTERED_MONTHLY_LIMIT : FREE_DAILY_LIMIT);
+  // Calculate limits based on plan (including bonus generations)
+  const baseLimit = user ? REGISTERED_MONTHLY_LIMIT : FREE_DAILY_LIMIT;
+  const maxUsage = (isPro || isProTrial) ? Infinity : baseLimit + bonusGenerations;
   const canGenerate = isPro || isProTrial || usageCount < maxUsage;
 
   return (
@@ -181,7 +197,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       canGenerate,
       incrementUsage,
       checkSubscription,
-      startTrial
+      startTrial,
+      addBonusGenerations,
+      bonusGenerations
     }}>
       {children}
     </AuthContext.Provider>

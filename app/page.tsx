@@ -16,6 +16,7 @@ import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 import { InteractiveDemo } from "@/components/InteractiveDemo";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { TrialBanner, TrialStatusBadge } from "@/components/TrialBanner";
+import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
@@ -222,6 +223,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
           <TrialBanner />
           <UsageBanner />
+          <OnboardingChecklist />
 
           <div className="grid lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
             <div className="order-2 lg:order-1">
