@@ -13,6 +13,7 @@ import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { ImageUploader } from "@/components/ImageUploader";
 import { DiagnosticPanel } from "@/components/DiagnosticPanel";
+import { InteractiveDemo } from "@/components/InteractiveDemo";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
@@ -340,7 +341,20 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
           </div>
         </section>
 
-        {/* 04. Comienza Ahora */}
+        {/* 04. Demo Interactivo */}
+        <section className="max-w-5xl mx-auto mb-24">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Mira cómo funciona
+            </h2>
+            <p className="text-zinc-400 text-base md:text-lg max-w-2xl mx-auto">
+              Observa en tiempo real cómo TestCraft AI transforma tus requisitos en casos de prueba profesionales
+            </p>
+          </div>
+          <InteractiveDemo />
+        </section>
+
+        {/* 05. Comienza Ahora */}
         <section className="max-w-4xl mx-auto mb-24 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Comienza Ahora</h2>
           <p className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed max-w-2xl mx-auto">

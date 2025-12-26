@@ -11,7 +11,8 @@
       "Bash(then echo \"=== .env.local encontrado ===\")",
       "Bash(else echo \"No existe .env.local\")",
       "Bash(fi)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(powershell -Command:*)"
     ]
   }
 }
