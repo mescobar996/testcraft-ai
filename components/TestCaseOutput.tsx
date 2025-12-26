@@ -201,12 +201,12 @@ Resultado Esperado: ${tc.expectedResult}`;
 
   if (error) {
     return (
-      <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-400 mt-0.5" />
+      <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 sm:p-5 md:p-6">
+        <div className="flex items-start gap-2 sm:gap-3">
+          <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-red-400 font-medium">{t.errorTitle}</p>
-            <p className="text-red-300/80 text-sm mt-1">{error}</p>
+            <p className="text-red-400 font-medium text-sm sm:text-base">{t.errorTitle}</p>
+            <p className="text-red-300/80 text-xs sm:text-sm mt-1">{error}</p>
           </div>
         </div>
       </div>
@@ -215,29 +215,29 @@ Resultado Esperado: ${tc.expectedResult}`;
 
   if (!result) {
     return (
-      <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 border-dashed">
-        <div className="flex flex-col items-center justify-center text-center space-y-3">
-          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center">
-            <ListChecks className="w-8 h-8 text-slate-600" />
+      <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 sm:p-7 md:p-8 border-dashed">
+        <div className="flex flex-col items-center justify-center text-center space-y-2 sm:space-y-3">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-slate-800 rounded-full flex items-center justify-center">
+            <ListChecks className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-slate-600" />
           </div>
           <div>
-            <p className="text-white font-medium">{t.noTestCases}</p>
-            <p className="text-sm text-slate-400 mt-1">{t.noTestCasesDesc}</p>
+            <p className="text-white font-medium text-sm sm:text-base">{t.noTestCases}</p>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">{t.noTestCasesDesc}</p>
           </div>
-          <p className="text-xs text-slate-500">{t.noTestCasesTip}</p>
+          <p className="text-[10px] sm:text-xs text-slate-500">{t.noTestCasesTip}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <StatsCards testCases={result.testCases} />
-      
+
       <ExecutionEstimate testCases={result.testCases} />
 
       {/* Botones de acción - Primera fila */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-1.5 sm:gap-2 flex-wrap">
         <ExportWithTemplates
           testCases={result.testCases}
           gherkin={result.gherkin}
@@ -258,17 +258,17 @@ Resultado Esperado: ${tc.expectedResult}`;
       </div>
 
       {/* Botones de acción - Segunda fila */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-1.5 sm:gap-2 flex-wrap">
         <Button
           onClick={() => copyToClipboard(result.gherkin, "gherkin-all")}
           variant="outline"
           size="sm"
-          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
+          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white text-xs sm:text-sm"
         >
           {copiedId === "gherkin-all" ? (
-            <Check className="w-4 h-4 mr-2 text-green-400" />
+            <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-green-400" />
           ) : (
-            <Copy className="w-4 h-4 mr-2" />
+            <Copy className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
           )}
           {t.copyGherkin}
         </Button>
@@ -276,59 +276,59 @@ Resultado Esperado: ${tc.expectedResult}`;
           onClick={copyAllCases}
           variant="outline"
           size="sm"
-          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
+          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white text-xs sm:text-sm"
         >
-          <CopyCheck className="w-4 h-4 mr-2" />
+          <CopyCheck className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
           {t.copyAll}
         </Button>
       </div>
 
       {/* Botones de acción - Tercera fila */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-1.5 sm:gap-2 flex-wrap">
         <Button
           onClick={toggleExpandAll}
           variant="outline"
           size="sm"
-          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
+          className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white text-xs sm:text-sm"
         >
-          <ChevronsUpDown className="w-4 h-4 mr-2" />
+          <ChevronsUpDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
           {allExpanded ? t.collapse : t.expand}
         </Button>
         <Button
           onClick={cycleSortOrder}
           variant="outline"
           size="sm"
-          className={`border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white ${
+          className={`border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white text-xs sm:text-sm ${
             sortBy !== "default" ? "border-violet-500/50 text-violet-300" : ""
           }`}
         >
-          <ArrowUpDown className="w-4 h-4 mr-2" />
+          <ArrowUpDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
           {getSortLabel()}
         </Button>
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+        <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-slate-500" />
         <input
           type="text"
           placeholder={t.searchPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-10 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20 text-sm"
+          className="w-full pl-8 sm:pl-10 pr-8 sm:pr-10 py-2 sm:py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20 text-xs sm:text-sm"
         />
         {searchQuery && (
           <button
             onClick={() => setSearchQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
         )}
       </div>
 
-      <div className="flex items-center gap-2 flex-wrap">
-        <Filter className="w-4 h-4 text-slate-400" />
-        <span className="text-sm text-slate-400 mr-1">{t.filter}</span>
+      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+        <Filter className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400" />
+        <span className="text-xs sm:text-sm text-slate-400 mr-0.5 sm:mr-1">{t.filter}</span>
         {[
           { key: "all", label: t.all, count: result.testCases.length },
           { key: "Positivo", label: t.positive, count: result.testCases.filter(tc => tc.type === "Positivo").length },
@@ -340,7 +340,7 @@ Resultado Esperado: ${tc.expectedResult}`;
             onClick={() => setActiveFilter(filter.key as FilterType)}
             variant="outline"
             size="sm"
-            className={`text-xs ${
+            className={`text-[10px] sm:text-xs ${
               activeFilter === filter.key
                 ? filter.key === "Positivo" ? "bg-green-500/20 border-green-500/50 text-green-400" :
                   filter.key === "Negativo" ? "bg-red-500/20 border-red-500/50 text-red-400" :
@@ -350,13 +350,13 @@ Resultado Esperado: ${tc.expectedResult}`;
             }`}
           >
             {filter.label}
-            <span className="ml-1.5 opacity-70">({filter.count})</span>
+            <span className="ml-1 sm:ml-1.5 opacity-70">({filter.count})</span>
           </Button>
         ))}
       </div>
 
       {(searchQuery || sortBy !== "default") && (
-        <p className="text-sm text-slate-400">
+        <p className="text-xs sm:text-sm text-slate-400">
           {filteredTestCases.length} {t.results}
           {searchQuery && ` para "${searchQuery}"`}
           {sortBy !== "default" && ` • ${t.orderedBy} ${getSortLabel().toLowerCase()}`}
