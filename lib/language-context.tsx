@@ -346,6 +346,18 @@ interface Translations {
   sessionExpiredError: string;
   noPermissionsError: string;
   retry: string;
+  // Password Strength Meter
+  passwordStrengthLabel: string;
+  passwordStrengthWeak: string;
+  passwordStrengthFair: string;
+  passwordStrengthGood: string;
+  passwordStrengthStrong: string;
+  passwordRequirementsLabel: string;
+  passwordMinLength: string;
+  passwordUppercase: string;
+  passwordLowercase: string;
+  passwordNumber: string;
+  passwordSpecialChar: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -691,6 +703,18 @@ const translations: Record<Language, Translations> = {
     sessionExpiredError: "Sesión expirada. Por favor, cierra sesión e inicia sesión nuevamente.",
     noPermissionsError: "Sin permisos para acceder al historial. Verifica tu autenticación.",
     retry: "Reintentar",
+    // Password Strength Meter
+    passwordStrengthLabel: "Fortaleza de contraseña",
+    passwordStrengthWeak: "Débil",
+    passwordStrengthFair: "Regular",
+    passwordStrengthGood: "Buena",
+    passwordStrengthStrong: "Fuerte",
+    passwordRequirementsLabel: "Requisitos:",
+    passwordMinLength: "Mínimo 8 caracteres",
+    passwordUppercase: "Una letra mayúscula",
+    passwordLowercase: "Una letra minúscula",
+    passwordNumber: "Un número",
+    passwordSpecialChar: "Un carácter especial (@$!%*?&#)",
   },
   en: {
     appName: "TestCraft AI",
@@ -1034,6 +1058,18 @@ const translations: Record<Language, Translations> = {
     sessionExpiredError: "Session expired. Please sign out and sign in again.",
     noPermissionsError: "No permissions to access history. Please verify your authentication.",
     retry: "Retry",
+    // Password Strength Meter
+    passwordStrengthLabel: "Password strength",
+    passwordStrengthWeak: "Weak",
+    passwordStrengthFair: "Fair",
+    passwordStrengthGood: "Good",
+    passwordStrengthStrong: "Strong",
+    passwordRequirementsLabel: "Requirements:",
+    passwordMinLength: "Minimum 8 characters",
+    passwordUppercase: "One uppercase letter",
+    passwordLowercase: "One lowercase letter",
+    passwordNumber: "One number",
+    passwordSpecialChar: "One special character (@$!%*?&#)",
   }
 };
 

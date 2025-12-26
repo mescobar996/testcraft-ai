@@ -59,7 +59,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     if (!formData.password) {
       newErrors.password = t.passwordRequired
     } else {
-      const { requirements } = calculatePasswordStrength(formData.password)
+      const { requirements } = calculatePasswordStrength(formData.password, t)
       const allMet = requirements.every(r => r.met)
       if (!allMet) {
         newErrors.password = t.passwordTooShort
