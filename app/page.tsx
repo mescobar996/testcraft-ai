@@ -1,27 +1,29 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, lazy, Suspense } from "react";
 import { TestCaseForm } from "@/components/TestCaseForm";
 import { TestCaseOutput } from "@/components/TestCaseOutput";
 import { AppIcon } from "@/components/AppIcon";
-import { Footer } from "@/components/Footer";
 import { UserMenu } from "@/components/UserMenu";
 import { UsageBanner } from "@/components/UsageBanner";
 import { UsageCounter } from "@/components/UsageCounter";
-import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
-import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts, ShortcutBadge } from "@/components/KeyboardShortcutsImproved";
 import { ImageUploader } from "@/components/ImageUploader";
-import { DiagnosticPanel } from "@/components/DiagnosticPanel";
-import { InteractiveDemo } from "@/components/InteractiveDemo";
-import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { TrialBanner, TrialStatusBadge } from "@/components/TrialBanner";
-import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
 import { trackGeneration } from "@/lib/analytics";
 import { Zap, Shield, Clock, Camera } from "lucide-react";
+
+// Lazy load componentes pesados para mejor performance
+const Footer = lazy(() => import("@/components/Footer").then(m => ({ default: m.Footer })));
+const CloudHistoryPanel = lazy(() => import("@/components/CloudHistoryPanel").then(m => ({ default: m.CloudHistoryPanel })));
+const FavoritesPanel = lazy(() => import("@/components/FavoritesPanel").then(m => ({ default: m.FavoritesPanel })));
+const DiagnosticPanel = lazy(() => import("@/components/DiagnosticPanel").then(m => ({ default: m.DiagnosticPanel })));
+const InteractiveDemo = lazy(() => import("@/components/InteractiveDemo").then(m => ({ default: m.InteractiveDemo })));
+const UpgradePrompt = lazy(() => import("@/components/UpgradePrompt").then(m => ({ default: m.UpgradePrompt })));
+const OnboardingChecklist = lazy(() => import("@/components/OnboardingChecklist").then(m => ({ default: m.OnboardingChecklist })));
 
 export interface TestCase {
   id: string;
@@ -197,11 +199,15 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
               <UsageCounter />
               <div className="hidden md:flex items-center gap-2">
                 <KeyboardShortcutsHelp shortcuts={shortcuts} />
-                <FavoritesPanel onSelectCase={handleSelectFavorite} />
-                <CloudHistoryPanel
-                  onSelect={handleSelectFromHistory}
-                  onNewGeneration={newGeneration}
-                />
+                <Suspense fallback={<div className="w-8 h-8" />}>
+                  <FavoritesPanel onSelectCase={handleSelectFavorite} />
+                </Suspense>
+                <Suspense fallback={<div className="w-8 h-8" />}>
+                  <CloudHistoryPanel
+                    onSelect={handleSelectFromHistory}
+                    onNewGeneration={newGeneration}
+                  />
+                </Suspense>
               </div>
               <UserMenu />
             </div>
@@ -234,7 +240,9 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
           <TrialBanner />
           <UsageBanner />
-          <OnboardingChecklist />
+          <Suspense fallback={<div className="h-20" />}>
+            <OnboardingChecklist />
+          </Suspense>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6 max-w-6xl mx-auto">
             <div className="order-2 lg:order-1">
@@ -367,17 +375,29 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
               {t.demoSubtitle}
             </p>
           </div>
-          <InteractiveDemo />
+          <Suspense fallback={<div className="h-96 bg-slate-900/30 rounded-xl animate-pulse" />}>
+            <InteractiveDemo />
+          </Suspense>
         </section>
       </div>
 
-      <Footer />
+      <Suspense fallback={<div className="h-32" />}>
+        <Footer />
+      </Suspense>
 
       {/* Upgrade prompt contextual */}
-      {user && !isPro && <UpgradePrompt usageCount={usageCount} maxUsage={maxUsage} />}
+      {user && !isPro && (
+        <Suspense fallback={null}>
+          <UpgradePrompt usageCount={usageCount} maxUsage={maxUsage} />
+        </Suspense>
+      )}
 
       {/* Panel de diagnóstico - TEMPORAL para debugging */}
-      {process.env.NODE_ENV === 'development' && <DiagnosticPanel />}
+      {process.env.NODE_ENV === 'development' && (
+        <Suspense fallback={null}>
+          <DiagnosticPanel />
+        </Suspense>
+      )}
     </main>
   );
 }

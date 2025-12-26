@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import { useAuth } from "@/lib/auth-context";
+import { useLanguage } from "@/lib/language-context";
 
 interface Integration {
   id: string;
@@ -24,25 +25,25 @@ interface Integration {
   icon: string;
   color: string;
   connected: boolean;
-  description: string;
+  descriptionKey: string;
   helpUrl: string;
-  fields: { key: string; label: string; placeholder: string; type?: string; help?: string }[];
+  fields: { key: string; labelKey: string; placeholderKey: string; type?: string; helpKey?: string }[];
 }
 
-const INTEGRATIONS: Integration[] = [
+const createIntegration = (t: any): Integration[] => [
   {
     id: "jira",
     name: "Jira",
     icon: "🔷",
     color: "from-blue-500 to-blue-600",
     connected: false,
-    description: "Crea issues de test case directamente en tu proyecto de Jira",
+    descriptionKey: "jiraDescription",
     helpUrl: "https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/",
     fields: [
-      { key: "domain", label: "Dominio Jira", placeholder: "tu-empresa.atlassian.net", help: "Sin https://" },
-      { key: "email", label: "Email", placeholder: "tu@email.com" },
-      { key: "apiToken", label: "API Token", placeholder: "Tu API token", type: "password", help: "Crear en Atlassian Account Settings" },
-      { key: "projectKey", label: "Clave del Proyecto", placeholder: "PROJ", help: "Ej: PROJ, TEST, QA" },
+      { key: "domain", labelKey: "organization", placeholderKey: "enterOrganization", helpKey: "organization" },
+      { key: "email", labelKey: "emailLabel", placeholderKey: "emailPlaceholder" },
+      { key: "apiToken", labelKey: "APIKey", placeholderKey: "enterAPIKey", type: "password", helpKey: "APIKey" },
+      { key: "projectKey", labelKey: "projectKey", placeholderKey: "enterProjectKey", helpKey: "projectKey" },
     ],
   },
   {
@@ -51,13 +52,13 @@ const INTEGRATIONS: Integration[] = [
     icon: "📋",
     color: "from-sky-500 to-sky-600",
     connected: false,
-    description: "Crea tarjetas con checklist de pasos en tu tablero de Trello",
+    descriptionKey: "trelloDescription",
     helpUrl: "https://trello.com/power-ups/admin",
     fields: [
-      { key: "apiKey", label: "API Key", placeholder: "Tu API Key", help: "Obtener en trello.com/power-ups/admin" },
-      { key: "token", label: "Token", placeholder: "Tu Token", type: "password", help: "Generar desde el link de API Key" },
-      { key: "boardId", label: "ID del Board", placeholder: "abc123", help: "Está en la URL del tablero" },
-      { key: "listId", label: "ID de la Lista", placeholder: "def456", help: "Agregar .json a la URL del tablero para ver IDs" },
+      { key: "apiKey", labelKey: "APIKey", placeholderKey: "enterAPIKey", helpKey: "APIKey" },
+      { key: "token", labelKey: "accessToken", placeholderKey: "enterAccessToken", type: "password", helpKey: "accessToken" },
+      { key: "boardId", labelKey: "boardID", placeholderKey: "enterBoardID", helpKey: "boardID" },
+      { key: "listId", labelKey: "boardID", placeholderKey: "enterBoardID", helpKey: "boardID" },
     ],
   },
   {
@@ -66,11 +67,11 @@ const INTEGRATIONS: Integration[] = [
     icon: "📝",
     color: "from-gray-600 to-gray-700",
     connected: false,
-    description: "Sincroniza casos de prueba con una base de datos de Notion",
+    descriptionKey: "notionDescription",
     helpUrl: "https://www.notion.so/my-integrations",
     fields: [
-      { key: "apiKey", label: "Integration Token", placeholder: "secret_...", type: "password", help: "Crear en notion.so/my-integrations" },
-      { key: "databaseId", label: "Database ID", placeholder: "abc123def456", help: "Compartir DB con tu integración primero" },
+      { key: "apiKey", labelKey: "accessToken", placeholderKey: "enterAccessToken", type: "password", helpKey: "accessToken" },
+      { key: "databaseId", labelKey: "workspace", placeholderKey: "enterWorkspace", helpKey: "workspace" },
     ],
   },
   {
@@ -79,12 +80,12 @@ const INTEGRATIONS: Integration[] = [
     icon: "🐙",
     color: "from-purple-500 to-purple-600",
     connected: false,
-    description: "Crea issues etiquetados por tipo y prioridad en GitHub",
+    descriptionKey: "githubDescription",
     helpUrl: "https://github.com/settings/tokens",
     fields: [
-      { key: "token", label: "Personal Access Token", placeholder: "ghp_...", type: "password", help: "Con permisos: repo, issues" },
-      { key: "owner", label: "Owner/Org", placeholder: "tu-usuario" },
-      { key: "repo", label: "Repositorio", placeholder: "nombre-repo" },
+      { key: "token", labelKey: "accessToken", placeholderKey: "enterAccessToken", type: "password", helpKey: "accessToken" },
+      { key: "owner", labelKey: "organization", placeholderKey: "enterOrganization" },
+      { key: "repo", labelKey: "repository", placeholderKey: "enterRepository" },
     ],
   },
   {
@@ -93,12 +94,12 @@ const INTEGRATIONS: Integration[] = [
     icon: "🔵",
     color: "from-blue-600 to-indigo-600",
     connected: false,
-    description: "Crea Test Cases en Azure DevOps Test Plans",
+    descriptionKey: "azureDescription",
     helpUrl: "https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate",
     fields: [
-      { key: "organization", label: "Organización", placeholder: "tu-organizacion" },
-      { key: "project", label: "Proyecto", placeholder: "nombre-proyecto" },
-      { key: "pat", label: "Personal Access Token", placeholder: "Tu PAT", type: "password", help: "Con permisos: Work Items (Read & Write)" },
+      { key: "organization", labelKey: "organization", placeholderKey: "enterOrganization" },
+      { key: "project", labelKey: "projectKey", placeholderKey: "enterProjectKey" },
+      { key: "pat", labelKey: "accessToken", placeholderKey: "enterAccessToken", type: "password", helpKey: "accessToken" },
     ],
   },
   {
@@ -107,11 +108,11 @@ const INTEGRATIONS: Integration[] = [
     icon: "💬",
     color: "from-green-500 to-emerald-500",
     connected: false,
-    description: "Recibe notificaciones cuando se generan nuevos casos de prueba",
+    descriptionKey: "slackDescription",
     helpUrl: "https://api.slack.com/messaging/webhooks",
     fields: [
-      { key: "webhookUrl", label: "Webhook URL", placeholder: "https://hooks.slack.com/services/...", type: "password", help: "Crear Incoming Webhook en Slack" },
-      { key: "channel", label: "Canal (opcional)", placeholder: "#qa-team", help: "Se usa el canal del webhook por defecto" },
+      { key: "webhookUrl", labelKey: "webhookURL", placeholderKey: "enterWebhookURL", type: "password", helpKey: "webhookURL" },
+      { key: "channel", labelKey: "workspace", placeholderKey: "enterWorkspace", helpKey: "workspace" },
     ],
   },
 ];
@@ -124,7 +125,8 @@ interface IntegrationsModalProps {
 export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
   const { showToast } = useToast();
   const { user, session } = useAuth();
-  const [integrations, setIntegrations] = useState(INTEGRATIONS);
+  const { t } = useLanguage();
+  const [integrations, setIntegrations] = useState(createIntegration(t));
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [isConnecting, setIsConnecting] = useState(false);
@@ -134,7 +136,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
 
   const loadIntegrations = useCallback(async () => {
     if (!session?.access_token) return;
-    
+
     setIsLoading(true);
     try {
       const response = await fetch('/api/integrations/config', {
@@ -146,7 +148,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
       if (response.ok) {
         const data = await response.json();
         const connectedIds = data.integrations.map((i: any) => i.integration_id);
-        
+
         setIntegrations(prev => prev.map(i => ({
           ...i,
           connected: connectedIds.includes(i.id)
@@ -168,16 +170,16 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
 
   const handleConnect = async () => {
     if (!selectedIntegration || !session?.access_token) return;
-    
+
     // Validar campos requeridos
     const missingFields = selectedIntegration.fields.filter(f => !formData[f.key]?.trim());
     if (missingFields.length > 0) {
-      showToast(`Completá: ${missingFields.map(f => f.label).join(', ')}`, "error");
+      showToast(`${t.emailRequired}: ${missingFields.map(f => t[f.labelKey as keyof typeof t] || f.labelKey).join(', ')}`, "error");
       return;
     }
 
     setIsConnecting(true);
-    
+
     try {
       const response = await fetch('/api/integrations/config', {
         method: 'POST',
@@ -192,19 +194,19 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
       });
 
       if (response.ok) {
-        setIntegrations(prev => prev.map(i => 
+        setIntegrations(prev => prev.map(i =>
           i.id === selectedIntegration.id ? { ...i, connected: true } : i
         ));
-        
-        showToast(`${selectedIntegration.name} conectado exitosamente`, "success");
+
+        showToast(`${selectedIntegration.name} ${t.connected}`, "success");
         setSelectedIntegration(null);
         setFormData({});
       } else {
         const error = await response.json();
-        showToast(error.error || "Error al conectar", "error");
+        showToast(error.error || t.connectionError, "error");
       }
     } catch (error) {
-      showToast("Error de conexión", "error");
+      showToast(t.connectionError, "error");
     } finally {
       setIsConnecting(false);
     }
@@ -212,16 +214,16 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
 
   const handleTestConnection = async () => {
     if (!selectedIntegration || !session?.access_token) return;
-    
+
     // Primero guardar la configuración
     const missingFields = selectedIntegration.fields.filter(f => !formData[f.key]?.trim());
     if (missingFields.length > 0) {
-      showToast(`Completá: ${missingFields.map(f => f.label).join(', ')}`, "error");
+      showToast(`${t.emailRequired}: ${missingFields.map(f => t[f.labelKey as keyof typeof t] || f.labelKey).join(', ')}`, "error");
       return;
     }
 
     setIsTesting(true);
-    
+
     try {
       // Guardar primero
       await fetch('/api/integrations/config', {
@@ -245,13 +247,13 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
 
       if (response.ok) {
         const data = await response.json();
-        showToast(`✓ Conexión exitosa${data.project?.name ? `: ${data.project.name}` : ''}`, "success");
+        showToast(`✓ ${t.connected}${data.project?.name ? `: ${data.project.name}` : ''}`, "success");
       } else {
         const error = await response.json();
-        showToast(error.error || "Error de conexión", "error");
+        showToast(error.error || t.connectionError, "error");
       }
     } catch (error) {
-      showToast("Error al probar conexión", "error");
+      showToast(t.connectionError, "error");
     } finally {
       setIsTesting(false);
     }
@@ -259,7 +261,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
 
   const handleDisconnect = async (integrationId: string) => {
     if (!session?.access_token) return;
-    
+
     try {
       const response = await fetch(`/api/integrations/config?integrationId=${integrationId}`, {
         method: 'DELETE',
@@ -269,13 +271,13 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
       });
 
       if (response.ok) {
-        setIntegrations(prev => prev.map(i => 
+        setIntegrations(prev => prev.map(i =>
           i.id === integrationId ? { ...i, connected: false } : i
         ));
-        showToast("Integración desconectada", "success");
+        showToast(t.notConfigured, "success");
       }
     } catch (error) {
-      showToast("Error al desconectar", "error");
+      showToast(t.connectionError, "error");
     }
   };
 
@@ -290,9 +292,9 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 max-w-md text-center">
           <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-white mb-2">Iniciá sesión</h2>
-          <p className="text-slate-400 mb-4">Necesitás iniciar sesión para usar las integraciones.</p>
-          <Button onClick={onClose}>Cerrar</Button>
+          <h2 className="text-xl font-semibold text-white mb-2">{t.signInButton}</h2>
+          <p className="text-slate-400 mb-4">{t.signInWithGoogle}</p>
+          <Button onClick={onClose}>{t.cancel}</Button>
         </div>
       </div>
     );
@@ -308,8 +310,8 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
               <Link2 className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white">Integraciones</h2>
-              <p className="text-sm text-slate-400">Conectá con tus herramientas de testing</p>
+              <h2 className="text-lg font-semibold text-white">{t.integrationsTitle}</h2>
+              <p className="text-sm text-slate-400">{t.integrationsSubtitle}</p>
             </div>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-white p-2">
@@ -333,14 +335,14 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                 }}
                 className="text-violet-400 hover:text-violet-300 text-sm flex items-center gap-1"
               >
-                ← Volver a integraciones
+                ← {t.cancel}
               </button>
-              
+
               <div className="flex items-center gap-3 mb-6">
                 <span className="text-3xl">{selectedIntegration.icon}</span>
                 <div>
                   <h3 className="text-xl font-semibold text-white">{selectedIntegration.name}</h3>
-                  <p className="text-slate-400 text-sm">{selectedIntegration.description}</p>
+                  <p className="text-slate-400 text-sm">{t[selectedIntegration.descriptionKey as keyof typeof t]}</p>
                 </div>
               </div>
 
@@ -348,15 +350,15 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                 <div className="flex items-start gap-2 text-sm">
                   <AlertCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                   <div className="text-slate-300">
-                    <p>Tus credenciales se guardan de forma segura en nuestra base de datos.</p>
-                    <a 
-                      href={selectedIntegration.helpUrl} 
-                      target="_blank" 
+                    <p>{t.exportDirectly}</p>
+                    <a
+                      href={selectedIntegration.helpUrl}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-400 hover:underline flex items-center gap-1 mt-1"
                     >
                       <ExternalLink className="w-3 h-3" />
-                      Ver cómo obtener credenciales
+                      {t.documentation}
                     </a>
                   </div>
                 </div>
@@ -366,9 +368,9 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                 {selectedIntegration.fields.map(field => (
                   <div key={field.key}>
                     <label className="text-sm text-slate-300 mb-1.5 block">
-                      {field.label}
-                      {field.help && (
-                        <span className="text-slate-500 ml-2 text-xs">({field.help})</span>
+                      {t[field.labelKey as keyof typeof t] || field.labelKey}
+                      {field.helpKey && (
+                        <span className="text-slate-500 ml-2 text-xs">({t[field.helpKey as keyof typeof t] || field.helpKey})</span>
                       )}
                     </label>
                     <div className="relative">
@@ -376,7 +378,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                         type={field.type === 'password' && !showPasswords[field.key] ? 'password' : 'text'}
                         value={formData[field.key] || ""}
                         onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
-                        placeholder={field.placeholder}
+                        placeholder={t[field.placeholderKey as keyof typeof t] || field.placeholderKey}
                         className="bg-slate-800/50 border-slate-700 text-white pr-10"
                       />
                       {field.type === 'password' && (
@@ -405,7 +407,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                   ) : (
                     <Settings className="w-4 h-4 mr-2" />
                   )}
-                  Probar Conexión
+                  {t.testConnection}
                 </Button>
                 <Button
                   onClick={handleConnect}
@@ -417,7 +419,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                   ) : (
                     <Check className="w-4 h-4 mr-2" />
                   )}
-                  Guardar y Conectar
+                  {t.saveIntegration}
                 </Button>
               </div>
             </div>
@@ -428,8 +430,8 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                 <div
                   key={integration.id}
                   className={`bg-slate-800/50 border rounded-xl p-4 transition-all ${
-                    integration.connected 
-                      ? 'border-green-500/50' 
+                    integration.connected
+                      ? 'border-green-500/50'
                       : 'border-slate-700 hover:border-violet-500/50'
                   }`}
                 >
@@ -440,15 +442,15 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                         <h3 className="text-white font-medium">{integration.name}</h3>
                         {integration.connected && (
                           <span className="text-xs text-green-400 flex items-center gap-1">
-                            <Check className="w-3 h-3" /> Conectado
+                            <Check className="w-3 h-3" /> {t.connected}
                           </span>
                         )}
                       </div>
                     </div>
                   </div>
-                  
-                  <p className="text-slate-400 text-sm mb-4">{integration.description}</p>
-                  
+
+                  <p className="text-slate-400 text-sm mb-4">{t[integration.descriptionKey as keyof typeof t]}</p>
+
                   <div className="flex gap-2">
                     {integration.connected ? (
                       <>
@@ -459,7 +461,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                           className="flex-1 border-slate-700 text-slate-300"
                         >
                           <Settings className="w-4 h-4 mr-1" />
-                          Configurar
+                          {t.configureAPI}
                         </Button>
                         <Button
                           size="sm"
@@ -477,7 +479,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
                         className={`flex-1 bg-gradient-to-r ${integration.color} hover:opacity-90`}
                       >
                         <Link2 className="w-4 h-4 mr-1" />
-                        Conectar
+                        {t.connected}
                       </Button>
                     )}
                   </div>
@@ -491,7 +493,7 @@ export function IntegrationsModal({ isOpen, onClose }: IntegrationsModalProps) {
         {!selectedIntegration && !isLoading && (
           <div className="p-4 border-t border-slate-800 bg-slate-800/30">
             <p className="text-xs text-slate-500 text-center">
-              Las credenciales se guardan encriptadas en tu cuenta
+              {t.exportDirectly}
             </p>
           </div>
         )}

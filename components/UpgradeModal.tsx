@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Check, Loader2, Crown, Zap, Shield, Clock, Sparkles, Camera, AlertCircle, LogIn } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useLanguage } from "@/lib/language-context";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface UpgradeModalProps {
@@ -12,12 +13,13 @@ interface UpgradeModalProps {
 
 export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleUpgrade = async () => {
     if (!user) {
-      setError("Para continuar con la compra, primero debes iniciar sesion con tu cuenta de Google usando el boton en la esquina superior derecha.");
+      setError(t.connectionError);
       return;
     }
 
@@ -30,7 +32,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       const { data: { session } } = await supabase.auth.getSession()
 
       if (!session?.access_token) {
-        throw new Error('No se pudo obtener el token de autenticación. Por favor, inicia sesión nuevamente.')
+        throw new Error(t.connectionError)
       }
 
       const response = await fetch('/api/stripe/checkout', {
@@ -50,17 +52,17 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al crear la sesion de pago');
+        throw new Error(data.error || t.connectionError);
       }
 
       if (data.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('El sistema de pagos no esta disponible. Stripe no esta configurado en el servidor.');
+        throw new Error(t.connectionError);
       }
     } catch (err) {
       console.error('Error creating checkout:', err);
-      setError(err instanceof Error ? err.message : 'Error al conectar con el servidor de pagos.');
+      setError(err instanceof Error ? err.message : t.connectionError);
     } finally {
       setIsLoading(false);
     }
@@ -69,37 +71,37 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50"
       role="dialog"
       aria-modal="true"
     >
-      <div 
+      <div
         className="fixed inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
-      
+
       <div className="fixed inset-0 sm:inset-auto sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-lg sm:max-h-[80vh] bg-slate-900 sm:rounded-2xl sm:border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
-        
+
         <div className="relative bg-gradient-to-br from-violet-600 to-purple-700 p-5 sm:p-6 text-center flex-shrink-0">
-          <button 
+          <button
             type="button"
             onClick={onClose}
             className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
           >
             <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
-          
+
           <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
             <Crown className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">TestCraft AI Pro</h2>
-          <p className="text-violet-200 text-sm">Desbloquea todo el potencial</p>
-          
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">TestCraft AI {t.proLabel}</h2>
+          <p className="text-violet-200 text-sm">{t.unlimitedPower}</p>
+
           <div className="mt-3 sm:mt-4 flex items-center justify-center gap-1">
             <span className="text-3xl sm:text-4xl font-bold text-white">$29</span>
-            <span className="text-violet-200">/mes</span>
+            <span className="text-violet-200">{t.perMonth}</span>
           </div>
         </div>
 
@@ -108,55 +110,55 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-start gap-3">
               <LogIn className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-blue-400 font-medium text-sm">Inicia sesion para continuar</p>
-                <p className="text-blue-300/70 text-xs mt-1">Usa el boton de Google en la esquina superior derecha</p>
+                <p className="text-blue-400 font-medium text-sm">{t.signInButton}</p>
+                <p className="text-blue-300/70 text-xs mt-1">{t.signInWithGoogle}</p>
               </div>
             </div>
           )}
-          
+
           {error && (
             <div className="mb-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
               <p className="text-amber-400 text-sm">{error}</p>
             </div>
           )}
-          
+
           <div className="space-y-3 sm:space-y-4">
-            <Feature 
+            <Feature
               icon={<Zap className="w-5 h-5 text-green-400" />}
-              title="Generaciones ilimitadas"
-              description="Sin limites diarios"
+              title={t.unlimitedGenerations}
+              description={t.unlimitedGenerationsDesc}
               bgColor="bg-green-500/10"
             />
-            <Feature 
+            <Feature
               icon={<Camera className="w-5 h-5 text-fuchsia-400" />}
-              title="Generacion desde imagen"
-              description="Subi screenshots y generamos casos"
+              title={t.generateFromImage}
+              description={t.generateFromImageSubtitle}
               bgColor="bg-fuchsia-500/10"
               isNew
             />
-            <Feature 
+            <Feature
               icon={<Clock className="w-5 h-5 text-blue-400" />}
-              title="Prioridad en generacion"
-              description="Respuestas mas rapidas"
+              title={t.prioritySupport}
+              description={t.prioritySupportDesc}
               bgColor="bg-blue-500/10"
             />
-            <Feature 
+            <Feature
               icon={<Shield className="w-5 h-5 text-purple-400" />}
-              title="Historial completo"
-              description="Guarda todo para siempre"
+              title={t.cloudHistory}
+              description={t.cloudHistoryDesc}
               bgColor="bg-purple-500/10"
             />
-            <Feature 
+            <Feature
               icon={<Sparkles className="w-5 h-5 text-yellow-400" />}
-              title="Test Plan PDF profesional"
-              description="Formato ejecutivo"
+              title={t.advancedExports}
+              description={t.advancedExportsDesc}
               bgColor="bg-yellow-500/10"
             />
-            <Feature 
+            <Feature
               icon={<Check className="w-5 h-5 text-pink-400" />}
-              title="Soporte prioritario"
-              description="Respuesta en 24hs"
+              title={t.APIAccess}
+              description={t.APIAccessDesc}
               bgColor="bg-pink-500/10"
             />
           </div>
@@ -168,30 +170,30 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             onClick={handleUpgrade}
             disabled={isLoading}
             className={`w-full flex items-center justify-center gap-2 ${
-              !user 
-                ? 'bg-slate-700 hover:bg-slate-600' 
+              !user
+                ? 'bg-slate-700 hover:bg-slate-600'
                 : 'bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700'
             } disabled:opacity-50 text-white py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl transition-all shadow-lg`}
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Procesando...
+                {t.processing}
               </>
             ) : !user ? (
               <>
                 <LogIn className="w-5 h-5" />
-                Iniciar sesion para comprar
+                {t.signInButton}
               </>
             ) : (
               <>
                 <Crown className="w-5 h-5" />
-                Actualizar a Pro
+                {t.upgradeNow}
               </>
             )}
           </button>
           <p className="text-center text-slate-500 text-xs sm:text-sm mt-3">
-            Pago seguro con Stripe - Cancela cuando quieras
+            {t.cancelAnytime}
           </p>
         </div>
       </div>

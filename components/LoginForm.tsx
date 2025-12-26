@@ -6,12 +6,14 @@ import Link from "next/link"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react"
 import { GoogleOAuthButton } from "./GoogleOAuthButton"
+import { useLanguage } from "@/lib/language-context"
 
 interface LoginFormProps {
   onSuccess?: () => void
 }
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -24,7 +26,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   const [forgotEmail, setForgotEmail] = useState("")
   const [isSendingReset, setIsSendingReset] = useState(false)
   const [resetMessage, setResetMessage] = useState("")
-  
+
   const router = useRouter()
   const supabase = createClientComponentClient()
 
@@ -41,13 +43,13 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     const newErrors: Record<string, string> = {}
 
     if (!formData.email.trim()) {
-      newErrors.email = "El email es requerido"
+      newErrors.email = t.emailRequired
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email inválido"
+      newErrors.email = t.invalidEmail
     }
 
     if (!formData.password) {
-      newErrors.password = "La contraseña es requerida"
+      newErrors.password = t.passwordRequired
     }
 
     setErrors(newErrors)
@@ -71,8 +73,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       })
 
       if (error) {
-        setGeneralError(error.message === "Invalid login credentials" 
-          ? "Email o contraseña incorrectos" 
+        setGeneralError(error.message === "Invalid login credentials"
+          ? t.invalidCredentials
           : error.message)
         return
       }
@@ -86,7 +88,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
     } catch (error) {
       console.error("Login error:", error)
-      setGeneralError("Error de conexión. Por favor, intenta de nuevo.")
+      setGeneralError(t.connectionError)
     } finally {
       setIsLoading(false)
     }
@@ -95,9 +97,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault()
     setResetMessage("")
-    
+
     if (!forgotEmail.trim() || !/\S+@\S+\.\S+/.test(forgotEmail)) {
-      setResetMessage("Por favor, ingresa un email válido")
+      setResetMessage(t.enterValidEmail)
       return
     }
 
@@ -122,12 +124,12 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           setResetMessage("")
         }, 3000)
       } else {
-        setResetMessage(data.error || "Error al enviar el email")
+        setResetMessage(data.error || t.resetError)
       }
 
     } catch (error) {
       console.error("Forgot password error:", error)
-      setResetMessage("Error de conexión. Por favor, intenta de nuevo.")
+      setResetMessage(t.connectionError)
     } finally {
       setIsSendingReset(false)
     }
@@ -143,16 +145,16 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h2 className="text-2xl font-bold text-white mb-2">Recuperar contraseña</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{t.recoverPassword}</h2>
           <p className="text-slate-400">
-            Te enviaremos un enlace para restablecer tu contraseña
+            {t.recoverPasswordDesc}
           </p>
         </div>
 
         <form onSubmit={handleForgotPassword} className="space-y-6">
           <div>
             <label htmlFor="forgotEmail" className="block text-sm font-medium text-slate-300 mb-2">
-              Email
+              {t.emailLabel}
             </label>
             <input
               id="forgotEmail"
@@ -160,7 +162,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
               value={forgotEmail}
               onChange={(e) => setForgotEmail(e.target.value)}
               className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-              placeholder="tu@email.com"
+              placeholder={t.emailPlaceholder}
               disabled={isSendingReset}
             />
           </div>
@@ -187,10 +189,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             {isSendingReset ? (
               <div className="flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Enviando...
+                {t.sending}
               </div>
             ) : (
-              "Enviar enlace de recuperación"
+              t.sendRecoveryLink
             )}
           </button>
         </form>
@@ -201,21 +203,21 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-white mb-2">Bienvenido de vuelta</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">{t.welcomeBack}</h2>
         <p className="text-slate-400">
-          Inicia sesión en tu cuenta de TestCraft AI
+          {t.signInToAccount}
         </p>
       </div>
 
       {/* Google OAuth Button */}
-      <GoogleOAuthButton text="Continuar con Google" />
+      <GoogleOAuthButton text={t.continueWithGoogle} />
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-slate-700"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-slate-900 text-slate-400">o continúa con email</span>
+          <span className="px-2 bg-slate-900 text-slate-400">{t.orContinueWithEmail}</span>
         </div>
       </div>
 
@@ -227,7 +229,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-          Email
+          {t.emailLabel}
         </label>
         <input
           id="email"
@@ -238,7 +240,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           className={`w-full px-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
             errors.email ? 'border-red-500' : 'border-slate-700'
           }`}
-          placeholder="tu@email.com"
+          placeholder={t.emailPlaceholder}
           disabled={isLoading}
         />
         {errors.email && (
@@ -248,7 +250,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-          Contraseña
+          {t.passwordLabel}
         </label>
         <div className="relative">
           <input
@@ -260,14 +262,14 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             className={`w-full px-4 py-3 pr-12 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
               errors.password ? 'border-red-500' : 'border-slate-700'
             }`}
-            placeholder="Tu contraseña"
+            placeholder={t.passwordPlaceholder}
             disabled={isLoading}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            aria-label={showPassword ? t.hidePassword : t.showPassword}
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>
@@ -283,7 +285,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           onClick={() => setShowForgotPassword(true)}
           className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
         >
-          ¿Olvidaste tu contraseña?
+          {t.forgotPassword}
         </button>
       </div>
 
@@ -295,18 +297,18 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         {isLoading ? (
           <div className="flex items-center justify-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin" />
-            Iniciando sesión...
+            {t.signingIn}
           </div>
         ) : (
-          "Iniciar sesión"
+          t.signInButton
         )}
       </button>
 
       <div className="text-center">
         <p className="text-slate-400 text-sm">
-          ¿No tienes una cuenta?{" "}
+          {t.noAccount}{" "}
           <Link href="/auth/register" className="text-violet-400 hover:text-violet-300 font-medium">
-            Regístrate
+            {t.signUp}
           </Link>
         </p>
       </div>

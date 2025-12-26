@@ -19,7 +19,7 @@ import {
 
 export function UserMenu() {
   const { user, loading, signInWithGoogle, signOut, usageCount, maxUsage, isPro, isProTrial, trialInfo } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
@@ -51,7 +51,7 @@ export function UserMenu() {
         className="border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 hover:text-white transition-all duration-300"
       >
         <LogIn className="w-4 h-4 mr-2" />
-        Iniciar sesión
+        {t.signInButton}
       </Button>
     );
   }
@@ -127,13 +127,13 @@ export function UserMenu() {
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-slate-400 text-sm flex items-center gap-1.5">
                     <Zap className="w-4 h-4 text-yellow-400" />
-                    Uso diario
+                    {t.generationsToday}
                   </span>
                   <span className="text-white text-sm font-medium">
                     {isPro ? (
                       <span className="flex items-center gap-1 text-yellow-400">
                         <Infinity className="w-4 h-4" />
-                        Ilimitado
+                        {t.unlimited}
                       </span>
                     ) : (
                       `${usageCount} / ${maxUsage}`
@@ -143,13 +143,13 @@ export function UserMenu() {
                 {!isPro && (
                   <>
                     <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-300"
                         style={{ width: `${Math.min((usageCount / maxUsage) * 100, 100)}%` }}
                       />
                     </div>
                     <p className="text-xs text-slate-500 mt-2">
-                      {maxUsage - usageCount} generaciones restantes hoy
+                      {maxUsage - usageCount} {t.generationsLeft.toLowerCase()}
                     </p>
                   </>
                 )}
@@ -158,15 +158,15 @@ export function UserMenu() {
               {/* Plan Badge & Upgrade */}
               <div className="p-4 border-b border-slate-700">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400 text-sm">Plan actual</span>
+                  <span className="text-slate-400 text-sm">{t.currentPlanLabel}</span>
                   {isPro ? (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30">
                       <Crown className="w-3 h-3" />
-                      Pro
+                      {t.proLabel}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-violet-500/20 text-violet-400 text-xs rounded-full">
-                      Gratuito
+                      {t.freeLabel}
                     </span>
                   )}
                 </div>
@@ -180,14 +180,14 @@ export function UserMenu() {
                     size="sm"
                   >
                     <Crown className="w-4 h-4 mr-2" />
-                    Actualizar Plan
+                    {t.upgradeNow}
                   </Button>
                 )}
               </div>
 
               {/* Language Selector */}
               <div className="p-4 border-b border-slate-700">
-                <span className="text-slate-400 text-sm block mb-2">Idioma</span>
+                <span className="text-slate-400 text-sm block mb-2">{language === "es" ? "Idioma" : "Language"}</span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setLanguage("es")}
@@ -222,7 +222,7 @@ export function UserMenu() {
                   className="w-full flex items-center gap-2 px-3 py-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200"
                 >
                   <LogOut className="w-4 h-4" />
-                  Cerrar sesión
+                  {t.signOut}
                 </button>
               </div>
             </div>

@@ -7,12 +7,14 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { GoogleOAuthButton } from "./GoogleOAuthButton"
 import { PasswordStrengthMeter, calculatePasswordStrength } from "./PasswordStrengthMeter"
+import { useLanguage } from "@/lib/language-context"
 
 interface RegisterFormProps {
   onSuccess?: () => void
 }
 
 export function RegisterForm({ onSuccess }: RegisterFormProps) {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,7 +27,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [generalError, setGeneralError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
-  
+
   const router = useRouter()
   const supabase = createClientComponentClient()
 
@@ -43,31 +45,31 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     const newErrors: Record<string, string> = {}
 
     if (!formData.name.trim()) {
-      newErrors.name = "El nombre es requerido"
+      newErrors.name = t.nameRequired
     } else if (formData.name.length < 2) {
-      newErrors.name = "El nombre debe tener al menos 2 caracteres"
+      newErrors.name = t.nameRequired
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "El email es requerido"
+      newErrors.email = t.emailRequired
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email inválido"
+      newErrors.email = t.invalidEmail
     }
 
     if (!formData.password) {
-      newErrors.password = "La contraseña es requerida"
+      newErrors.password = t.passwordRequired
     } else {
       const { requirements } = calculatePasswordStrength(formData.password)
       const allMet = requirements.every(r => r.met)
       if (!allMet) {
-        newErrors.password = "La contraseña no cumple con todos los requisitos de seguridad"
+        newErrors.password = t.passwordTooShort
       }
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Confirma tu contraseña"
+      newErrors.confirmPassword = t.passwordRequired
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Las contraseñas no coinciden"
+      newErrors.confirmPassword = t.passwordsDoNotMatch
     }
 
     setErrors(newErrors)
@@ -109,13 +111,13 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           })
           setErrors(fieldErrors)
         } else {
-          setGeneralError(data.error || "Error al registrar usuario")
+          setGeneralError(data.error || t.connectionError)
         }
         return
       }
 
       setSuccessMessage(data.message)
-      
+
       // Auto-login después de registro exitoso
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -133,7 +135,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
     } catch (error) {
       console.error("Registration error:", error)
-      setGeneralError("Error de conexión. Por favor, intenta de nuevo.")
+      setGeneralError(t.connectionError)
     } finally {
       setIsLoading(false)
     }
@@ -142,21 +144,21 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-white mb-2">Crear cuenta</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">{t.createAccount}</h2>
         <p className="text-slate-400">
-          Únete a TestCraft AI y genera casos de prueba profesionales
+          {t.startFreeToday}
         </p>
       </div>
 
       {/* Google OAuth Button */}
-      <GoogleOAuthButton text="Registrarse con Google" />
+      <GoogleOAuthButton text={t.continueWithGoogle} />
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-slate-700"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-slate-900 text-slate-400">o continúa con email</span>
+          <span className="px-2 bg-slate-900 text-slate-400">{t.orContinueWithEmail}</span>
         </div>
       </div>
 
@@ -174,7 +176,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
-          Nombre completo
+          {t.fullNameLabel}
         </label>
         <input
           id="name"
@@ -185,7 +187,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           className={`w-full px-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
             errors.name ? 'border-red-500' : 'border-slate-700'
           }`}
-          placeholder="Tu nombre"
+          placeholder={t.fullNamePlaceholder}
           disabled={isLoading}
         />
         {errors.name && (
@@ -195,7 +197,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-          Email
+          {t.emailLabel}
         </label>
         <input
           id="email"
@@ -206,7 +208,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           className={`w-full px-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
             errors.email ? 'border-red-500' : 'border-slate-700'
           }`}
-          placeholder="tu@email.com"
+          placeholder={t.emailPlaceholder}
           disabled={isLoading}
         />
         {errors.email && (
@@ -216,7 +218,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-          Contraseña
+          {t.passwordLabel}
         </label>
         <div className="relative">
           <input
@@ -228,14 +230,14 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             className={`w-full px-4 py-3 pr-12 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
               errors.password ? 'border-red-500' : 'border-slate-700'
             }`}
-            placeholder="Mínimo 8 caracteres"
+            placeholder={t.passwordPlaceholder}
             disabled={isLoading}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            aria-label={showPassword ? t.hidePassword : t.showPassword}
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>
@@ -251,7 +253,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       <div>
         <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-2">
-          Confirmar contraseña
+          {t.confirmPasswordLabel}
         </label>
         <div className="relative">
           <input
@@ -263,14 +265,14 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             className={`w-full px-4 py-3 pr-12 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
               errors.confirmPassword ? 'border-red-500' : 'border-slate-700'
             }`}
-            placeholder="Repite tu contraseña"
+            placeholder={t.confirmPasswordPlaceholder}
             disabled={isLoading}
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-            aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            aria-label={showConfirmPassword ? t.hidePassword : t.showPassword}
           >
             {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>
@@ -288,18 +290,18 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         {isLoading ? (
           <div className="flex items-center justify-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin" />
-            Creando cuenta...
+            {t.creatingAccount}
           </div>
         ) : (
-          "Crear cuenta"
+          t.createAccountButton
         )}
       </button>
 
       <div className="text-center">
         <p className="text-slate-400 text-sm">
-          ¿Ya tienes una cuenta?{" "}
+          {t.alreadyHaveAccount}{" "}
           <Link href="/auth/login" className="text-violet-400 hover:text-violet-300 font-medium">
-            Inicia sesión
+            {t.signInButton}
           </Link>
         </p>
       </div>
