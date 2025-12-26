@@ -55,10 +55,10 @@ const faqContent = [
 
 export default function FAQPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-sm sticky top-0 z-50">
+    <div className="min-h-screen">
+      <header className="border-b border-violet-500/20 bg-purple-950/60 backdrop-blur-xl sticky top-0 z-50 shadow-lg shadow-violet-500/10">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <Link href="/" className="flex items-center gap-3 text-slate-400 hover:text-white transition-colors">
+          <Link href="/" className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors">
             <ArrowLeft className="w-5 h-5" />
             <span>Volver a TestCraft AI</span>
           </Link>
@@ -72,27 +72,27 @@ export default function FAQPage() {
           </div>
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white">Preguntas Frecuentes (FAQ)</h1>
-            <p className="text-slate-400">Respuestas a las dudas más comunes sobre TestCraft AI</p>
+            <p className="text-gray-400">Respuestas a las dudas más comunes sobre TestCraft AI</p>
           </div>
         </div>
 
         <div className="space-y-6">
           {faqContent.map((item, index) => (
-            <div key={index} className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+            <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-white mb-2">{item.question}</h2>
-              <p className="text-slate-300">{item.answer}</p>
+              <p className="text-gray-300">{item.answer}</p>
             </div>
           ))}
         </div>
       </main>
 
-      <footer className="border-t border-slate-800 py-8 mt-16">
+      <footer className="border-t border-violet-500/20 bg-purple-950/60 backdrop-blur-xl py-8 mt-16 shadow-lg shadow-violet-500/10">
         <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-slate-500 text-sm">© 2025 TestCraft AI. Todos los derechos reservados.</p>
+          <p className="text-gray-500 text-sm">© 2025 TestCraft AI. Todos los derechos reservados.</p>
           <div className="flex items-center gap-6 text-sm">
-            <Link href="/terms" className="text-slate-500 hover:text-white transition-colors">Términos</Link>
-            <Link href="/privacy" className="text-slate-500 hover:text-white transition-colors">Privacidad</Link>
-            <Link href="/pricing" className="text-slate-500 hover:text-white transition-colors">Precios</Link>
+            <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">Términos</Link>
+            <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacidad</Link>
+            <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">Precios</Link>
             <Link href="/faq" className="text-violet-400">FAQ</Link>
           </div>
         </div>

@@ -11,7 +11,6 @@ import { UsageCounter } from "@/components/UsageCounter";
 import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
-import { LanguageToggle } from "@/components/LanguageToggle";
 import { ImageUploader } from "@/components/ImageUploader";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
@@ -169,7 +168,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
   return (
     <main className="min-h-screen relative">
-      <header className="border-b border-white/10 bg-purple-950/40 backdrop-blur-xl sticky top-0 z-40">
+      <header className="border-b border-violet-500/20 bg-purple-950/60 backdrop-blur-xl sticky top-0 z-40 shadow-lg shadow-violet-500/10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 group">
@@ -184,7 +183,6 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
             <div className="flex items-center gap-2">
               <UsageCounter />
-              <LanguageToggle />
               <KeyboardShortcutsHelp shortcuts={shortcuts} />
               <FavoritesPanel onSelectCase={handleSelectFavorite} />
               <CloudHistoryPanel

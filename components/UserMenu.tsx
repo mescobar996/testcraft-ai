@@ -3,20 +3,23 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
+import { useLanguage } from '@/lib/language-context';
 import { Button } from '@/components/ui/button';
 import { UpgradeModal } from '@/components/UpgradeModal';
-import { 
-  LogIn, 
-  LogOut, 
-  User, 
+import {
+  LogIn,
+  LogOut,
+  User,
   ChevronDown,
   Zap,
   Crown,
-  Infinity
+  Infinity,
+  Globe
 } from 'lucide-react';
 
 export function UserMenu() {
   const { user, loading, signInWithGoogle, signOut, usageCount, maxUsage, isPro } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
@@ -177,9 +180,36 @@ export function UserMenu() {
                     size="sm"
                   >
                     <Crown className="w-4 h-4 mr-2" />
-                    Actualizar a Pro - $5/mes
+                    Actualizar Plan
                   </Button>
                 )}
+              </div>
+
+              {/* Language Selector */}
+              <div className="p-4 border-b border-slate-700">
+                <span className="text-slate-400 text-sm block mb-2">Idioma</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setLanguage("es")}
+                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      language === "es"
+                        ? "bg-violet-600 text-white"
+                        : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                    }`}
+                  >
+                    🇪🇸 Español
+                  </button>
+                  <button
+                    onClick={() => setLanguage("en")}
+                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      language === "en"
+                        ? "bg-violet-600 text-white"
+                        : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                    }`}
+                  >
+                    🇬🇧 English
+                  </button>
+                </div>
               </div>
 
               {/* Sign Out */}

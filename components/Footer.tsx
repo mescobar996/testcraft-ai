@@ -15,7 +15,7 @@ export function Footer() {
 
   return (
     <>
-      <footer className="border-t border-white/10 bg-purple-950/40 backdrop-blur-xl">
+      <footer className="border-t border-violet-500/20 bg-purple-950/60 backdrop-blur-xl shadow-lg shadow-violet-500/10">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand */}

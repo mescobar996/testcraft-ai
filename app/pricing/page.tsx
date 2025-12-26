@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import Link from "next/link"
 import { PricingCards } from "@/components/PricingCards"
-import { Check } from "lucide-react"
+import { Check, ArrowLeft } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Precios - TestCraft AI",
@@ -11,6 +11,14 @@ export const metadata: Metadata = {
 export default function PricingPage() {
   return (
     <div className="min-h-screen px-4 py-12">
+      <header className="border-b border-violet-500/20 bg-purple-950/60 backdrop-blur-xl sticky top-0 z-50 mb-12 -mx-4 px-4 shadow-lg shadow-violet-500/10">
+        <div className="max-w-6xl mx-auto py-4">
+          <Link href="/" className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+            <span>Volver a TestCraft AI</span>
+          </Link>
+        </div>
+      </header>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
