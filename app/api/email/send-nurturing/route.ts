@@ -50,30 +50,45 @@ export async function POST(request: Request) {
       });
     }
 
-    // En producción, aquí se enviaría el email con Resend, SendGrid, etc.
-    // Por ahora, retornamos éxito simulado
-    /**
-     * Ejemplo con Resend:
-     *
-     * import { Resend } from 'resend';
-     * const resend = new Resend(process.env.RESEND_API_KEY);
-     *
-     * const { data, error } = await resend.emails.send({
-     *   from: 'TestCraft AI <noreply@testcraft.ai>',
-     *   to: [userEmail],
-     *   subject: emailContent.subject,
-     *   html: emailContent.htmlContent,
-     *   text: emailContent.textContent
-     * });
-     *
-     * if (error) {
-     *   return NextResponse.json({ error: error.message }, { status: 500 });
-     * }
-     */
+    // En producción, enviar email real con Resend
+    if (process.env.RESEND_API_KEY) {
+      try {
+        // Importación dinámica de Resend
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
+        const { data, error } = await resend.emails.send({
+          from: 'TestCraft AI <onboarding@resend.dev>', // Cambiar en producción
+          to: [userEmail],
+          subject: emailContent.subject,
+          html: emailContent.htmlContent,
+          text: emailContent.textContent
+        });
+
+        if (error) {
+          console.error('Resend error:', error);
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: 'Email sent successfully',
+          emailId: data?.id || 'sent-' + Date.now()
+        });
+      } catch (resendError) {
+        console.error('Failed to send email with Resend:', resendError);
+        return NextResponse.json(
+          { error: 'Failed to send email' },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Si no hay API key configurada, simular envío
+    console.log('⚠️ RESEND_API_KEY not configured - email not sent');
     return NextResponse.json({
       success: true,
-      message: 'Email sent successfully',
+      message: 'Email simulated (no API key configured)',
       emailId: 'simulated-' + Date.now()
     });
 
