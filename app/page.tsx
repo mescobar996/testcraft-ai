@@ -10,7 +10,7 @@ import { UsageBanner } from "@/components/UsageBanner";
 import { UsageCounter } from "@/components/UsageCounter";
 import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
-import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
+import { KeyboardShortcutsHelp, useKeyboardShortcuts, ShortcutBadge } from "@/components/KeyboardShortcutsImproved";
 import { ImageUploader } from "@/components/ImageUploader";
 import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 import { InteractiveDemo } from "@/components/InteractiveDemo";
