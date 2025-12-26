@@ -15,7 +15,7 @@ export function Footer() {
 
   return (
     <>
-      <footer className="border-t border-zinc-800/50 bg-black/80 backdrop-blur-xl">
+      <footer className="border-t border-white/10 bg-purple-950/40 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand */}
@@ -24,7 +24,7 @@ export function Footer() {
                 <AppIcon size="md" />
                 <span className="text-white font-semibold text-base">{t.appName}</span>
               </div>
-              <p className="text-zinc-600 text-xs max-w-xs leading-relaxed">
+              <p className="text-gray-400 text-xs max-w-xs leading-relaxed">
                 {t.appSubtitle}
               </p>
             </div>
@@ -36,7 +36,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/pricing"
-                    className="text-zinc-600 hover:text-white text-xs transition-colors"
+                    className="text-gray-400 hover:text-white text-xs transition-colors"
                   >
                     Precios
                   </Link>
@@ -44,7 +44,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/faq"
-                    className="text-zinc-600 hover:text-white text-xs transition-colors"
+                    className="text-gray-400 hover:text-white text-xs transition-colors"
                   >
                     Preguntas Frecuentes
                   </Link>
@@ -59,7 +59,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/terms"
-                    className="text-zinc-600 hover:text-white text-xs transition-colors"
+                    className="text-gray-400 hover:text-white text-xs transition-colors"
                   >
                     Términos y Condiciones
                   </Link>
@@ -67,7 +67,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/privacy"
-                    className="text-zinc-600 hover:text-white text-xs transition-colors"
+                    className="text-gray-400 hover:text-white text-xs transition-colors"
                   >
                     Política de Privacidad
                   </Link>
@@ -87,7 +87,7 @@ export function Footer() {
                   Actualizar a Pro
                 </button>
               ) : !user ? (
-                <p className="text-zinc-600 text-xs">
+                <p className="text-gray-400 text-xs">
                   Inicia sesión para acceder a Pro
                 </p>
               ) : (
@@ -100,10 +100,10 @@ export function Footer() {
           </div>
 
           {/* Bottom */}
-          <div className="border-t border-zinc-800/50 mt-10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-zinc-600 text-sm">{t.copyright}</p>
+          <div className="border-t border-white/10 mt-10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-500 text-sm">{t.copyright}</p>
             <div className="flex items-center gap-4">
-              <span className="text-zinc-600 text-sm">
+              <span className="text-gray-500 text-sm">
                 Powered by Claude AI
               </span>
             </div>

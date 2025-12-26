@@ -169,7 +169,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
   return (
     <main className="min-h-screen relative">
-      <header className="border-b border-zinc-800/50 bg-black/80 backdrop-blur-xl sticky top-0 z-40">
+      <header className="border-b border-white/10 bg-purple-950/40 backdrop-blur-xl sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 group">
