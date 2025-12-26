@@ -116,8 +116,8 @@ Resultado Esperado: ${tc.expectedResult}`;
 
   const handleFavorite = async (tc: TestCase) => {
     if (!user) return;
-    
-    const title = requirementTitle || "Sin título";
+
+    const title = requirementTitle || t.noTitle;
     const saved = await addFavorite(user.id, tc, title);
     
     if (saved) {

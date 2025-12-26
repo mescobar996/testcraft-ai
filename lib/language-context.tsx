@@ -136,6 +136,11 @@ interface Translations {
   imageGenerated: string;
   selectValidImage: string;
   imageTooLarge: string;
+  // page.tsx errors and messages
+  limitReached: string;
+  errorGeneratingCases: string;
+  generatedFromImage: string;
+  noTitle: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -271,6 +276,11 @@ const translations: Record<Language, Translations> = {
     imageGenerated: "Casos generados desde imagen",
     selectValidImage: "Por favor selecciona una imagen válida",
     imageTooLarge: "La imagen debe ser menor a 10MB",
+    // page.tsx errors and messages
+    limitReached: "Has alcanzado el límite diario de generaciones. Iniciá sesión o actualizá a Pro para obtener más.",
+    errorGeneratingCases: "Error al generar casos de prueba",
+    generatedFromImage: "Generado desde imagen",
+    noTitle: "Sin título",
   },
   en: {
     appName: "TestCraft AI",
@@ -404,6 +414,11 @@ const translations: Record<Language, Translations> = {
     imageGenerated: "Cases generated from image",
     selectValidImage: "Please select a valid image",
     imageTooLarge: "Image must be less than 10MB",
+    // page.tsx errors and messages
+    limitReached: "You've reached the daily generation limit. Sign in or upgrade to Pro for more.",
+    errorGeneratingCases: "Error generating test cases",
+    generatedFromImage: "Generated from image",
+    noTitle: "Untitled",
   }
 };
 

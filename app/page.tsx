@@ -52,7 +52,7 @@ export default function Home() {
 
   const handleGenerate = async (requirement: string, context: string, format: string) => {
     if (!canGenerate) {
-      setError("Has alcanzado el límite diario de generaciones. Iniciá sesión o actualizá a Pro para obtener más.");
+      setError(t.limitReached);
       return;
     }
 
@@ -67,7 +67,7 @@ export default function Home() {
         body: JSON.stringify({ requirement, context, format }),
       });
 
-      if (!response.ok) throw new Error("Error al generar casos de prueba");
+      if (!response.ok) throw new Error(t.errorGeneratingCases);
 
       const data = await response.json();
       setResult(data);
@@ -89,7 +89,7 @@ export default function Home() {
 
   const handleGenerateFromImage = (imageResult: GenerationResult) => {
     setResult(imageResult);
-    setCurrentRequirement("Generado desde imagen");
+    setCurrentRequirement(t.generatedFromImage);
     setError(null);
     incrementUsage();
 
