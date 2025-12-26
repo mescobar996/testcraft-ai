@@ -79,6 +79,46 @@ interface Translations {
   orderedBy: string;
   casesFound: string;
   noResults: string;
+  // Landing page
+  aboutTitle: string;
+  aboutDesc: string;
+  statsGenerated: string;
+  statsUsers: string;
+  statsAvailability: string;
+  featuresTitle: string;
+  featuresAI: string;
+  featuresFormats: string;
+  featuresIntegrations: string;
+  featuresIntegrationsSoon: string;
+  featuresPerformance: string;
+  useCasesTitle: string;
+  useCaseEcommerce: string;
+  useCaseEcommerceDesc: string;
+  useCaseAPI: string;
+  useCaseAPIDesc: string;
+  useCaseUI: string;
+  useCaseUIDesc: string;
+  useCaseRegression: string;
+  useCaseRegressionDesc: string;
+  demoTitle: string;
+  demoSubtitle: string;
+  // Tags
+  tagClaudeAI: string;
+  tagPositive: string;
+  tagNegative: string;
+  tagEdge: string;
+  tagFromImage: string;
+  tagGherkin: string;
+  tagTable: string;
+  tagJSON: string;
+  tagPDF: string;
+  tagJira: string;
+  tagAzure: string;
+  tagGitHub: string;
+  tagTestRail: string;
+  tagFast: string;
+  tagCloud: string;
+  tagHistory: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -157,6 +197,46 @@ const translations: Record<Language, Translations> = {
     orderedBy: "Ordenado por",
     casesFound: "casos encontrados",
     noResults: "No se encontraron casos",
+    // Landing page
+    aboutTitle: "Sobre TestCraft AI",
+    aboutDesc: "TestCraft AI es la herramienta definitiva para QA Engineers y desarrolladores que buscan automatizar la creación de casos de prueba profesionales. Utilizamos inteligencia artificial avanzada para generar casos completos, incluyendo escenarios positivos, negativos y de borde.",
+    statsGenerated: "Casos Generados",
+    statsUsers: "Usuarios Activos",
+    statsAvailability: "Disponibilidad",
+    featuresTitle: "Características & Tecnologías",
+    featuresAI: "Generación IA",
+    featuresFormats: "Formatos",
+    featuresIntegrations: "Integraciones",
+    featuresIntegrationsSoon: "Integraciones (próximamente)",
+    featuresPerformance: "Performance",
+    useCasesTitle: "Casos de Uso Destacados",
+    useCaseEcommerce: "Testing E-Commerce",
+    useCaseEcommerceDesc: "Genera casos completos para flujos de compra, carritos, checkout y pagos.",
+    useCaseAPI: "APIs REST",
+    useCaseAPIDesc: "Casos de prueba para endpoints, autenticación, validaciones y errores.",
+    useCaseUI: "Testing UI/UX",
+    useCaseUIDesc: "Desde screenshots, genera casos para formularios, navegación y responsive.",
+    useCaseRegression: "Regresión Automática",
+    useCaseRegressionDesc: "Mantén tu suite de casos actualizada con cada nueva feature.",
+    demoTitle: "Mira cómo funciona",
+    demoSubtitle: "Observa en tiempo real cómo TestCraft AI transforma tus requisitos en casos de prueba profesionales",
+    // Tags
+    tagClaudeAI: "Claude AI",
+    tagPositive: "Casos Positivos",
+    tagNegative: "Casos Negativos",
+    tagEdge: "Casos Borde",
+    tagFromImage: "Desde Imagen",
+    tagGherkin: "Gherkin",
+    tagTable: "Tabla",
+    tagJSON: "JSON",
+    tagPDF: "PDF Export",
+    tagJira: "Jira",
+    tagAzure: "Azure DevOps",
+    tagGitHub: "GitHub",
+    tagTestRail: "TestRail",
+    tagFast: "Generación Rápida",
+    tagCloud: "Cloud Storage",
+    tagHistory: "Historial",
   },
   en: {
     appName: "TestCraft AI",
@@ -233,6 +313,46 @@ const translations: Record<Language, Translations> = {
     orderedBy: "Ordered by",
     casesFound: "cases found",
     noResults: "No cases found",
+    // Landing page
+    aboutTitle: "About TestCraft AI",
+    aboutDesc: "TestCraft AI is the ultimate tool for QA Engineers and developers looking to automate the creation of professional test cases. We use advanced artificial intelligence to generate complete cases, including positive, negative and edge scenarios.",
+    statsGenerated: "Generated Cases",
+    statsUsers: "Active Users",
+    statsAvailability: "Availability",
+    featuresTitle: "Features & Technologies",
+    featuresAI: "AI Generation",
+    featuresFormats: "Formats",
+    featuresIntegrations: "Integrations",
+    featuresIntegrationsSoon: "Integrations (coming soon)",
+    featuresPerformance: "Performance",
+    useCasesTitle: "Featured Use Cases",
+    useCaseEcommerce: "E-Commerce Testing",
+    useCaseEcommerceDesc: "Generate complete cases for purchase flows, carts, checkout and payments.",
+    useCaseAPI: "REST APIs",
+    useCaseAPIDesc: "Test cases for endpoints, authentication, validations and errors.",
+    useCaseUI: "UI/UX Testing",
+    useCaseUIDesc: "From screenshots, generate cases for forms, navigation and responsive design.",
+    useCaseRegression: "Automated Regression",
+    useCaseRegressionDesc: "Keep your test suite updated with each new feature.",
+    demoTitle: "See how it works",
+    demoSubtitle: "Watch in real-time how TestCraft AI transforms your requirements into professional test cases",
+    // Tags
+    tagClaudeAI: "Claude AI",
+    tagPositive: "Positive Cases",
+    tagNegative: "Negative Cases",
+    tagEdge: "Edge Cases",
+    tagFromImage: "From Image",
+    tagGherkin: "Gherkin",
+    tagTable: "Table",
+    tagJSON: "JSON",
+    tagPDF: "PDF Export",
+    tagJira: "Jira",
+    tagAzure: "Azure DevOps",
+    tagGitHub: "GitHub",
+    tagTestRail: "TestRail",
+    tagFast: "Fast Generation",
+    tagCloud: "Cloud Storage",
+    tagHistory: "History",
   }
 };
 
