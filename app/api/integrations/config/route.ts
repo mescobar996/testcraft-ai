@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     }
 
     const integrations = await getUserIntegrations(user.id);
-    
+
     const safeIntegrations = integrations.map(i => ({
       integration_id: i.integration_id,
       is_active: i.is_active,
@@ -53,7 +53,41 @@ export async function GET(request: NextRequest) {
       }
     }));
 
-    return NextResponse.json({ integrations: safeIntegrations });
+    // Get Jira-specific data if configured
+    const jiraIntegration = integrations.find(i => i.integration_id === 'jira');
+    let jiraData = { configured: false, projects: [] };
+
+    if (jiraIntegration && jiraIntegration.is_active) {
+      try {
+        const { domain, email, apiToken } = jiraIntegration.config;
+        const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
+
+        const projectsResponse = await fetch(`https://${domain}/rest/api/3/project`, {
+          headers: {
+            'Authorization': `Basic ${auth}`,
+            'Accept': 'application/json',
+          }
+        });
+
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          jiraData = {
+            configured: true,
+            projects: projectsData.map((p: any) => ({
+              key: p.key,
+              name: p.name
+            }))
+          };
+        }
+      } catch (error) {
+        console.error('Error fetching Jira projects:', error);
+      }
+    }
+
+    return NextResponse.json({
+      integrations: safeIntegrations,
+      jira: jiraData
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });
   }

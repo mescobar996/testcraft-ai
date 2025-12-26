@@ -29,6 +29,7 @@ import { addFavorite } from "@/lib/favorites-db";
 import { useToast } from "@/components/Toast";
 import { useLanguage } from "@/lib/language-context";
 import { QualitySuggestions } from "@/components/QualitySuggestions";
+import { JiraExportButton } from "@/components/JiraExportButton";
 
 interface TestCaseOutputProps {
   result: GenerationResult | null;
@@ -236,17 +237,18 @@ Resultado Esperado: ${tc.expectedResult}`;
 
       {/* Botones de acción - Primera fila */}
       <div className="flex gap-2 flex-wrap">
-        <ExportMenu 
-          testCases={result.testCases} 
+        <ExportMenu
+          testCases={result.testCases}
           gherkin={result.gherkin}
           onExportPDF={exportToPDF}
         />
-        <TestPlanModal 
+        <TestPlanModal
           testCases={result.testCases}
           requirement={requirementTitle || ""}
           gherkin={result.gherkin}
           summary={result.summary}
         />
+        <JiraExportButton testCases={result.testCases} />
       </div>
 
       {/* Botones de acción - Segunda fila */}

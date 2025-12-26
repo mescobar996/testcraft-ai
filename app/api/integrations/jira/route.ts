@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    const { testCases } = await request.json() as { testCases: TestCase[] };
+    const { testCases, projectKey } = await request.json() as { testCases: TestCase[]; projectKey?: string };
 
     if (!testCases || testCases.length === 0) {
       return NextResponse.json({ error: 'No hay casos de prueba' }, { status: 400 });
@@ -61,7 +61,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Jira no está configurado' }, { status: 400 });
     }
 
-    const { domain, email, apiToken, projectKey } = config.config;
+    const { domain, email, apiToken, projectKey: configProjectKey } = config.config;
+    const finalProjectKey = projectKey || configProjectKey;
 
     // Autenticación básica para Jira
     const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             fields: {
-              project: { key: projectKey },
+              project: { key: finalProjectKey },
               summary: `[TC-${tc.type}] ${tc.title}`,
               description: {
                 type: 'doc',
