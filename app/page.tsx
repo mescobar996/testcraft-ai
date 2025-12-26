@@ -12,6 +12,7 @@ import { CloudHistoryPanel } from "@/components/CloudHistoryPanel";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { ImageUploader } from "@/components/ImageUploader";
+import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
@@ -357,6 +358,9 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
       </div>
 
       <Footer />
+
+      {/* Panel de diagnóstico - TEMPORAL para debugging */}
+      {process.env.NODE_ENV === 'development' && <DiagnosticPanel />}
     </main>
   );
 }
