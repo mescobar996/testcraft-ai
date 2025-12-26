@@ -128,8 +128,8 @@ export default function TermsPage() {
             <div className="pl-10 space-y-3">
               <p><strong className="text-white">6.1 Planes disponibles:</strong></p>
               <ul className="list-disc pl-6 space-y-1 text-slate-400">
-                <li><strong className="text-slate-300">Plan Gratuito:</strong> 20 generaciones diarias con funcionalidades básicas.</li>
-                <li><strong className="text-slate-300">Plan Pro:</strong> Generaciones ilimitadas y funcionalidades premium.</li>
+                <li><strong className="text-slate-300">Plan Gratuito:</strong> 10 generaciones mensuales con funcionalidades básicas.</li>
+                <li><strong className="text-slate-300">Plan Pro:</strong> 500 generaciones mensuales y funcionalidades premium por $29 USD/mes.</li>
               </ul>
               <p className="mt-3"><strong className="text-white">6.2 Facturación:</strong> Los pagos se procesan de forma segura a través de Stripe. Las suscripciones se renuevan automáticamente al final de cada período de facturación.</p>
               <p><strong className="text-white">6.3 Cancelación:</strong> Podés cancelar tu suscripción en cualquier momento. La cancelación será efectiva al finalizar el período de facturación vigente, sin reembolsos por períodos parciales.</p>

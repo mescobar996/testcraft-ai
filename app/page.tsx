@@ -291,7 +291,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
               </div>
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Integraciones</h3>
+              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Integraciones (próximamente)</h3>
               <div className="flex flex-wrap gap-2">
                 <SkillTag>Jira</SkillTag>
                 <SkillTag>Azure DevOps</SkillTag>
@@ -344,7 +344,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
         <section className="max-w-4xl mx-auto mb-24 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Comienza Ahora</h2>
           <p className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed max-w-2xl mx-auto">
-            Empieza a generar casos de prueba profesionales en segundos. Gratis para siempre con 20 generaciones diarias.
+            Empieza a generar casos de prueba profesionales en segundos. Gratis para siempre con 10 generaciones mensuales.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <a href="#" className="px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-medium rounded-lg transition-colors">

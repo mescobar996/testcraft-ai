@@ -30,7 +30,7 @@ const PLANS_BASE = {
       'Exportación completa (Excel, PDF, Gherkin)',
       'Plantillas personalizadas',
       'Historial completo',
-      'Integración con Jira',
+      'Integración con Jira (próximamente)',
       'Soporte prioritario'
     ],
     maxUsage: 500,
@@ -42,10 +42,10 @@ const PLANS_BASE = {
     currency: 'usd',
     features: [
       'Casos de prueba ilimitados',
-      'Exportación completa + API',
+      'Exportación completa + API (próximamente)',
       'Plantillas ilimitadas',
       'Historial ilimitado',
-      'Integraciones múltiples (Jira, TestRail, etc.)',
+      'Integraciones múltiples (próximamente)',
       'Soporte 24/7',
       'SLA garantizado'
     ],

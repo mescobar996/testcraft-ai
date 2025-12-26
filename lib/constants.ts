@@ -5,7 +5,7 @@
 
 export const LIMITS = {
   FREE_ANONYMOUS_DAILY: 5,
-  FREE_REGISTERED_DAILY: 20,
+  FREE_REGISTERED_MONTHLY: 10, // 10 generaciones por mes (30 días)
   PRO_MONTHLY: 500,
   ENTERPRISE_MONTHLY: -1, // ilimitado
 } as const;
@@ -23,7 +23,7 @@ export const VALIDATION = {
 } as const;
 
 export const ERROR_MESSAGES = {
-  LIMIT_REACHED: "Has alcanzado el límite diario de generaciones. Inicia sesión o actualiza a Pro para obtener más.",
+  LIMIT_REACHED: "Has alcanzado el límite mensual de generaciones. Actualiza a Pro para obtener 500 generaciones por mes.",
   RATE_LIMIT_EXCEEDED: "Demasiadas solicitudes. Por favor, intenta de nuevo en unos minutos.",
   INVALID_EMAIL: "Email inválido",
   WEAK_PASSWORD: "La contraseña debe tener al menos 8 caracteres con mayúsculas, minúsculas y números",

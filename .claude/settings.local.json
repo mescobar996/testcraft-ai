@@ -10,7 +10,8 @@
       "Bash(if [ -f .env.local ])",
       "Bash(then echo \"=== .env.local encontrado ===\")",
       "Bash(else echo \"No existe .env.local\")",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(curl:*)"
     ]
   }
 }

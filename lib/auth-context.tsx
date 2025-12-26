@@ -21,9 +21,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const FREE_DAILY_LIMIT = 5;
-const REGISTERED_DAILY_LIMIT = 20;
-const USAGE_KEY = 'testcraft-daily-usage';
-const USAGE_DATE_KEY = 'testcraft-usage-date';
+const REGISTERED_MONTHLY_LIMIT = 10;
+const USAGE_KEY = 'testcraft-monthly-usage';
+const USAGE_DATE_KEY = 'testcraft-usage-month';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -32,13 +32,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [usageCount, setUsageCount] = useState(0);
   const [isPro, setIsPro] = useState(false);
 
-  // Check and reset daily usage
-  const checkDailyUsage = () => {
-    const today = new Date().toDateString();
-    const savedDate = localStorage.getItem(USAGE_DATE_KEY);
-    
-    if (savedDate !== today) {
-      localStorage.setItem(USAGE_DATE_KEY, today);
+  // Check and reset monthly usage
+  const checkMonthlyUsage = () => {
+    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+    const savedMonth = localStorage.getItem(USAGE_DATE_KEY);
+
+    if (savedMonth !== currentMonth) {
+      localStorage.setItem(USAGE_DATE_KEY, currentMonth);
       localStorage.setItem(USAGE_KEY, '0');
       setUsageCount(0);
     } else {
@@ -83,8 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // Check daily usage
-    checkDailyUsage();
+    // Check monthly usage
+    checkMonthlyUsage();
 
     return () => subscription.unsubscribe();
   }, []);
@@ -140,7 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // Calculate limits based on plan
-  const maxUsage = isPro ? Infinity : (user ? REGISTERED_DAILY_LIMIT : FREE_DAILY_LIMIT);
+  const maxUsage = isPro ? Infinity : (user ? REGISTERED_MONTHLY_LIMIT : FREE_DAILY_LIMIT);
   const canGenerate = isPro || usageCount < maxUsage;
 
   return (

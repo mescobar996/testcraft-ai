@@ -24,8 +24,8 @@ const faqContent = [
     answer: "Sí. Para acceder a las funcionalidades, incluso en el Plan Gratuito, debe iniciar sesión con su cuenta de Google.",
   },
   {
-    question: "¿Cómo se calcula el 'Uso Diario'?",
-    answer: "El uso diario se refiere a la cantidad de veces que ha presionado el botón 'Generar Casos de Prueba' en un período de 24 horas. El Plan Gratuito tiene un límite de 20 generaciones por día.",
+    question: "¿Cómo se calcula el 'Uso Mensual'?",
+    answer: "El uso mensual se refiere a la cantidad total de generaciones que realizas en un mes (30 días). El Plan Gratuito registrado tiene un límite de 10 generaciones por mes. Este contador se resetea automáticamente al inicio de cada mes.",
   },
   {
     question: "¿Mis datos y casos de prueba están seguros?",
@@ -33,7 +33,7 @@ const faqContent = [
   },
   {
     question: "¿Cuánto cuesta el Plan Pro?",
-    answer: "El Plan Pro tiene un costo de $5 USD por mes.",
+    answer: "El Plan Pro tiene un costo de $29 USD por mes e incluye 500 generaciones mensuales, exportación avanzada, plantillas personalizadas y soporte prioritario.",
   },
   {
     question: "¿Qué significa 'Generación desde Imagen'?",
