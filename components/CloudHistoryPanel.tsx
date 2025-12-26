@@ -56,12 +56,23 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
         setHistory(data);
         setIsLoading(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       clearTimeout(timeoutId);
 
       if (!timeoutReached) {
         console.error("Error loading history:", error);
-        setError("Error al cargar el historial. Verifica que Supabase esté configurado.");
+
+        // Mensajes de error más específicos
+        if (error?.message?.includes('JWT')) {
+          setError("Sesión expirada. Por favor, cierra sesión e inicia sesión nuevamente.");
+        } else if (error?.code === 'PGRST116') {
+          setError("La tabla 'generations' no existe. Contacta al soporte.");
+        } else if (error?.message?.includes('permission')) {
+          setError("Sin permisos para acceder al historial. Verifica tu autenticación.");
+        } else {
+          setError(`Error al cargar el historial: ${error?.message || 'Desconocido'}`);
+        }
+
         setIsLoading(false);
       }
     }

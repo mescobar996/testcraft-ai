@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { getSupabaseClient } from './supabase';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 interface AuthContextType {
   user: User | null;
@@ -66,30 +66,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Get initial session
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
+    const supabase = createClientComponentClient();
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-      });
-
-      // Listen for auth changes
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        }
-      );
-
-      return () => subscription.unsubscribe();
-    } else {
-      setLoading(false);
-    }
+      }
+    );
 
     // Check daily usage
     checkDailyUsage();
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Check subscription when user changes
@@ -115,11 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user, checkSubscription]);
 
   const signInWithGoogle = async () => {
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      console.warn('Supabase client not configured');
-      return;
-    }
+    const supabase = createClientComponentClient();
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -131,8 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    const supabase = getSupabaseClient();
-    if (!supabase) return;
+    const supabase = createClientComponentClient();
 
     const { error } = await supabase.auth.signOut();
     if (error) console.error('Error signing out:', error);

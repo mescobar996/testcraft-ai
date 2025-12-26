@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { getSupabaseClient } from "@/lib/supabase";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { AlertCircle, CheckCircle, XCircle, Loader2 } from "lucide-react";
 
 export function DiagnosticPanel() {
@@ -13,25 +13,23 @@ export function DiagnosticPanel() {
     database: { status: "checking", message: "" },
   });
 
-  useEffect(() => {
-    runDiagnostics();
-  }, [user]);
-
   const runDiagnostics = async () => {
     // Check 1: Supabase Client
-    const supabase = getSupabaseClient();
-    if (supabase) {
+    try {
+      const supabase = createClientComponentClient();
       setChecks(prev => ({
         ...prev,
         supabase: { status: "success", message: "Cliente de Supabase inicializado" }
       }));
-    } else {
+    } catch (err) {
       setChecks(prev => ({
         ...prev,
-        supabase: { status: "error", message: "Variables de entorno faltantes" }
+        supabase: { status: "error", message: "Error al inicializar Supabase" }
       }));
       return;
     }
+
+    const supabase = createClientComponentClient();
 
     // Check 2: Autenticación
     if (user) {
@@ -81,6 +79,11 @@ export function DiagnosticPanel() {
       }));
     }
   };
+
+  useEffect(() => {
+    runDiagnostics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const getIcon = (status: string) => {
     switch (status) {
