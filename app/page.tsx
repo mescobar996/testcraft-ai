@@ -169,7 +169,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
   return (
     <main className="min-h-screen relative">
-      <header className="border-b border-violet-500/20 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40 shadow-xl shadow-violet-500/10">
+      <header className="border-b border-zinc-800/50 bg-black/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 group">
@@ -197,17 +197,17 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-20">
         {/* Hero Section */}
-        <div className="max-w-4xl mx-auto mb-24">
-          <div className="mb-12">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+        <div className="max-w-5xl mx-auto mb-32">
+          <div className="mb-16">
+            <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 leading-[1.1] tracking-tight">
               {t.heroTitle}{" "}
-              <span className="text-violet-400">
+              <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
                 {t.heroHighlight}
               </span>
             </h1>
-            <p className="text-zinc-400 text-xl mb-8 leading-relaxed">{t.heroSubtitle}</p>
+            <p className="text-zinc-400 text-xl md:text-2xl mb-10 leading-relaxed max-w-3xl">{t.heroSubtitle}</p>
 
             <div className="flex gap-4 mb-8">
               <ImageUploader
@@ -220,19 +220,19 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
           <UsageBanner />
 
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-2 gap-8">
             <div className="order-2 lg:order-1">
-              <TestCaseForm 
-                onGenerate={handleGenerate} 
+              <TestCaseForm
+                onGenerate={handleGenerate}
                 isLoading={isLoading}
                 triggerGenerate={triggerGenerate}
               />
             </div>
 
             <div className="order-1 lg:order-2" data-results>
-              <TestCaseOutput 
-                result={result} 
-                isLoading={isLoading || isImageLoading} 
+              <TestCaseOutput
+                result={result}
+                isLoading={isLoading || isImageLoading}
                 error={error}
                 requirementTitle={currentRequirement.split('\n')[0].substring(0, 50)}
                 onRegenerateCase={handleRegenerateCase}
@@ -243,39 +243,39 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
         </div>
 
         {/* 01. Sobre TestCraft AI */}
-        <section className="max-w-4xl mx-auto mb-32">
-          <div className="flex items-baseline gap-4 mb-8">
-            <span className="text-6xl font-bold text-zinc-800">01</span>
-            <h2 className="text-3xl font-bold text-white">Sobre TestCraft AI</h2>
+        <section className="max-w-5xl mx-auto mb-40">
+          <div className="flex items-baseline gap-6 mb-10">
+            <span className="text-7xl font-bold text-zinc-900/50 dark:text-zinc-800">01</span>
+            <h2 className="text-4xl font-bold text-white">Sobre TestCraft AI</h2>
           </div>
-          <div className="pl-20">
-            <p className="text-zinc-400 text-lg mb-8 leading-relaxed">
+          <div className="pl-24">
+            <p className="text-zinc-400 text-lg md:text-xl mb-12 leading-relaxed max-w-3xl">
               TestCraft AI es la herramienta definitiva para QA Engineers y desarrolladores que buscan automatizar la creación de casos de prueba profesionales. Utilizamos inteligencia artificial avanzada para generar casos completos, incluyendo escenarios positivos, negativos y de borde.
             </p>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-12">
               <div>
-                <div className="text-4xl font-bold text-violet-400 mb-2">10K+</div>
-                <div className="text-zinc-500 text-sm">Casos Generados</div>
+                <div className="text-5xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent mb-3">10K+</div>
+                <div className="text-zinc-500 text-sm uppercase tracking-wider">Casos Generados</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-violet-400 mb-2">500+</div>
-                <div className="text-zinc-500 text-sm">Usuarios Activos</div>
+                <div className="text-5xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent mb-3">500+</div>
+                <div className="text-zinc-500 text-sm uppercase tracking-wider">Usuarios Activos</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-violet-400 mb-2">24/7</div>
-                <div className="text-zinc-500 text-sm">Disponibilidad</div>
+                <div className="text-5xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent mb-3">24/7</div>
+                <div className="text-zinc-500 text-sm uppercase tracking-wider">Disponibilidad</div>
               </div>
             </div>
           </div>
         </section>
 
         {/* 02. Características & Tecnologías */}
-        <section className="max-w-4xl mx-auto mb-32">
-          <div className="flex items-baseline gap-4 mb-8">
-            <span className="text-6xl font-bold text-zinc-800">02</span>
-            <h2 className="text-3xl font-bold text-white">Características & Tecnologías</h2>
+        <section className="max-w-5xl mx-auto mb-40">
+          <div className="flex items-baseline gap-6 mb-10">
+            <span className="text-7xl font-bold text-zinc-900/50 dark:text-zinc-800">02</span>
+            <h2 className="text-4xl font-bold text-white">Características & Tecnologías</h2>
           </div>
-          <div className="pl-20 grid md:grid-cols-2 gap-8">
+          <div className="pl-24 grid md:grid-cols-2 gap-12">
             <div>
               <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Generación IA</h3>
               <div className="flex flex-wrap gap-2">
@@ -316,12 +316,12 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
         </section>
 
         {/* 03. Casos de Uso */}
-        <section className="max-w-4xl mx-auto mb-32">
-          <div className="flex items-baseline gap-4 mb-8">
-            <span className="text-6xl font-bold text-zinc-800">03</span>
-            <h2 className="text-3xl font-bold text-white">Casos de Uso Destacados</h2>
+        <section className="max-w-5xl mx-auto mb-40">
+          <div className="flex items-baseline gap-6 mb-10">
+            <span className="text-7xl font-bold text-zinc-900/50 dark:text-zinc-800">03</span>
+            <h2 className="text-4xl font-bold text-white">Casos de Uso Destacados</h2>
           </div>
-          <div className="pl-20 grid md:grid-cols-2 gap-6">
+          <div className="pl-24 grid md:grid-cols-2 gap-8">
             <ProjectCard
               title="Testing E-Commerce"
               description="Genera casos completos para flujos de compra, carritos, checkout y pagos."
@@ -347,20 +347,20 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
         </section>
 
         {/* 04. Comienza Ahora */}
-        <section className="max-w-4xl mx-auto mb-32">
-          <div className="flex items-baseline gap-4 mb-8">
-            <span className="text-6xl font-bold text-zinc-800">04</span>
-            <h2 className="text-3xl font-bold text-white">Comienza Ahora</h2>
+        <section className="max-w-5xl mx-auto mb-40">
+          <div className="flex items-baseline gap-6 mb-10">
+            <span className="text-7xl font-bold text-zinc-900/50 dark:text-zinc-800">04</span>
+            <h2 className="text-4xl font-bold text-white">Comienza Ahora</h2>
           </div>
-          <div className="pl-20">
-            <p className="text-zinc-400 text-lg mb-8 leading-relaxed">
+          <div className="pl-24">
+            <p className="text-zinc-400 text-lg md:text-xl mb-10 leading-relaxed max-w-3xl">
               Empieza a generar casos de prueba profesionales en segundos. Gratis para siempre con 20 generaciones diarias.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-medium rounded transition-colors">
+              <a href="#" className="px-8 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-violet-500/25">
                 Comenzar Gratis
               </a>
-              <a href="/pricing" className="px-6 py-3 border border-white/10 hover:border-white/20 text-white font-medium rounded transition-colors">
+              <a href="/pricing" className="px-8 py-4 border border-zinc-800 hover:border-zinc-700 text-white font-semibold rounded-lg transition-all duration-200">
                 Ver Planes
               </a>
             </div>
@@ -375,7 +375,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
 function SkillTag({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/50 border border-white/[0.05] rounded text-zinc-400 text-xs font-medium hover:border-violet-500/20 transition-colors">
+    <div className="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900/30 border border-zinc-800/50 rounded-lg text-zinc-400 text-sm font-medium hover:border-violet-500/30 hover:bg-zinc-900/50 transition-all duration-200">
       {icon}
       {children}
     </div>
@@ -384,17 +384,17 @@ function SkillTag({ children, icon }: { children: React.ReactNode; icon?: React.
 
 function ProjectCard({ title, description, tags, isNew }: { title: string; description: string; tags: string[]; isNew?: boolean }) {
   return (
-    <div className="bg-zinc-950/50 border border-white/[0.03] rounded-lg p-6 hover:border-violet-500/20 transition-all duration-200 relative">
+    <div className="bg-zinc-950/30 border border-zinc-800/50 rounded-xl p-8 hover:border-violet-500/30 hover:bg-zinc-950/50 transition-all duration-200 relative group">
       {isNew && (
-        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-violet-600/90 rounded text-[10px] font-semibold text-white">
+        <div className="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-violet-600 to-purple-600 rounded-lg text-xs font-semibold text-white shadow-lg">
           NUEVO
         </div>
       )}
-      <h3 className="text-white font-semibold mb-3 text-lg">{title}</h3>
-      <p className="text-zinc-500 text-sm mb-4 leading-relaxed">{description}</p>
+      <h3 className="text-white font-bold mb-4 text-xl group-hover:text-violet-400 transition-colors">{title}</h3>
+      <p className="text-zinc-400 text-base mb-6 leading-relaxed">{description}</p>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <span key={tag} className="px-2 py-1 bg-zinc-900/50 text-zinc-600 text-xs rounded">
+          <span key={tag} className="px-3 py-1 bg-zinc-900/50 border border-zinc-800/50 text-zinc-500 text-xs rounded-md font-medium">
             {tag}
           </span>
         ))}

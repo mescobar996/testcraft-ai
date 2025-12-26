@@ -15,7 +15,7 @@ export function Footer() {
 
   return (
     <>
-      <footer className="border-t border-violet-500/20 bg-slate-950/80 backdrop-blur-xl">
+      <footer className="border-t border-zinc-800/50 bg-black/80 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand */}
@@ -100,10 +100,10 @@ export function Footer() {
           </div>
 
           {/* Bottom */}
-          <div className="border-t border-white/[0.03] mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-zinc-700 text-xs">{t.copyright}</p>
+          <div className="border-t border-zinc-800/50 mt-10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-zinc-600 text-sm">{t.copyright}</p>
             <div className="flex items-center gap-4">
-              <span className="text-zinc-700 text-xs">
+              <span className="text-zinc-600 text-sm">
                 Powered by Claude AI
               </span>
             </div>
