@@ -28,6 +28,7 @@ import { useAuth } from "@/lib/auth-context";
 import { addFavorite } from "@/lib/favorites-db";
 import { useToast } from "@/components/Toast";
 import { useLanguage } from "@/lib/language-context";
+import { QualitySuggestions } from "@/components/QualitySuggestions";
 
 interface TestCaseOutputProps {
   result: GenerationResult | null;
@@ -373,6 +374,9 @@ Resultado Esperado: ${tc.expectedResult}`;
         </TabsList>
 
         <TabsContent value="table" className="mt-4 space-y-3">
+          {/* Quality Suggestions */}
+          <QualitySuggestions testCases={result.testCases} />
+
           {filteredTestCases.length === 0 ? (
             <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6 text-center">
               <p className="text-slate-400">
