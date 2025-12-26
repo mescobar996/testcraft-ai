@@ -181,45 +181,49 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
   return (
     <main className="min-h-screen relative">
       <header className="border-b border-violet-500/20 bg-purple-950/60 backdrop-blur-xl sticky top-0 z-40 shadow-lg shadow-violet-500/10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 group">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 group">
               <div className="transition-transform duration-200 group-hover:scale-105">
                 <AppIcon size="lg" withGlow />
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">{t.appName}</h1>
-                <p className="text-xs text-zinc-500">{t.appSubtitle}</p>
+              <div className="hidden sm:block">
+                <h1 className="text-base sm:text-lg md:text-xl font-bold text-white">{t.appName}</h1>
+                <p className="text-[10px] sm:text-xs text-zinc-500">{t.appSubtitle}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <UsageCounter />
-              <KeyboardShortcutsHelp shortcuts={shortcuts} />
-              <FavoritesPanel onSelectCase={handleSelectFavorite} />
-              <CloudHistoryPanel
-                onSelect={handleSelectFromHistory}
-                onNewGeneration={newGeneration}
-              />
+              <div className="hidden md:flex items-center gap-2">
+                <KeyboardShortcutsHelp shortcuts={shortcuts} />
+                <FavoritesPanel onSelectCase={handleSelectFavorite} />
+                <CloudHistoryPanel
+                  onSelect={handleSelectFromHistory}
+                  onNewGeneration={newGeneration}
+                />
+              </div>
               <UserMenu />
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-12">
-        {/* Hero Section */}
-        <div className="max-w-6xl mx-auto mb-20">
-          <div className="mb-12 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12">
+        {/* Hero Section - Mobile First */}
+        <div className="max-w-6xl mx-auto mb-10 sm:mb-14 md:mb-20">
+          <div className="mb-6 sm:mb-8 md:mb-12 text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-5 md:mb-6 leading-tight px-2">
               {t.heroTitle}{" "}
               <span className="text-violet-500">
                 {t.heroHighlight}
               </span>
             </h1>
-            <p className="text-zinc-400 text-lg md:text-xl mb-8 leading-relaxed max-w-2xl mx-auto">{t.heroSubtitle}</p>
+            <p className="text-zinc-400 text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-7 md:mb-8 leading-relaxed max-w-2xl mx-auto px-4">
+              {t.heroSubtitle}
+            </p>
 
-            <div className="flex justify-center gap-4 mb-8">
+            <div className="flex justify-center gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-7 md:mb-8 px-4">
               <ImageUploader
                 onGenerateFromImage={handleGenerateFromImage}
                 isLoading={isImageLoading}
@@ -232,7 +236,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
           <UsageBanner />
           <OnboardingChecklist />
 
-          <div className="grid lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6 max-w-6xl mx-auto">
             <div className="order-2 lg:order-1">
               <TestCaseForm
                 onGenerate={handleGenerate}
@@ -254,113 +258,113 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
           </div>
         </div>
 
-        {/* 01. Sobre TestCraft AI */}
-        <section className="max-w-6xl mx-auto mb-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Sobre TestCraft AI</h2>
-            <p className="text-zinc-400 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
-              TestCraft AI es la herramienta definitiva para QA Engineers y desarrolladores que buscan automatizar la creación de casos de prueba profesionales. Utilizamos inteligencia artificial avanzada para generar casos completos, incluyendo escenarios positivos, negativos y de borde.
+        {/* 01. Sobre TestCraft AI - Mobile First */}
+        <section className="w-full max-w-6xl mx-auto mb-12 md:mb-16 lg:mb-24 px-4">
+          <div className="text-center mb-8 md:mb-10 lg:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">{t.aboutTitle}</h2>
+            <p className="text-zinc-400 text-sm sm:text-base md:text-lg leading-relaxed max-w-3xl mx-auto px-2">
+              {t.aboutDesc}
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg">
-              <div className="text-4xl font-bold text-violet-400 mb-2">10K+</div>
-              <div className="text-gray-300 text-sm">Casos Generados</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-4xl mx-auto">
+            <div className="text-center p-4 sm:p-5 md:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:border-violet-400/50 transition-all">
+              <div className="text-3xl sm:text-4xl font-bold text-violet-400 mb-1 md:mb-2">10K+</div>
+              <div className="text-gray-300 text-xs sm:text-sm">{t.statsGenerated}</div>
             </div>
-            <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg">
-              <div className="text-4xl font-bold text-violet-400 mb-2">500+</div>
-              <div className="text-gray-300 text-sm">Usuarios Activos</div>
+            <div className="text-center p-4 sm:p-5 md:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:border-violet-400/50 transition-all">
+              <div className="text-3xl sm:text-4xl font-bold text-violet-400 mb-1 md:mb-2">500+</div>
+              <div className="text-gray-300 text-xs sm:text-sm">{t.statsUsers}</div>
             </div>
-            <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg">
-              <div className="text-4xl font-bold text-violet-400 mb-2">24/7</div>
-              <div className="text-gray-300 text-sm">Disponibilidad</div>
-            </div>
-          </div>
-        </section>
-
-        {/* 02. Características & Tecnologías */}
-        <section className="max-w-6xl mx-auto mb-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Características & Tecnologías</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Generación IA</h3>
-              <div className="flex flex-wrap gap-2">
-                <SkillTag>Claude AI</SkillTag>
-                <SkillTag>Casos Positivos</SkillTag>
-                <SkillTag>Casos Negativos</SkillTag>
-                <SkillTag>Casos Borde</SkillTag>
-                <SkillTag icon={<Camera className="w-3 h-3" />}>Desde Imagen</SkillTag>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Formatos</h3>
-              <div className="flex flex-wrap gap-2">
-                <SkillTag>Gherkin</SkillTag>
-                <SkillTag>Tabla</SkillTag>
-                <SkillTag>JSON</SkillTag>
-                <SkillTag>PDF Export</SkillTag>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Integraciones (próximamente)</h3>
-              <div className="flex flex-wrap gap-2">
-                <SkillTag>Jira</SkillTag>
-                <SkillTag>Azure DevOps</SkillTag>
-                <SkillTag>GitHub</SkillTag>
-                <SkillTag>TestRail</SkillTag>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Performance</h3>
-              <div className="flex flex-wrap gap-2">
-                <SkillTag icon={<Zap className="w-3 h-3" />}>Generación Rápida</SkillTag>
-                <SkillTag>Cloud Storage</SkillTag>
-                <SkillTag>Historial</SkillTag>
-              </div>
+            <div className="text-center p-4 sm:p-5 md:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:border-violet-400/50 transition-all sm:col-span-2 lg:col-span-1">
+              <div className="text-3xl sm:text-4xl font-bold text-violet-400 mb-1 md:mb-2">24/7</div>
+              <div className="text-gray-300 text-xs sm:text-sm">{t.statsAvailability}</div>
             </div>
           </div>
         </section>
 
-        {/* 03. Casos de Uso */}
-        <section className="max-w-6xl mx-auto mb-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Casos de Uso Destacados</h2>
+        {/* 02. Características & Tecnologías - Mobile First */}
+        <section className="w-full max-w-6xl mx-auto mb-12 md:mb-16 lg:mb-24 px-4">
+          <div className="text-center mb-8 md:mb-10 lg:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">{t.featuresTitle}</h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <div>
+              <h3 className="text-white font-semibold mb-3 md:mb-4 text-xs sm:text-sm uppercase tracking-wider">{t.featuresAI}</h3>
+              <div className="flex flex-wrap gap-1.5 md:gap-2">
+                <SkillTag>{t.tagClaudeAI}</SkillTag>
+                <SkillTag>{t.tagPositive}</SkillTag>
+                <SkillTag>{t.tagNegative}</SkillTag>
+                <SkillTag>{t.tagEdge}</SkillTag>
+                <SkillTag icon={<Camera className="w-3 h-3" />}>{t.tagFromImage}</SkillTag>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-3 md:mb-4 text-xs sm:text-sm uppercase tracking-wider">{t.featuresFormats}</h3>
+              <div className="flex flex-wrap gap-1.5 md:gap-2">
+                <SkillTag>{t.tagGherkin}</SkillTag>
+                <SkillTag>{t.tagTable}</SkillTag>
+                <SkillTag>{t.tagJSON}</SkillTag>
+                <SkillTag>{t.tagPDF}</SkillTag>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-3 md:mb-4 text-xs sm:text-sm uppercase tracking-wider">{t.featuresIntegrationsSoon}</h3>
+              <div className="flex flex-wrap gap-1.5 md:gap-2">
+                <SkillTag>{t.tagJira}</SkillTag>
+                <SkillTag>{t.tagAzure}</SkillTag>
+                <SkillTag>{t.tagGitHub}</SkillTag>
+                <SkillTag>{t.tagTestRail}</SkillTag>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-3 md:mb-4 text-xs sm:text-sm uppercase tracking-wider">{t.featuresPerformance}</h3>
+              <div className="flex flex-wrap gap-1.5 md:gap-2">
+                <SkillTag icon={<Zap className="w-3 h-3" />}>{t.tagFast}</SkillTag>
+                <SkillTag>{t.tagCloud}</SkillTag>
+                <SkillTag>{t.tagHistory}</SkillTag>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 03. Casos de Uso - Mobile First */}
+        <section className="w-full max-w-6xl mx-auto mb-12 md:mb-16 lg:mb-24 px-4">
+          <div className="text-center mb-8 md:mb-10 lg:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">{t.useCasesTitle}</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <ProjectCard
-              title="Testing E-Commerce"
-              description="Genera casos completos para flujos de compra, carritos, checkout y pagos."
+              title={t.useCaseEcommerce}
+              description={t.useCaseEcommerceDesc}
               tags={["Stripe", "PayPal", "Carrito"]}
             />
             <ProjectCard
-              title="APIs REST"
-              description="Casos de prueba para endpoints, autenticación, validaciones y errores."
+              title={t.useCaseAPI}
+              description={t.useCaseAPIDesc}
               tags={["OAuth", "JWT", "CRUD"]}
             />
             <ProjectCard
-              title="Testing UI/UX"
-              description="Desde screenshots, genera casos para formularios, navegación y responsive."
+              title={t.useCaseUI}
+              description={t.useCaseUIDesc}
               tags={["Responsive", "Forms", "Navigation"]}
               isNew
             />
             <ProjectCard
-              title="Regresión Automática"
-              description="Mantén tu suite de casos actualizada con cada nueva feature."
+              title={t.useCaseRegression}
+              description={t.useCaseRegressionDesc}
               tags={["CI/CD", "Automation", "Regression"]}
             />
           </div>
         </section>
 
-        {/* 04. Demo Interactivo */}
-        <section className="max-w-5xl mx-auto mb-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Mira cómo funciona
+        {/* 04. Demo Interactivo - Mobile First */}
+        <section className="w-full max-w-5xl mx-auto mb-12 md:mb-16 lg:mb-24 px-4">
+          <div className="text-center mb-8 md:mb-10 lg:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
+              {t.demoTitle}
             </h2>
-            <p className="text-zinc-400 text-base md:text-lg max-w-2xl mx-auto">
-              Observa en tiempo real cómo TestCraft AI transforma tus requisitos en casos de prueba profesionales
+            <p className="text-zinc-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-2">
+              {t.demoSubtitle}
             </p>
           </div>
           <InteractiveDemo />
@@ -380,26 +384,26 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
 function SkillTag({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded text-gray-300 text-xs font-medium hover:border-violet-400/50 transition-colors">
+    <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded text-gray-300 text-[10px] sm:text-xs font-medium hover:border-violet-400/50 transition-colors">
       {icon}
-      {children}
+      <span className="whitespace-nowrap">{children}</span>
     </div>
   );
 }
 
 function ProjectCard({ title, description, tags, isNew }: { title: string; description: string; tags: string[]; isNew?: boolean }) {
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 hover:border-white/20 transition-colors relative">
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 sm:p-5 md:p-6 hover:border-white/20 transition-colors relative">
       {isNew && (
-        <div className="absolute -top-2 -right-2 px-2 py-1 bg-violet-500 rounded text-[10px] font-bold text-white uppercase">
+        <div className="absolute -top-2 -right-2 px-2 py-1 bg-violet-500 rounded text-[9px] sm:text-[10px] font-bold text-white uppercase">
           Nuevo
         </div>
       )}
-      <h3 className="text-white font-semibold mb-3 text-lg">{title}</h3>
-      <p className="text-gray-300 text-sm mb-4 leading-relaxed">{description}</p>
-      <div className="flex flex-wrap gap-2">
+      <h3 className="text-white font-semibold mb-2 sm:mb-3 text-base sm:text-lg">{title}</h3>
+      <p className="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">{description}</p>
+      <div className="flex flex-wrap gap-1.5 sm:gap-2">
         {tags.map((tag) => (
-          <span key={tag} className="px-2 py-1 bg-white/10 text-gray-400 text-xs rounded">
+          <span key={tag} className="px-2 py-0.5 sm:py-1 bg-white/10 text-gray-400 text-[10px] sm:text-xs rounded whitespace-nowrap">
             {tag}
           </span>
         ))}
