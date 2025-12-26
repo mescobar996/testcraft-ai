@@ -197,19 +197,20 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+      <div className="container mx-auto px-4 py-16">
+        {/* Hero Section */}
+        <div className="max-w-4xl mx-auto mb-24">
+          <div className="mb-12">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
               {t.heroTitle}{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-indigo-400">
+              <span className="text-violet-400">
                 {t.heroHighlight}
               </span>
-            </h2>
-            <p className="text-slate-400 text-lg max-w-2xl mx-auto">{t.heroSubtitle}</p>
-            
-            <div className="mt-6">
-              <ImageUploader 
+            </h1>
+            <p className="text-zinc-400 text-xl mb-8 leading-relaxed">{t.heroSubtitle}</p>
+
+            <div className="flex gap-4 mb-8">
+              <ImageUploader
                 onGenerateFromImage={handleGenerateFromImage}
                 isLoading={isImageLoading}
                 setIsLoading={setIsImageLoading}
@@ -239,32 +240,132 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
               />
             </div>
           </div>
-          
-          {/* FEATURE CARDS - 4 columnas con "Desde Imagen" + badge NUEVO */}
-          <div className="mt-16 grid md:grid-cols-4 gap-6">
-            <FeatureCard
-              icon={<Camera className="w-6 h-6 text-fuchsia-400" />}
-              title="Desde Imagen"
-              description="Subí un screenshot y generamos casos automáticamente."
+        </div>
+
+        {/* 01. Sobre TestCraft AI */}
+        <section className="max-w-4xl mx-auto mb-32">
+          <div className="flex items-baseline gap-4 mb-8">
+            <span className="text-6xl font-bold text-zinc-800">01</span>
+            <h2 className="text-3xl font-bold text-white">Sobre TestCraft AI</h2>
+          </div>
+          <div className="pl-20">
+            <p className="text-zinc-400 text-lg mb-8 leading-relaxed">
+              TestCraft AI es la herramienta definitiva para QA Engineers y desarrolladores que buscan automatizar la creación de casos de prueba profesionales. Utilizamos inteligencia artificial avanzada para generar casos completos, incluyendo escenarios positivos, negativos y de borde.
+            </p>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div>
+                <div className="text-4xl font-bold text-violet-400 mb-2">10K+</div>
+                <div className="text-zinc-500 text-sm">Casos Generados</div>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-violet-400 mb-2">500+</div>
+                <div className="text-zinc-500 text-sm">Usuarios Activos</div>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-violet-400 mb-2">24/7</div>
+                <div className="text-zinc-500 text-sm">Disponibilidad</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 02. Características & Tecnologías */}
+        <section className="max-w-4xl mx-auto mb-32">
+          <div className="flex items-baseline gap-4 mb-8">
+            <span className="text-6xl font-bold text-zinc-800">02</span>
+            <h2 className="text-3xl font-bold text-white">Características & Tecnologías</h2>
+          </div>
+          <div className="pl-20 grid md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Generación IA</h3>
+              <div className="flex flex-wrap gap-2">
+                <SkillTag>Claude AI</SkillTag>
+                <SkillTag>Casos Positivos</SkillTag>
+                <SkillTag>Casos Negativos</SkillTag>
+                <SkillTag>Casos Borde</SkillTag>
+                <SkillTag icon={<Camera className="w-3 h-3" />}>Desde Imagen</SkillTag>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Formatos</h3>
+              <div className="flex flex-wrap gap-2">
+                <SkillTag>Gherkin</SkillTag>
+                <SkillTag>Tabla</SkillTag>
+                <SkillTag>JSON</SkillTag>
+                <SkillTag>PDF Export</SkillTag>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Integraciones</h3>
+              <div className="flex flex-wrap gap-2">
+                <SkillTag>Jira</SkillTag>
+                <SkillTag>Azure DevOps</SkillTag>
+                <SkillTag>GitHub</SkillTag>
+                <SkillTag>TestRail</SkillTag>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Performance</h3>
+              <div className="flex flex-wrap gap-2">
+                <SkillTag icon={<Zap className="w-3 h-3" />}>Generación Rápida</SkillTag>
+                <SkillTag>Cloud Storage</SkillTag>
+                <SkillTag>Historial</SkillTag>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 03. Casos de Uso */}
+        <section className="max-w-4xl mx-auto mb-32">
+          <div className="flex items-baseline gap-4 mb-8">
+            <span className="text-6xl font-bold text-zinc-800">03</span>
+            <h2 className="text-3xl font-bold text-white">Casos de Uso Destacados</h2>
+          </div>
+          <div className="pl-20 grid md:grid-cols-2 gap-6">
+            <ProjectCard
+              title="Testing E-Commerce"
+              description="Genera casos completos para flujos de compra, carritos, checkout y pagos."
+              tags={["Stripe", "PayPal", "Carrito"]}
+            />
+            <ProjectCard
+              title="APIs REST"
+              description="Casos de prueba para endpoints, autenticación, validaciones y errores."
+              tags={["OAuth", "JWT", "CRUD"]}
+            />
+            <ProjectCard
+              title="Testing UI/UX"
+              description="Desde screenshots, genera casos para formularios, navegación y responsive."
+              tags={["Responsive", "Forms", "Navigation"]}
               isNew
             />
-            <FeatureCard
-              icon={<Zap className="w-6 h-6 text-yellow-400" />}
-              title={t.feature1Title}
-              description={t.feature1Desc}
-            />
-            <FeatureCard
-              icon={<Shield className="w-6 h-6 text-green-400" />}
-              title={t.feature2Title}
-              description={t.feature2Desc}
-            />
-            <FeatureCard
-              icon={<Clock className="w-6 h-6 text-blue-400" />}
-              title={t.feature3Title}
-              description={t.feature3Desc}
+            <ProjectCard
+              title="Regresión Automática"
+              description="Mantén tu suite de casos actualizada con cada nueva feature."
+              tags={["CI/CD", "Automation", "Regression"]}
             />
           </div>
-        </div>
+        </section>
+
+        {/* 04. Comienza Ahora */}
+        <section className="max-w-4xl mx-auto mb-32">
+          <div className="flex items-baseline gap-4 mb-8">
+            <span className="text-6xl font-bold text-zinc-800">04</span>
+            <h2 className="text-3xl font-bold text-white">Comienza Ahora</h2>
+          </div>
+          <div className="pl-20">
+            <p className="text-zinc-400 text-lg mb-8 leading-relaxed">
+              Empieza a generar casos de prueba profesionales en segundos. Gratis para siempre con 20 generaciones diarias.
+            </p>
+            <div className="flex gap-4">
+              <a href="#" className="px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-medium rounded transition-colors">
+                Comenzar Gratis
+              </a>
+              <a href="/pricing" className="px-6 py-3 border border-white/10 hover:border-white/20 text-white font-medium rounded transition-colors">
+                Ver Planes
+              </a>
+            </div>
+          </div>
+        </section>
       </div>
 
       <Footer />
@@ -272,19 +373,32 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
   );
 }
 
-function FeatureCard({ icon, title, description, isNew }: { icon: React.ReactNode; title: string; description: string; isNew?: boolean }) {
+function SkillTag({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
   return (
-    <div className={`bg-zinc-950/50 border rounded-lg p-6 hover:border-violet-500/20 transition-all duration-200 group relative ${isNew ? 'border-violet-500/30' : 'border-white/[0.03]'}`}>
+    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/50 border border-white/[0.05] rounded text-zinc-400 text-xs font-medium hover:border-violet-500/20 transition-colors">
+      {icon}
+      {children}
+    </div>
+  );
+}
+
+function ProjectCard({ title, description, tags, isNew }: { title: string; description: string; tags: string[]; isNew?: boolean }) {
+  return (
+    <div className="bg-zinc-950/50 border border-white/[0.03] rounded-lg p-6 hover:border-violet-500/20 transition-all duration-200 relative">
       {isNew && (
         <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-violet-600/90 rounded text-[10px] font-semibold text-white">
           NUEVO
         </div>
       )}
-      <div className="w-10 h-10 bg-zinc-900/50 rounded flex items-center justify-center mb-4">
-        {icon}
+      <h3 className="text-white font-semibold mb-3 text-lg">{title}</h3>
+      <p className="text-zinc-500 text-sm mb-4 leading-relaxed">{description}</p>
+      <div className="flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <span key={tag} className="px-2 py-1 bg-zinc-900/50 text-zinc-600 text-xs rounded">
+            {tag}
+          </span>
+        ))}
       </div>
-      <h3 className="text-white font-semibold mb-2 text-sm">{title}</h3>
-      <p className="text-zinc-500 text-xs leading-relaxed">{description}</p>
     </div>
   );
 }
