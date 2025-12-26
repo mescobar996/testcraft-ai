@@ -14,6 +14,8 @@ import { KeyboardShortcutsHelp, useKeyboardShortcuts } from "@/components/Keyboa
 import { ImageUploader } from "@/components/ImageUploader";
 import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 import { InteractiveDemo } from "@/components/InteractiveDemo";
+import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { TrialBanner, TrialStatusBadge } from "@/components/TrialBanner";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
@@ -43,7 +45,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [newGeneration, setNewGeneration] = useState<HistoryRecord | null>(null);
   const [triggerGenerate, setTriggerGenerate] = useState(0);
-  const { user, canGenerate, incrementUsage } = useAuth();
+  const { user, canGenerate, incrementUsage, isPro, usageCount, maxUsage } = useAuth();
   const { t } = useLanguage();
 
   const handleGenerate = async (requirement: string, context: string, format: string) => {
@@ -218,6 +220,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             </div>
           </div>
 
+          <TrialBanner />
           <UsageBanner />
 
           <div className="grid lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
@@ -353,25 +356,12 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
           </div>
           <InteractiveDemo />
         </section>
-
-        {/* 05. Comienza Ahora */}
-        <section className="max-w-4xl mx-auto mb-24 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Comienza Ahora</h2>
-          <p className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed max-w-2xl mx-auto">
-            Empieza a generar casos de prueba profesionales en segundos. Gratis para siempre con 10 generaciones mensuales.
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <a href="#" className="px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-medium rounded-lg transition-colors">
-              Comenzar Gratis
-            </a>
-            <a href="/pricing" className="px-6 py-3 border border-zinc-700 hover:border-zinc-600 text-white font-medium rounded-lg transition-colors">
-              Ver Planes
-            </a>
-          </div>
-        </section>
       </div>
 
       <Footer />
+
+      {/* Upgrade prompt contextual */}
+      {user && !isPro && <UpgradePrompt usageCount={usageCount} maxUsage={maxUsage} />}
 
       {/* Panel de diagnóstico - TEMPORAL para debugging */}
       {process.env.NODE_ENV === 'development' && <DiagnosticPanel />}

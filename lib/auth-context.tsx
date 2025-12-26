@@ -3,12 +3,15 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { getTrialInfo, startTrial as startTrialHelper, type TrialInfo } from './trial';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   isPro: boolean;
+  isProTrial: boolean;
+  trialInfo: TrialInfo | null;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   usageCount: number;
@@ -16,6 +19,7 @@ interface AuthContextType {
   canGenerate: boolean;
   incrementUsage: () => void;
   checkSubscription: () => Promise<void>;
+  startTrial: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [usageCount, setUsageCount] = useState(0);
   const [isPro, setIsPro] = useState(false);
+  const [trialInfo, setTrialInfo] = useState<TrialInfo | null>(null);
 
   // Check and reset monthly usage
   const checkMonthlyUsage = () => {
@@ -93,8 +98,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (user) {
       checkSubscription();
+      // También verificar trial
+      const trial = getTrialInfo(user.id);
+      setTrialInfo(trial);
     } else {
       setIsPro(false);
+      setTrialInfo(null);
     }
   }, [user, checkSubscription]);
 
@@ -132,16 +141,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const incrementUsage = () => {
-    if (isPro) return; // Pro users don't have limits
-    
+    if (isPro || isProTrial) return; // Pro users and trial users don't have limits
+
     const newCount = usageCount + 1;
     setUsageCount(newCount);
     localStorage.setItem(USAGE_KEY, newCount.toString());
   };
 
+  const startTrial = (): boolean => {
+    if (!user) return false;
+
+    const success = startTrialHelper(user.id);
+    if (success) {
+      const trial = getTrialInfo(user.id);
+      setTrialInfo(trial);
+    }
+    return success;
+  };
+
+  // Determinar si el usuario tiene acceso a features Pro (vía trial o subscription)
+  const isProTrial = trialInfo?.isActive ?? false;
+
   // Calculate limits based on plan
-  const maxUsage = isPro ? Infinity : (user ? REGISTERED_MONTHLY_LIMIT : FREE_DAILY_LIMIT);
-  const canGenerate = isPro || usageCount < maxUsage;
+  const maxUsage = (isPro || isProTrial) ? Infinity : (user ? REGISTERED_MONTHLY_LIMIT : FREE_DAILY_LIMIT);
+  const canGenerate = isPro || isProTrial || usageCount < maxUsage;
 
   return (
     <AuthContext.Provider value={{
@@ -149,13 +172,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       loading,
       isPro,
+      isProTrial,
+      trialInfo,
       signInWithGoogle,
       signOut,
       usageCount,
       maxUsage,
       canGenerate,
       incrementUsage,
-      checkSubscription
+      checkSubscription,
+      startTrial
     }}>
       {children}
     </AuthContext.Provider>

@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export function UserMenu() {
-  const { user, loading, signInWithGoogle, signOut, usageCount, maxUsage, isPro } = useAuth();
+  const { user, loading, signInWithGoogle, signOut, usageCount, maxUsage, isPro, isProTrial, trialInfo } = useAuth();
   const { language, setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
