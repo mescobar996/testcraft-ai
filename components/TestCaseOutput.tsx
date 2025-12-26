@@ -20,6 +20,7 @@ import {
 import { GenerationResult, TestCase } from "@/app/page";
 import { StatsCards } from "@/components/StatsCards";
 import { ExportMenu } from "@/components/ExportMenu";
+import { ExportWithTemplates } from "@/components/ExportWithTemplates";
 import { EditableTestCase } from "@/components/EditableTestCase";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { TestPlanModal } from "@/components/TestPlanModal";
@@ -237,6 +238,11 @@ Resultado Esperado: ${tc.expectedResult}`;
 
       {/* Botones de acción - Primera fila */}
       <div className="flex gap-2 flex-wrap">
+        <ExportWithTemplates
+          testCases={result.testCases}
+          gherkin={result.gherkin}
+          onExportPDF={exportToPDF}
+        />
         <ExportMenu
           testCases={result.testCases}
           gherkin={result.gherkin}
