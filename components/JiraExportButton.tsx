@@ -25,10 +25,12 @@ interface JiraProject {
 }
 
 export function JiraExportButton({ testCases }: JiraExportButtonProps) {
-  const { user, isPro } = useAuth();
+  const { user, isPro, isProTrial } = useAuth();
   const { language } = useLanguage();
   const { showToast } = useToast();
   const supabase = createClientComponentClient();
+
+  const hasAccess = isPro || isProTrial;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,10 +74,10 @@ export function JiraExportButton({ testCases }: JiraExportButtonProps) {
   }, [supabase]);
 
   useEffect(() => {
-    if (isModalOpen && user && isPro) {
+    if (isModalOpen && user && hasAccess) {
       checkJiraConfig();
     }
-  }, [isModalOpen, user, isPro, checkJiraConfig]);
+  }, [isModalOpen, user, hasAccess, checkJiraConfig]);
 
   const handleSendToJira = async () => {
     if (!selectedProjectKey || testCases.length === 0) return;
@@ -86,7 +88,10 @@ export function JiraExportButton({ testCases }: JiraExportButtonProps) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        showToast("No autorizado", "error");
+        showToast(
+          language === "es" ? "No autorizado" : "Unauthorized",
+          "error"
+        );
         return;
       }
 
@@ -140,10 +145,13 @@ export function JiraExportButton({ testCases }: JiraExportButtonProps) {
     }
   };
 
-  if (!user || !isPro) {
+  if (!user || !hasAccess) {
     return (
       <button
-        onClick={() => showToast(language === "es" ? "Requiere plan Pro" : "Requires Pro plan", "warning")}
+        onClick={() => showToast(
+          language === "es" ? "Requiere plan Pro o Trial" : "Requires Pro or Trial plan",
+          "warning"
+        )}
         className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 border border-slate-700 text-slate-400 rounded-lg cursor-not-allowed text-sm"
       >
         <Send className="w-4 h-4" />
