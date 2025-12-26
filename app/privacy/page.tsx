@@ -49,7 +49,7 @@ export default function PrivacyPage() {
               <p>El responsable del tratamiento de tus datos personales es:</p>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4">
                 <p><strong className="text-white">TestCraft AI</strong></p>
-                <p>Correo electrónico: <a href="mailto:testcraftia@gmail.com" className="text-violet-400 hover:text-violet-300">testcraftia@gmail.com</a></p>
+                <p>Correo electrónico: <a href="mailto:testcraftai@gmail.com" className="text-violet-400 hover:text-violet-300">testcraftai@gmail.com</a></p>
               </div>
             </div>
           </section>
@@ -195,7 +195,7 @@ export default function PrivacyPage() {
               </ul>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 mt-4">
                 <p className="text-gray-300">
-                  Para ejercer estos derechos, contactanos en: <a href="mailto:testcraftia@gmail.com" className="text-violet-400 hover:text-violet-300 font-medium">testcraftia@gmail.com</a>
+                  Para ejercer estos derechos, contactanos en: <a href="mailto:testcraftai@gmail.com" className="text-violet-400 hover:text-violet-300 font-medium">testcraftai@gmail.com</a>
                 </p>
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function PrivacyPage() {
             <div className="pl-10">
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4">
                 <p className="text-white font-medium">TestCraft AI</p>
-                <p className="text-gray-400">Correo electrónico: <a href="mailto:testcraftia@gmail.com" className="text-violet-400 hover:text-violet-300">testcraftia@gmail.com</a></p>
+                <p className="text-gray-400">Correo electrónico: <a href="mailto:testcraftai@gmail.com" className="text-violet-400 hover:text-violet-300">testcraftai@gmail.com</a></p>
               </div>
             </div>
           </section>

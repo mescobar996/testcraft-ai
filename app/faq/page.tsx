@@ -45,11 +45,11 @@ const faqContent = [
   },
   {
     question: "¿Cómo puedo contactar al soporte técnico?",
-    answer: "Si es usuario del Plan Gratuito, puede contactarnos a través de testcraftia@gmail.com. Si es usuario Pro, tiene acceso a soporte prioritario con respuesta garantizada en 24 horas.",
+    answer: "Si es usuario del Plan Gratuito, puede contactarnos a través de testcraftai@gmail.com. Si es usuario Pro, tiene acceso a soporte prioritario con respuesta garantizada en 24 horas.",
   },
   {
     question: "¿Dónde puedo reportar un error o sugerir una mejora?",
-    answer: "Agradecemos sus comentarios. Puede reportar errores o sugerir mejoras a través de testcraftia@gmail.com.",
+    answer: "Agradecemos sus comentarios. Puede reportar errores o sugerir mejoras a través de testcraftai@gmail.com.",
   },
 ];
 

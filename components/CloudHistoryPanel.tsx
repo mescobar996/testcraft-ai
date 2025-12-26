@@ -28,15 +28,27 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
   const [history, setHistory] = useState<HistoryRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const loadHistory = useCallback(async () => {
     if (!user) return;
     setIsLoading(true);
+    setError(null);
+
+    // Timeout después de 10 segundos
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+      setError("Tiempo de espera agotado. Por favor, intenta de nuevo.");
+    }, 10000);
+
     try {
       const data = await getGenerations(user.id);
+      clearTimeout(timeoutId);
       setHistory(data);
     } catch (error) {
+      clearTimeout(timeoutId);
       console.error("Error loading history:", error);
+      setError("Error al cargar el historial. Por favor, intenta de nuevo.");
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +169,21 @@ export function CloudHistoryPanel({ onSelect, onNewGeneration }: CloudHistoryPan
 
             {/* Contenido scrolleable */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-5">
-              {isLoading ? (
+              {error ? (
+                <div className="flex flex-col items-center justify-center h-48 text-center px-4">
+                  <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
+                    <X className="w-8 h-8 text-red-400" />
+                  </div>
+                  <p className="text-white text-lg font-semibold mb-2">Error al cargar</p>
+                  <p className="text-slate-400 text-sm mb-4">{error}</p>
+                  <button
+                    onClick={loadHistory}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors text-sm font-medium"
+                  >
+                    Reintentar
+                  </button>
+                </div>
+              ) : isLoading ? (
                 <div className="flex flex-col items-center justify-center h-48 text-slate-400">
                   <Loader2 className="w-10 h-10 animate-spin mb-4 text-blue-500" />
                   <p>Cargando historial...</p>

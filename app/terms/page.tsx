@@ -240,7 +240,7 @@ export default function TermsPage() {
               <p className="mb-4">Para consultas relacionadas con estos Términos y Condiciones:</p>
               <div className="bg-slate-800/50 rounded-lg p-4">
                 <p className="text-white font-medium">TestCraft AI</p>
-                <p className="text-slate-400">Correo electrónico: <a href="mailto:testcraftia@gmail.com" className="text-violet-400 hover:text-violet-300">testcraftia@gmail.com</a></p>
+                <p className="text-slate-400">Correo electrónico: <a href="mailto:testcraftai@gmail.com" className="text-violet-400 hover:text-violet-300">testcraftai@gmail.com</a></p>
               </div>
             </div>
           </section>
