@@ -3,6 +3,8 @@
  * Permite a usuarios Free probar features Pro sin tarjeta de crédito
  */
 
+import { initializeEmailNurturing } from './email-nurturing';
+
 const TRIAL_DURATION_DAYS = 14;
 const TRIAL_KEY = 'testcraft-pro-trial';
 const TRIAL_START_KEY = 'testcraft-pro-trial-start';
@@ -32,7 +34,7 @@ export function checkTrialEligibility(userId: string): boolean {
 /**
  * Inicia el trial para un usuario
  */
-export function startTrial(userId: string): boolean {
+export function startTrial(userId: string, userEmail?: string, userName?: string): boolean {
   if (typeof window === 'undefined') return false;
 
   const trialKey = `${TRIAL_KEY}-${userId}`;
@@ -46,6 +48,11 @@ export function startTrial(userId: string): boolean {
   const now = new Date();
   localStorage.setItem(trialKey, 'used');
   localStorage.setItem(trialStartKey, now.toISOString());
+
+  // Inicializar email nurturing si tenemos email y nombre
+  if (userEmail && userName) {
+    initializeEmailNurturing(userId, userEmail, userName, now.toISOString());
+  }
 
   return true;
 }

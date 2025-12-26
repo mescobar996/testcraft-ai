@@ -166,7 +166,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const startTrial = (): boolean => {
     if (!user) return false;
 
-    const success = startTrialHelper(user.id);
+    // Extraer nombre del usuario (email name o user metadata)
+    const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'Usuario';
+    const userEmail = user.email || '';
+
+    const success = startTrialHelper(user.id, userEmail, userName);
     if (success) {
       const trial = getTrialInfo(user.id);
       setTrialInfo(trial);
