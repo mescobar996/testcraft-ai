@@ -99,11 +99,11 @@ export function TestCaseOutput({
 
   const formatTestCaseForCopy = (tc: TestCase) => {
     return `${tc.id} - ${tc.title}
-Tipo: ${tc.type} | Prioridad: ${tc.priority}
-Precondiciones: ${tc.preconditions}
-Pasos:
+${t.typeLabel} ${tc.type} | ${t.priorityLabel} ${tc.priority}
+${t.preconditionsLabel} ${tc.preconditions}
+${t.stepsLabel}
 ${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join("\n")}
-Resultado Esperado: ${tc.expectedResult}`;
+${t.expectedResultLabel} ${tc.expectedResult}`;
   };
 
   const copyAllCases = async () => {
@@ -111,7 +111,7 @@ Resultado Esperado: ${tc.expectedResult}`;
     
     const allText = result.testCases.map(tc => formatTestCaseForCopy(tc)).join("\n\n" + "=".repeat(50) + "\n\n");
     await navigator.clipboard.writeText(allText);
-    showToast(`${result.testCases.length} casos copiados`, "success", <CopyCheck className="w-4 h-4" />);
+    showToast(`${result.testCases.length} ${t.casesCopied}`, "success", <CopyCheck className="w-4 h-4" />);
   };
 
   const handleFavorite = async (tc: TestCase) => {

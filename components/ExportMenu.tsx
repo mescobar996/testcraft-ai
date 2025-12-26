@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { TestCase } from "@/app/page";
 import { useToast } from "@/components/Toast";
+import { useLanguage } from "@/lib/language-context";
 
 interface ExportMenuProps {
   testCases: TestCase[];
@@ -31,6 +32,7 @@ const downloadBlob = (blob: Blob, filename: string) => {
 export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { showToast } = useToast();
+  const { t } = useLanguage();
 
   const exportToExcel = () => {
     const headers = ["ID", "Título", "Tipo", "Prioridad", "Precondiciones", "Pasos", "Resultado Esperado"];
@@ -60,7 +62,7 @@ export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps)
     ]);
     const csvContent = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
     downloadBlob(new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8" }), `jira-import-${Date.now()}.csv`);
-    showToast("CSV listo para importar en Jira", "success");
+    showToast(t.jiraReady, "success");
     setIsOpen(false);
   };
 
@@ -72,7 +74,7 @@ export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps)
     ]);
     const csvContent = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
     downloadBlob(new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8" }), `testrail-import-${Date.now()}.csv`);
-    showToast("CSV listo para TestRail", "success");
+    showToast(t.testRailReady, "success");
     setIsOpen(false);
   };
 
@@ -84,7 +86,7 @@ export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps)
     ]);
     const csvContent = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
     downloadBlob(new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8" }), `zephyr-import-${Date.now()}.csv`);
-    showToast("CSV listo para Zephyr Scale", "success");
+    showToast(t.zephyrReady, "success");
     setIsOpen(false);
   };
 
@@ -96,7 +98,7 @@ export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps)
     ]);
     const csvContent = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
     downloadBlob(new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8" }), `qtest-import-${Date.now()}.xlsx`);
-    showToast("Excel listo para qTest", "success");
+    showToast(t.qTestReady, "success");
     setIsOpen(false);
   };
 
@@ -109,7 +111,7 @@ export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps)
         className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
       >
         <Download className="w-4 h-4 mr-2" />
-        Exportar
+        {t.exportButton}
         {isOpen ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
       </Button>
 
@@ -119,31 +121,31 @@ export function ExportMenu({ testCases, gherkin, onExportPDF }: ExportMenuProps)
           
           <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
             <div className="p-2 border-b border-slate-800">
-              <p className="text-xs text-slate-500 px-2 py-1 uppercase tracking-wider">Formatos Básicos</p>
+              <p className="text-xs text-slate-500 px-2 py-1 uppercase tracking-wider">{t.basicFormats}</p>
               <button onClick={exportToExcel} className="w-full flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm">
-                <FileSpreadsheet className="w-4 h-4 text-green-400" /> Excel (.xlsx)
+                <FileSpreadsheet className="w-4 h-4 text-green-400" /> {t.excelFormat}
               </button>
               <button onClick={() => { onExportPDF(); setIsOpen(false); }} className="w-full flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm">
-                <FileText className="w-4 h-4 text-red-400" /> PDF
+                <FileText className="w-4 h-4 text-red-400" /> {t.pdfFormat}
               </button>
               <button onClick={exportToJSON} className="w-full flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm">
-                <FileJson className="w-4 h-4 text-yellow-400" /> JSON
+                <FileJson className="w-4 h-4 text-yellow-400" /> {t.jsonFormat}
               </button>
             </div>
 
             <div className="p-2">
-              <p className="text-xs text-slate-500 px-2 py-1 uppercase tracking-wider">Herramientas de Testing</p>
+              <p className="text-xs text-slate-500 px-2 py-1 uppercase tracking-wider">{t.testingTools}</p>
               <button onClick={exportToJiraCSV} className="w-full flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm">
-                <span className="w-4 text-blue-400 font-bold text-xs">J</span> Jira (CSV)
+                <span className="w-4 text-blue-400 font-bold text-xs">J</span> {t.jiraCSV}
               </button>
               <button onClick={exportToTestRail} className="w-full flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm">
-                <span className="w-4 text-teal-400 font-bold text-xs">TR</span> TestRail (CSV)
+                <span className="w-4 text-teal-400 font-bold text-xs">TR</span> {t.testRailCSV}
               </button>
               <button onClick={exportToZephyr} className="w-full flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm">
-                <span className="w-4 text-purple-400 font-bold text-xs">Z</span> Zephyr Scale (CSV)
+                <span className="w-4 text-purple-400 font-bold text-xs">Z</span> {t.zephyrCSV}
               </button>
               <button onClick={exportToQTest} className="w-full flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg text-sm">
-                <span className="w-4 text-orange-400 font-bold text-xs">qT</span> qTest (Excel)
+                <span className="w-4 text-orange-400 font-bold text-xs">qT</span> {t.qTestExcel}
               </button>
             </div>
           </div>

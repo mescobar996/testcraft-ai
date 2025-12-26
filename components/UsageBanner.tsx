@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
+import { useLanguage } from '@/lib/language-context';
 import { Zap, LogIn, AlertTriangle, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UpgradeModal } from '@/components/UpgradeModal';
 
 export function UsageBanner() {
   const { user, usageCount, maxUsage, canGenerate, isPro, signInWithGoogle } = useAuth();
+  const { t } = useLanguage();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Pro users don't see any banner
@@ -29,7 +31,7 @@ export function UsageBanner() {
             <div className="flex items-center gap-2 text-yellow-400 text-sm">
               <AlertTriangle className="w-4 h-4" />
               <span>
-                Te quedan {maxUsage - usageCount} generaciones hoy.
+                {t.generationsLeft} {maxUsage - usageCount} generaciones hoy.
               </span>
             </div>
             {user ? (
@@ -39,7 +41,7 @@ export function UsageBanner() {
                 className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500"
               >
                 <Crown className="w-4 h-4 mr-1" />
-                Actualizar a Pro
+                {t.upgradeToProButton}
               </Button>
             ) : (
               <Button
@@ -49,7 +51,7 @@ export function UsageBanner() {
                 className="border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10"
               >
                 <LogIn className="w-4 h-4 mr-1" />
-                Iniciar sesión para más
+                {t.signInForMore}
               </Button>
             )}
           </div>
@@ -68,11 +70,11 @@ export function UsageBanner() {
             <Zap className="w-6 h-6 text-red-400" />
           </div>
           <div>
-            <p className="text-white font-medium">Límite diario alcanzado</p>
+            <p className="text-white font-medium">{t.limitReachedTitle}</p>
             <p className="text-slate-400 text-sm mt-1">
-              {user 
-                ? "Actualizá a Pro para generaciones ilimitadas."
-                : "Iniciá sesión para obtener más generaciones diarias."
+              {user
+                ? t.upgradeToPro
+                : t.loginForMore
               }
             </p>
           </div>
@@ -82,7 +84,7 @@ export function UsageBanner() {
               className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500"
             >
               <Crown className="w-4 h-4 mr-2" />
-              Actualizar a Pro - $5/mes
+              {t.upgradeToProPrice}
             </Button>
           ) : (
             <Button
@@ -90,7 +92,7 @@ export function UsageBanner() {
               className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500"
             >
               <LogIn className="w-4 h-4 mr-2" />
-              Iniciar sesión con Google
+              {t.signInWithGoogle}
             </Button>
           )}
         </div>

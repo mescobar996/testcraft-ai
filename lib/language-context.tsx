@@ -141,6 +141,37 @@ interface Translations {
   errorGeneratingCases: string;
   generatedFromImage: string;
   noTitle: string;
+  // TestCaseOutput
+  casesCopied: string;
+  typeLabel: string;
+  priorityLabel: string;
+  preconditionsLabel: string;
+  stepsLabel: string;
+  expectedResultLabel: string;
+  // ExportMenu
+  exportButton: string;
+  basicFormats: string;
+  testingTools: string;
+  excelFormat: string;
+  pdfFormat: string;
+  jsonFormat: string;
+  jiraCSV: string;
+  testRailCSV: string;
+  zephyrCSV: string;
+  qTestExcel: string;
+  jiraReady: string;
+  testRailReady: string;
+  zephyrReady: string;
+  qTestReady: string;
+  // UsageBanner
+  upgradeToPro: string;
+  loginForMore: string;
+  generationsLeft: string;
+  upgradeToProButton: string;
+  signInForMore: string;
+  limitReachedTitle: string;
+  upgradeToProPrice: string;
+  signInWithGoogle: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -281,6 +312,37 @@ const translations: Record<Language, Translations> = {
     errorGeneratingCases: "Error al generar casos de prueba",
     generatedFromImage: "Generado desde imagen",
     noTitle: "Sin título",
+    // TestCaseOutput
+    casesCopied: "casos copiados",
+    typeLabel: "Tipo:",
+    priorityLabel: "Prioridad:",
+    preconditionsLabel: "Precondiciones:",
+    stepsLabel: "Pasos:",
+    expectedResultLabel: "Resultado Esperado:",
+    // ExportMenu
+    exportButton: "Exportar",
+    basicFormats: "Formatos Básicos",
+    testingTools: "Herramientas de Testing",
+    excelFormat: "Excel (.xlsx)",
+    pdfFormat: "PDF",
+    jsonFormat: "JSON",
+    jiraCSV: "Jira (CSV)",
+    testRailCSV: "TestRail (CSV)",
+    zephyrCSV: "Zephyr Scale (CSV)",
+    qTestExcel: "qTest (Excel)",
+    jiraReady: "CSV listo para importar en Jira",
+    testRailReady: "CSV listo para TestRail",
+    zephyrReady: "CSV listo para Zephyr Scale",
+    qTestReady: "Excel listo para qTest",
+    // UsageBanner
+    upgradeToPro: "Actualizá a Pro para generaciones ilimitadas.",
+    loginForMore: "Iniciá sesión para obtener más generaciones diarias.",
+    generationsLeft: "Te quedan",
+    upgradeToProButton: "Actualizar a Pro",
+    signInForMore: "Iniciar sesión para más",
+    limitReachedTitle: "Límite diario alcanzado",
+    upgradeToProPrice: "Actualizar a Pro - $5/mes",
+    signInWithGoogle: "Iniciar sesión con Google",
   },
   en: {
     appName: "TestCraft AI",
@@ -419,6 +481,37 @@ const translations: Record<Language, Translations> = {
     errorGeneratingCases: "Error generating test cases",
     generatedFromImage: "Generated from image",
     noTitle: "Untitled",
+    // TestCaseOutput
+    casesCopied: "cases copied",
+    typeLabel: "Type:",
+    priorityLabel: "Priority:",
+    preconditionsLabel: "Preconditions:",
+    stepsLabel: "Steps:",
+    expectedResultLabel: "Expected Result:",
+    // ExportMenu
+    exportButton: "Export",
+    basicFormats: "Basic Formats",
+    testingTools: "Testing Tools",
+    excelFormat: "Excel (.xlsx)",
+    pdfFormat: "PDF",
+    jsonFormat: "JSON",
+    jiraCSV: "Jira (CSV)",
+    testRailCSV: "TestRail (CSV)",
+    zephyrCSV: "Zephyr Scale (CSV)",
+    qTestExcel: "qTest (Excel)",
+    jiraReady: "CSV ready to import in Jira",
+    testRailReady: "CSV ready for TestRail",
+    zephyrReady: "CSV ready for Zephyr Scale",
+    qTestReady: "Excel ready for qTest",
+    // UsageBanner
+    upgradeToPro: "Upgrade to Pro for unlimited generations.",
+    loginForMore: "Sign in to get more daily generations.",
+    generationsLeft: "You have",
+    upgradeToProButton: "Upgrade to Pro",
+    signInForMore: "Sign in for more",
+    limitReachedTitle: "Daily limit reached",
+    upgradeToProPrice: "Upgrade to Pro - $5/mo",
+    signInWithGoogle: "Sign in with Google",
   }
 };
 
