@@ -6,6 +6,7 @@ import { z } from "zod";
 import { GenerateRequestSchema } from "@/lib/validations";
 import { ANTHROPIC, ERROR_MESSAGES, RATE_LIMITING } from "@/lib/constants";
 import { logError, logger } from "@/lib/logger";
+import { extractJSON } from "@/lib/utils";
 import { checkRateLimit, getRateLimitIdentifier } from "@/lib/rate-limiter";
 import { getCachedGeneration, setCachedGeneration } from "@/lib/cache";
 
@@ -137,20 +138,10 @@ Responde SOLO con el JSON, sin texto adicional ni markdown.`;
       throw new Error("No se recibió respuesta de texto");
     }
 
-    let jsonResponse;
+    let jsonResponse: any;
     try {
-      // Limpiar respuesta de markdown
-      let cleanedText = textContent.text.trim();
-      if (cleanedText.startsWith("```json")) {
-        cleanedText = cleanedText.slice(7);
-      }
-      if (cleanedText.startsWith("```")) {
-        cleanedText = cleanedText.slice(3);
-      }
-      if (cleanedText.endsWith("```")) {
-        cleanedText = cleanedText.slice(0, -3);
-      }
-      jsonResponse = JSON.parse(cleanedText.trim());
+      const extracted = extractJSON(textContent.text);
+      jsonResponse = extracted;
     } catch (parseError) {
       logError("generate-api", parseError, {
         responsePreview: textContent.text.substring(0, 200)
@@ -162,7 +153,7 @@ Responde SOLO con el JSON, sin texto adicional ni markdown.`;
     await setCachedGeneration(requirement, context, jsonResponse);
 
     logger.info('generate-api', 'Generation successful', {
-      testCasesCount: jsonResponse.testCases?.length || 0
+      testCasesCount: (jsonResponse as any).testCases?.length || 0
     });
 
     return NextResponse.json(jsonResponse, {

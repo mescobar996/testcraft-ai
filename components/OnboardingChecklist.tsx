@@ -19,7 +19,9 @@ import {
   Circle,
   X,
   Gift,
-  TrendingUp
+  TrendingUp,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 
 const STEP_ICONS = {
@@ -38,6 +40,7 @@ export function OnboardingChecklist({ onStepComplete }: OnboardingChecklistProps
   const { language } = useLanguage();
   const [state, setState] = useState<OnboardingState | null>(null);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -56,7 +59,12 @@ export function OnboardingChecklist({ onStepComplete }: OnboardingChecklistProps
     if (currentState.isComplete && !currentState.rewardClaimed && !showRewardModal) {
       setShowRewardModal(true);
     }
-  }, [user, mounted, showRewardModal]);
+
+    // Colapsar automáticamente si ya hay progreso significativo o si es recurrente
+    if (currentState.completionPercentage >= 50 || usageCount > 0) {
+      setIsCollapsed(true);
+    }
+  }, [user, mounted, showRewardModal, usageCount]);
 
   const handleCompleteStep = (stepId: string) => {
     const userId = user?.id || null;
@@ -98,126 +106,145 @@ export function OnboardingChecklist({ onStepComplete }: OnboardingChecklistProps
   return (
     <>
       {/* Checklist Card */}
-      <div className="bg-gradient-to-br from-violet-600/10 via-purple-600/10 to-violet-600/10 border border-violet-500/30 rounded-xl p-5 mb-6 relative overflow-hidden">
+      <div className={`bg-gradient-to-br from-violet-600/10 via-purple-600/10 to-violet-600/10 border border-violet-500/30 rounded-xl relative overflow-hidden transition-all duration-300 mb-6 ${isCollapsed ? 'p-3' : 'p-5'}`}>
         {/* Background decoration */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
 
         {/* Content */}
         <div className="relative">
           {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-violet-500/20 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-violet-400" />
+          <div className={`flex items-center justify-between ${isCollapsed ? 'mb-0' : 'mb-4'}`}>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setIsCollapsed(!isCollapsed)}>
+              <div className={`${isCollapsed ? 'w-8 h-8' : 'w-10 h-10'} bg-violet-500/20 rounded-lg flex items-center justify-center transition-all`}>
+                <TrendingUp className={`${isCollapsed ? 'w-4 h-4' : 'w-5 h-5'} text-violet-400`} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 className={`${isCollapsed ? 'text-sm' : 'text-lg'} font-bold text-white transition-all flex items-center gap-2`}>
                   {language === "es" ? "Primeros Pasos" : "Getting Started"}
+                  {isCollapsed && (
+                    <span className="text-[10px] bg-violet-500/20 text-violet-300 px-1.5 py-0.5 rounded-full font-medium">
+                      {state.completionPercentage}%
+                    </span>
+                  )}
                 </h3>
-                <p className="text-sm text-slate-400">
-                  {language === "es"
-                    ? "Completa todos los pasos y gana +5 generaciones bonus"
-                    : "Complete all steps and earn +5 bonus generations"}
-                </p>
+                {!isCollapsed && (
+                  <p className="text-sm text-slate-400">
+                    {language === "es"
+                      ? "Completa todos los pasos y gana +5 generaciones bonus"
+                      : "Complete all steps and earn +5 bonus generations"}
+                  </p>
+                )}
               </div>
             </div>
 
-            <button
-              onClick={() => setIsDismissed(true)}
-              className="text-slate-400 hover:text-white transition-colors"
-              aria-label={language === "es" ? "Cerrar" : "Close"}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mb-5">
-            <div className="flex justify-between text-xs text-slate-400 mb-2">
-              <span>{language === "es" ? "Progreso" : "Progress"}</span>
-              <span className="font-semibold text-violet-400">
-                {state.completionPercentage}%
-              </span>
-            </div>
-            <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-500"
-                style={{ width: `${state.completionPercentage}%` }}
-              />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="text-slate-400 hover:text-white transition-colors p-1"
+              >
+                {isCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+              </button>
+              <button
+                onClick={() => setIsDismissed(true)}
+                className="text-slate-400 hover:text-white transition-colors p-1"
+                aria-label={language === "es" ? "Cerrar" : "Close"}
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
 
-          {/* Steps */}
-          <div className="space-y-3">
-            {state.steps.map((step) => {
-              const Icon = STEP_ICONS[step.icon as keyof typeof STEP_ICONS];
-              const isCompleted = step.completed;
+          {!isCollapsed && (
+            <>
+              {/* Progress Bar */}
+              <div className="mb-5 mt-4">
+                <div className="flex justify-between text-xs text-slate-400 mb-2">
+                  <span>{language === "es" ? "Progreso" : "Progress"}</span>
+                  <span className="font-semibold text-violet-400">
+                    {state.completionPercentage}%
+                  </span>
+                </div>
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-500"
+                    style={{ width: `${state.completionPercentage}%` }}
+                  />
+                </div>
+              </div>
 
-              return (
-                <button
-                  key={step.id}
-                  onClick={() => !isCompleted && handleCompleteStep(step.id)}
-                  disabled={isCompleted}
-                  className={`w-full flex items-start gap-3 p-3 rounded-lg transition-all ${
-                    isCompleted
-                      ? "bg-slate-800/30 opacity-60"
-                      : "bg-slate-800/50 hover:bg-slate-800/70 cursor-pointer"
-                  }`}
-                >
-                  {/* Checkbox */}
-                  <div className="flex-shrink-0 mt-0.5">
-                    {isCompleted ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-400" />
-                    ) : (
-                      <Circle className="w-5 h-5 text-slate-500" />
-                    )}
-                  </div>
+              {/* Steps */}
+              <div className="space-y-3">
+                {state.steps.map((step) => {
+                  const Icon = STEP_ICONS[step.icon as keyof typeof STEP_ICONS];
+                  const isCompleted = step.completed;
 
-                  {/* Icon */}
-                  <div className="flex-shrink-0">
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  return (
+                    <button
+                      key={step.id}
+                      onClick={() => !isCompleted && handleCompleteStep(step.id)}
+                      disabled={isCompleted}
+                      className={`w-full flex items-start gap-3 p-3 rounded-lg transition-all ${
                         isCompleted
-                          ? "bg-green-500/20"
-                          : "bg-violet-500/20"
+                          ? "bg-slate-800/30 opacity-60"
+                          : "bg-slate-800/50 hover:bg-slate-800/70 cursor-pointer"
                       }`}
                     >
-                      <Icon
-                        className={`w-4 h-4 ${
-                          isCompleted ? "text-green-400" : "text-violet-400"
-                        }`}
-                      />
-                    </div>
-                  </div>
+                      {/* Checkbox */}
+                      <div className="flex-shrink-0 mt-0.5">
+                        {isCompleted ? (
+                          <CheckCircle2 className="w-5 h-5 text-green-400" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-slate-500" />
+                        )}
+                      </div>
 
-                  {/* Text */}
-                  <div className="flex-1 text-left">
-                    <p
-                      className={`text-sm font-medium ${
-                        isCompleted ? "text-slate-400 line-through" : "text-white"
-                      }`}
-                    >
-                      {language === "es" ? step.title : step.titleEn}
-                    </p>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      {language === "es" ? step.description : step.descriptionEn}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                      {/* Icon */}
+                      <div className="flex-shrink-0">
+                        <div
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            isCompleted
+                              ? "bg-green-500/20"
+                              : "bg-violet-500/20"
+                          }`}
+                        >
+                          <Icon
+                            className={`w-4 h-4 ${
+                              isCompleted ? "text-green-400" : "text-violet-400"
+                            }`}
+                          />
+                        </div>
+                      </div>
 
-          {/* Reward Badge */}
-          {state.completionPercentage > 0 && (
-            <div className="mt-4 flex items-center gap-2 px-3 py-2 bg-violet-500/10 border border-violet-500/30 rounded-lg">
-              <Gift className="w-4 h-4 text-violet-400" />
-              <span className="text-xs text-violet-300">
-                {language === "es"
-                  ? `${state.completionPercentage}% completado • ${4 - state.steps.filter(s => s.completed).length} pasos restantes`
-                  : `${state.completionPercentage}% complete • ${4 - state.steps.filter(s => s.completed).length} steps remaining`}
-              </span>
-            </div>
+                      {/* Text */}
+                      <div className="flex-1 text-left">
+                        <p
+                          className={`text-sm font-medium ${
+                            isCompleted ? "text-slate-400 line-through" : "text-white"
+                          }`}
+                        >
+                          {language === "es" ? step.title : step.titleEn}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {language === "es" ? step.description : step.descriptionEn}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Reward Badge */}
+              {state.completionPercentage > 0 && (
+                <div className="mt-4 flex items-center gap-2 px-3 py-2 bg-violet-500/10 border border-violet-500/30 rounded-lg">
+                  <Gift className="w-4 h-4 text-violet-400" />
+                  <span className="text-xs text-violet-300">
+                    {language === "es"
+                      ? `${state.completionPercentage}% completado • ${4 - state.steps.filter(s => s.completed).length} pasos restantes`
+                      : `${state.completionPercentage}% complete • ${4 - state.steps.filter(s => s.completed).length} steps remaining`}
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

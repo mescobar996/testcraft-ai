@@ -136,10 +136,14 @@ export function TestCaseForm({ onGenerate, isLoading, triggerGenerate }: TestCas
 
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="text-slate-400 hover:text-white w-full justify-between text-xs sm:text-sm"
+          className={`w-full justify-between text-xs sm:text-sm transition-all duration-200 ${
+            showAdvanced 
+              ? "bg-violet-500/10 border-violet-500/50 text-violet-300" 
+              : "bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white hover:border-slate-600"
+          }`}
         >
           <span className="flex items-center gap-1 sm:gap-2">
             <Settings2 className="w-3 h-3 sm:w-4 sm:h-4" />
