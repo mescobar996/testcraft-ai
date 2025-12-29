@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { FileText, Download, Loader2, Plus, X } from "lucide-react"
 import { canUseFeature } from "@/lib/stripe"
+import { useLanguage } from "@/lib/language-context"
 
 interface TestPlanGeneratorProps {
   userTier?: string
@@ -20,6 +21,7 @@ interface TestCase {
 }
 
 export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGeneratorProps) {
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
@@ -74,12 +76,12 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
   const handleGenerate = async () => {
     // Verificar límite de uso
     if (!canUseFeature(userTier, 'PRO')) {
-      alert('La generación de planes de prueba requiere un plan Pro o Enterprise')
+      alert(t.testPlanRequiresPro)
       return
     }
 
     if (!formData.title.trim()) {
-      alert('Por favor, ingresa un título para el plan de pruebas')
+      alert(t.testPlanEnterTitle)
       return
     }
 
@@ -120,7 +122,7 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
 
     } catch (error) {
       console.error("Generate test plan error:", error)
-      alert("Error al generar el plan de pruebas")
+      alert(t.testPlanGenerationError)
     } finally {
       setIsLoading(false)
     }
@@ -133,13 +135,13 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
         <div className="flex items-center gap-3 mb-8">
           <FileText className="w-8 h-8 text-violet-400" />
-          <h2 className="text-3xl font-bold text-white">Generar Plan de Pruebas</h2>
+          <h2 className="text-3xl font-bold text-white">{t.testPlanTitle}</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Título del Plan
+              {t.testPlanTitleLabel}
             </label>
             <input
               type="text"
@@ -147,14 +149,14 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
               value={formData.title}
               onChange={handleInputChange}
               className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              placeholder="Plan de Pruebas - Módulo de Autenticación"
+              placeholder={t.testPlanTitlePlaceholder}
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Línea de tiempo
+              {t.testPlanTimeline}
             </label>
             <input
               type="text"
@@ -162,13 +164,13 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
               value={formData.timeline}
               onChange={handleInputChange}
               className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              placeholder="2 semanas"
+              placeholder={t.testPlanTimelinePlaceholder}
             />
           </div>
 
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Descripción
+              {t.testPlanDescription}
             </label>
             <textarea
               name="description"
@@ -176,13 +178,13 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
               onChange={handleInputChange}
               rows={3}
               className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              placeholder="Descripción detallada del plan de pruebas..."
+              placeholder={t.testPlanDescriptionPlaceholder}
             />
           </div>
 
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Objetivos
+              {t.testPlanObjectives}
             </label>
             <textarea
               name="objectives"
@@ -190,13 +192,13 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
               onChange={handleInputChange}
               rows={2}
               className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              placeholder="Objetivos principales del plan de pruebas..."
+              placeholder={t.testPlanObjectivesPlaceholder}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Alcance
+              {t.testPlanScope}
             </label>
             <input
               type="text"
@@ -204,13 +206,13 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
               value={formData.scope}
               onChange={handleInputChange}
               className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              placeholder="Módulos incluidos en el alcance"
+              placeholder={t.testPlanScopePlaceholder}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Recursos
+              {t.testPlanResources}
             </label>
             <input
               type="text"
@@ -218,7 +220,7 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
               value={formData.resources}
               onChange={handleInputChange}
               className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              placeholder="QA Engineers, ambiente de testing, etc."
+              placeholder={t.testPlanResourcesPlaceholder}
             />
           </div>
         </div>
@@ -226,13 +228,13 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
         {/* Casos de prueba */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-white">Casos de Prueba</h3>
+            <h3 className="text-xl font-semibold text-white">{t.testPlanTestCases}</h3>
             <button
               onClick={() => setShowAddTestCase(true)}
               className="flex items-center gap-2 bg-violet-600 text-white px-4 py-2 rounded-lg hover:bg-violet-700 transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Añadir
+              {t.testPlanAddButton}
             </button>
           </div>
 
@@ -244,7 +246,7 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
                   type="text"
                   value={newTestCase.title}
                   onChange={(e) => setNewTestCase(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Título del caso de prueba"
+                  placeholder={t.testPlanCaseTitlePlaceholder}
                   className="px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-slate-400"
                 />
                 <select
@@ -355,12 +357,12 @@ export function TestPlanGenerator({ userTier = 'free', onSuccess }: TestPlanGene
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Generando...
+                {t.generating}
               </>
             ) : (
               <>
                 <FileText className="w-4 h-4" />
-                Generar Plan de Pruebas
+                {t.testPlanGenerate}
               </>
             )}
           </button>

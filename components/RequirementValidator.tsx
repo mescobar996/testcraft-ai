@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { AlertTriangle, CheckCircle, Info, XCircle } from "lucide-react";
+import { useLanguage } from "@/lib/language-context";
 
 interface ValidationResult {
   isValid: boolean;
@@ -16,7 +17,7 @@ interface RequirementValidatorProps {
   show: boolean;
 }
 
-export function validateRequirement(requirement: string): ValidationResult {
+export function validateRequirement(requirement: string, t: any): ValidationResult {
   const text = requirement.trim();
   const messages: string[] = [];
   const suggestions: string[] = [];
@@ -28,18 +29,18 @@ export function validateRequirement(requirement: string): ValidationResult {
       isValid: false,
       score: 0,
       level: "error",
-      messages: ["El campo está vacío"],
-      suggestions: ["Ingresá una descripción del requisito o historia de usuario"],
+      messages: [t.validatorFieldEmpty],
+      suggestions: [t.validatorEnterDescription],
     };
   }
 
   if (text.length < 30) {
-    messages.push("Requisito muy corto");
-    suggestions.push("Agregá más detalles para obtener mejores casos de prueba");
+    messages.push(t.validatorTooShort);
+    suggestions.push(t.validatorAddMoreDetails);
   } else if (text.length < 100) {
     score += 10;
-    messages.push("Longitud básica");
-    suggestions.push("Considerá agregar criterios de aceptación");
+    messages.push(t.validatorBasicLength);
+    suggestions.push(t.validatorConsiderCriteria);
   } else if (text.length < 300) {
     score += 25;
   } else {
@@ -51,7 +52,7 @@ export function validateRequirement(requirement: string): ValidationResult {
   if (hasUserStoryFormat) {
     score += 15;
   } else {
-    suggestions.push("Tip: Usar formato 'Como [usuario], quiero [acción] para [beneficio]'");
+    suggestions.push(t.validatorTipUserStory);
   }
 
   // Check for acceptance criteria
@@ -59,7 +60,7 @@ export function validateRequirement(requirement: string): ValidationResult {
   if (hasCriteria) {
     score += 20;
   } else {
-    suggestions.push("Agregá criterios de aceptación para mayor precisión");
+    suggestions.push(t.validatorAddCriteria);
   }
 
   // Check for specific actions/verbs
@@ -84,16 +85,16 @@ export function validateRequirement(requirement: string): ValidationResult {
   let level: ValidationResult["level"];
   if (score >= 70) {
     level = "excellent";
-    messages.push("Requisito bien detallado");
+    messages.push(t.validatorWellDetailed);
   } else if (score >= 45) {
     level = "good";
-    messages.push("Requisito aceptable");
+    messages.push(t.validatorAcceptable);
   } else if (score >= 20) {
     level = "warning";
-    messages.push("Requisito básico");
+    messages.push(t.validatorBasic);
   } else {
     level = "error";
-    messages.push("Requisito insuficiente");
+    messages.push(t.validatorInsufficient);
   }
 
   return {
@@ -106,7 +107,8 @@ export function validateRequirement(requirement: string): ValidationResult {
 }
 
 export function RequirementValidator({ requirement, show }: RequirementValidatorProps) {
-  const validation = useMemo(() => validateRequirement(requirement), [requirement]);
+  const { t } = useLanguage();
+  const validation = useMemo(() => validateRequirement(requirement, t), [requirement, t]);
 
   if (!show || requirement.trim().length === 0) return null;
 

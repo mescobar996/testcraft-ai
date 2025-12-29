@@ -376,6 +376,60 @@ interface Translations {
   compareV2New: string;
   compareSteps: string;
   compareResult: string;
+  // Requirement Validator
+  validatorFieldEmpty: string;
+  validatorEnterDescription: string;
+  validatorTooShort: string;
+  validatorAddMoreDetails: string;
+  validatorBasicLength: string;
+  validatorConsiderCriteria: string;
+  validatorWellDetailed: string;
+  validatorAcceptable: string;
+  validatorBasic: string;
+  validatorInsufficient: string;
+  validatorTipUserStory: string;
+  validatorAddCriteria: string;
+  // Test Plan Generator
+  testPlanRequiresPro: string;
+  testPlanEnterTitle: string;
+  testPlanGenerationError: string;
+  testPlanTitle: string;
+  testPlanTitleLabel: string;
+  testPlanTitlePlaceholder: string;
+  testPlanTimeline: string;
+  testPlanTimelinePlaceholder: string;
+  testPlanDescription: string;
+  testPlanDescriptionPlaceholder: string;
+  testPlanObjectives: string;
+  testPlanObjectivesPlaceholder: string;
+  testPlanScope: string;
+  testPlanScopePlaceholder: string;
+  testPlanResources: string;
+  testPlanResourcesPlaceholder: string;
+  testPlanTestCases: string;
+  testPlanAddButton: string;
+  testPlanCaseTitlePlaceholder: string;
+  testPlanGenerate: string;
+  // Reset Password Page
+  resetPasswordVerifying: string;
+  resetPasswordInvalidLink: string;
+  resetPasswordError: string;
+  resetPasswordNewLink: string;
+  resetPasswordTitle: string;
+  resetPasswordSubtitle: string;
+  resetPasswordSuccess: string;
+  resetPasswordLabel: string;
+  resetPasswordPlaceholder: string;
+  resetPasswordConfirmLabel: string;
+  resetPasswordConfirmPlaceholder: string;
+  resetPasswordUpdating: string;
+  resetPasswordButton: string;
+  resetPasswordRemember: string;
+  resetPasswordRequired: string;
+  resetPasswordMinLength: string;
+  resetPasswordComplexity: string;
+  resetPasswordConfirmRequired: string;
+  resetPasswordMismatch: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -751,6 +805,60 @@ const translations: Record<Language, Translations> = {
     compareV2New: "V2 - Nuevo",
     compareSteps: "pasos",
     compareResult: "Resultado",
+    // Requirement Validator
+    validatorFieldEmpty: "El campo está vacío",
+    validatorEnterDescription: "Ingresá una descripción del requisito o historia de usuario",
+    validatorTooShort: "Requisito muy corto",
+    validatorAddMoreDetails: "Agregá más detalles para obtener mejores casos de prueba",
+    validatorBasicLength: "Longitud básica",
+    validatorConsiderCriteria: "Considerá agregar criterios de aceptación",
+    validatorWellDetailed: "Requisito bien detallado",
+    validatorAcceptable: "Requisito aceptable",
+    validatorBasic: "Requisito básico",
+    validatorInsufficient: "Requisito insuficiente",
+    validatorTipUserStory: "Tip: Usar formato 'Como [usuario], quiero [acción] para [beneficio]'",
+    validatorAddCriteria: "Agregá criterios de aceptación para mayor precisión",
+    // Test Plan Generator
+    testPlanRequiresPro: "La generación de planes de prueba requiere un plan Pro o Enterprise",
+    testPlanEnterTitle: "Por favor, ingresa un título para el plan de pruebas",
+    testPlanGenerationError: "Error al generar el plan de pruebas",
+    testPlanTitle: "Generar Plan de Pruebas",
+    testPlanTitleLabel: "Título del Plan",
+    testPlanTitlePlaceholder: "Plan de Pruebas - Módulo de Autenticación",
+    testPlanTimeline: "Línea de tiempo",
+    testPlanTimelinePlaceholder: "2 semanas",
+    testPlanDescription: "Descripción",
+    testPlanDescriptionPlaceholder: "Descripción detallada del plan de pruebas...",
+    testPlanObjectives: "Objetivos",
+    testPlanObjectivesPlaceholder: "Objetivos principales del plan de pruebas...",
+    testPlanScope: "Alcance",
+    testPlanScopePlaceholder: "Módulos incluidos en el alcance",
+    testPlanResources: "Recursos",
+    testPlanResourcesPlaceholder: "QA Engineers, ambiente de testing, etc.",
+    testPlanTestCases: "Casos de Prueba",
+    testPlanAddButton: "Añadir",
+    testPlanCaseTitlePlaceholder: "Título del caso de prueba",
+    testPlanGenerate: "Generar Plan de Pruebas",
+    // Reset Password Page
+    resetPasswordVerifying: "Verificando enlace...",
+    resetPasswordInvalidLink: "Enlace inválido",
+    resetPasswordError: "Error al restablecer la contraseña. Por favor, intenta de nuevo.",
+    resetPasswordNewLink: "Solicitar nuevo enlace",
+    resetPasswordTitle: "Nueva contraseña",
+    resetPasswordSubtitle: "Ingresa tu nueva contraseña",
+    resetPasswordSuccess: "Contraseña restablecida exitosamente. Redirigiendo...",
+    resetPasswordLabel: "Nueva contraseña",
+    resetPasswordPlaceholder: "Mínimo 8 caracteres",
+    resetPasswordConfirmLabel: "Confirmar contraseña",
+    resetPasswordConfirmPlaceholder: "Repite tu contraseña",
+    resetPasswordUpdating: "Actualizando...",
+    resetPasswordButton: "Restablecer contraseña",
+    resetPasswordRemember: "¿Recuerdas tu contraseña?",
+    resetPasswordRequired: "La contraseña es requerida",
+    resetPasswordMinLength: "La contraseña debe tener al menos 8 caracteres",
+    resetPasswordComplexity: "La contraseña debe tener mayúsculas, minúsculas y números",
+    resetPasswordConfirmRequired: "Confirma tu contraseña",
+    resetPasswordMismatch: "Las contraseñas no coinciden",
   },
   en: {
     appName: "TestCraft AI",
@@ -1124,6 +1232,60 @@ const translations: Record<Language, Translations> = {
     compareV2New: "V2 - New",
     compareSteps: "steps",
     compareResult: "Result",
+    // Requirement Validator
+    validatorFieldEmpty: "Field is empty",
+    validatorEnterDescription: "Enter a requirement or user story description",
+    validatorTooShort: "Requirement too short",
+    validatorAddMoreDetails: "Add more details to get better test cases",
+    validatorBasicLength: "Basic length",
+    validatorConsiderCriteria: "Consider adding acceptance criteria",
+    validatorWellDetailed: "Well-detailed requirement",
+    validatorAcceptable: "Acceptable requirement",
+    validatorBasic: "Basic requirement",
+    validatorInsufficient: "Insufficient requirement",
+    validatorTipUserStory: "Tip: Use format 'As a [user], I want [action] so that [benefit]'",
+    validatorAddCriteria: "Add acceptance criteria for greater precision",
+    // Test Plan Generator
+    testPlanRequiresPro: "Test plan generation requires a Pro or Enterprise plan",
+    testPlanEnterTitle: "Please enter a title for the test plan",
+    testPlanGenerationError: "Error generating test plan",
+    testPlanTitle: "Generate Test Plan",
+    testPlanTitleLabel: "Plan Title",
+    testPlanTitlePlaceholder: "Test Plan - Authentication Module",
+    testPlanTimeline: "Timeline",
+    testPlanTimelinePlaceholder: "2 weeks",
+    testPlanDescription: "Description",
+    testPlanDescriptionPlaceholder: "Detailed description of the test plan...",
+    testPlanObjectives: "Objectives",
+    testPlanObjectivesPlaceholder: "Main objectives of the test plan...",
+    testPlanScope: "Scope",
+    testPlanScopePlaceholder: "Modules included in scope",
+    testPlanResources: "Resources",
+    testPlanResourcesPlaceholder: "QA Engineers, testing environment, etc.",
+    testPlanTestCases: "Test Cases",
+    testPlanAddButton: "Add",
+    testPlanCaseTitlePlaceholder: "Test case title",
+    testPlanGenerate: "Generate Test Plan",
+    // Reset Password Page
+    resetPasswordVerifying: "Verifying link...",
+    resetPasswordInvalidLink: "Invalid link",
+    resetPasswordError: "Error resetting password. Please try again.",
+    resetPasswordNewLink: "Request new link",
+    resetPasswordTitle: "New password",
+    resetPasswordSubtitle: "Enter your new password",
+    resetPasswordSuccess: "Password reset successfully. Redirecting...",
+    resetPasswordLabel: "New password",
+    resetPasswordPlaceholder: "Minimum 8 characters",
+    resetPasswordConfirmLabel: "Confirm password",
+    resetPasswordConfirmPlaceholder: "Repeat your password",
+    resetPasswordUpdating: "Updating...",
+    resetPasswordButton: "Reset password",
+    resetPasswordRemember: "Remember your password?",
+    resetPasswordRequired: "Password is required",
+    resetPasswordMinLength: "Password must be at least 8 characters",
+    resetPasswordComplexity: "Password must contain uppercase, lowercase and numbers",
+    resetPasswordConfirmRequired: "Please confirm your password",
+    resetPasswordMismatch: "Passwords do not match",
   }
 };
 

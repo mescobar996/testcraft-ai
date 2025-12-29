@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Keyboard, X, Zap, FileText, Download, Star, Search } from "lucide-react";
+import { useLanguage } from "@/lib/language-context";
 
 interface ShortcutAction {
   key: string;
@@ -126,7 +127,7 @@ export function useKeyboardShortcuts(shortcuts: ShortcutAction[]) {
 
 export function KeyboardShortcutsHelp({ shortcuts }: KeyboardShortcutsProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [language] = useState<"es" | "en">("es"); // TODO: Usar context de idioma
+  const { language } = useLanguage();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

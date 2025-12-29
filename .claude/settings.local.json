@@ -17,7 +17,10 @@
       "Bash(Select-Object -First 5)",
       "Bash(npm install:*)",
       "Bash(Select-Object -First 10)",
-      "Bash(Select-String \"\\(Compiled|error|Error\\)\")"
+      "Bash(Select-String \"\\(Compiled|error|Error\\)\")",
+      "Bash(cd:*)",
+      "Bash(grep:*)",
+      "Bash(wc:*)"
     ]
   }
 }

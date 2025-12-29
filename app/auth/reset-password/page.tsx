@@ -5,9 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { useLanguage } from "@/lib/language-context"
 
 // Componente separado que usa useSearchParams
 function ResetPasswordForm() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams()
   const router = useRouter()
   const supabase = createClientComponentClient()
@@ -27,36 +29,36 @@ function ResetPasswordForm() {
     const checkToken = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
-        
+
         if (error || !session) {
-          setGeneralError("Enlace inválido o expirado. Por favor, solicita un nuevo enlace.")
+          setGeneralError(t.resetPasswordError)
         }
       } catch (error) {
         console.error("Token check error:", error)
-        setGeneralError("Error al verificar el enlace.")
+        setGeneralError(t.resetPasswordError)
       } finally {
         setIsChecking(false)
       }
     }
 
     checkToken()
-  }, [supabase.auth])
+  }, [supabase.auth, t])
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
     if (!password) {
-      newErrors.password = "La contraseña es requerida"
+      newErrors.password = t.resetPasswordRequired
     } else if (password.length < 8) {
-      newErrors.password = "La contraseña debe tener al menos 8 caracteres"
+      newErrors.password = t.resetPasswordMinLength
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(password)) {
-      newErrors.password = "La contraseña debe tener mayúsculas, minúsculas y números"
+      newErrors.password = t.resetPasswordComplexity
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = "Confirma tu contraseña"
+      newErrors.confirmPassword = t.resetPasswordConfirmRequired
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Las contraseñas no coinciden"
+      newErrors.confirmPassword = t.resetPasswordMismatch
     }
 
     setErrors(newErrors)
@@ -84,7 +86,7 @@ function ResetPasswordForm() {
         return
       }
 
-      setSuccessMessage("Contraseña restablecida exitosamente. Redirigiendo...")
+      setSuccessMessage(t.resetPasswordSuccess)
       
       // Redirigir después de 2 segundos
       setTimeout(() => {
@@ -93,7 +95,7 @@ function ResetPasswordForm() {
 
     } catch (error) {
       console.error("Reset password error:", error)
-      setGeneralError("Error al restablecer la contraseña. Por favor, intenta de nuevo.")
+      setGeneralError(t.resetPasswordError)
     } finally {
       setIsLoading(false)
     }
@@ -104,7 +106,7 @@ function ResetPasswordForm() {
       <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-violet-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white">Verificando enlace...</p>
+          <p className="text-white">{t.resetPasswordVerifying}</p>
         </div>
       </div>
     )
@@ -131,13 +133,13 @@ function ResetPasswordForm() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Enlace inválido</h2>
+            <h2 className="text-xl font-bold text-white mb-2">{t.resetPasswordInvalidLink}</h2>
             <p className="text-slate-400 mb-6">{generalError}</p>
             <Link
               href="/auth/forgot-password"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white py-2 px-4 rounded-lg font-medium hover:from-violet-700 hover:to-fuchsia-700 transition-all duration-200"
             >
-              Solicitar nuevo enlace
+              {t.resetPasswordNewLink}
             </Link>
           </div>
         </div>
@@ -148,9 +150,9 @@ function ResetPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-white mb-2">Nueva contraseña</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">{t.resetPasswordTitle}</h2>
         <p className="text-slate-400">
-          Ingresa tu nueva contraseña
+          {t.resetPasswordSubtitle}
         </p>
       </div>
 
@@ -168,7 +170,7 @@ function ResetPasswordForm() {
 
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-          Nueva contraseña
+          {t.resetPasswordLabel}
         </label>
         <div className="relative">
           <input
@@ -179,7 +181,7 @@ function ResetPasswordForm() {
             className={`w-full px-4 py-3 pr-12 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
               errors.password ? 'border-red-500' : 'border-slate-700'
             }`}
-            placeholder="Mínimo 8 caracteres"
+            placeholder={t.resetPasswordPlaceholder}
             disabled={isLoading}
           />
           <button
@@ -198,7 +200,7 @@ function ResetPasswordForm() {
 
       <div>
         <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-2">
-          Confirmar contraseña
+          {t.resetPasswordConfirmLabel}
         </label>
         <div className="relative">
           <input
@@ -209,7 +211,7 @@ function ResetPasswordForm() {
             className={`w-full px-4 py-3 pr-12 bg-slate-800 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
               errors.confirmPassword ? 'border-red-500' : 'border-slate-700'
             }`}
-            placeholder="Repite tu contraseña"
+            placeholder={t.resetPasswordConfirmPlaceholder}
             disabled={isLoading}
           />
           <button
@@ -234,10 +236,10 @@ function ResetPasswordForm() {
         {isLoading ? (
           <div className="flex items-center justify-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin" />
-            Actualizando...
+            {t.resetPasswordUpdating}
           </div>
         ) : (
-          "Restablecer contraseña"
+          t.resetPasswordButton
         )}
       </button>
     </form>
@@ -246,6 +248,8 @@ function ResetPasswordForm() {
 
 // Componente principal con Suspense
 export default function ResetPasswordPage() {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-12">
       <div className="w-full max-w-md">
@@ -266,7 +270,7 @@ export default function ResetPasswordPage() {
           <Suspense fallback={
             <div className="text-center">
               <div className="w-8 h-8 border-2 border-violet-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-slate-400">Cargando...</p>
+              <p className="text-slate-400">{t.resetPasswordVerifying}</p>
             </div>
           }>
             <ResetPasswordForm />
@@ -276,9 +280,9 @@ export default function ResetPasswordPage() {
         {/* Footer */}
         <div className="mt-8 text-center">
           <p className="text-slate-500 text-sm">
-            ¿Recuerdas tu contraseña?{" "}
+            {t.resetPasswordRemember}{" "}
             <Link href="/auth/login" className="text-violet-400 hover:text-violet-300 font-medium">
-              Inicia sesión
+              {t.signInButton}
             </Link>
           </p>
         </div>
