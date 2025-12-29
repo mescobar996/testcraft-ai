@@ -358,6 +358,24 @@ interface Translations {
   passwordLowercase: string;
   passwordNumber: string;
   passwordSpecialChar: string;
+  // Compare Mode Additional
+  compareOriginalRequirement: string;
+  compareNewRequirement: string;
+  compareOriginalPlaceholder: string;
+  compareNewPlaceholder: string;
+  compareContextOptional: string;
+  compareContextPlaceholder: string;
+  compareNew: string;
+  compareRemoved: string;
+  compareModified: string;
+  compareUnchanged: string;
+  compareNewCases: string;
+  compareRemovedCases: string;
+  compareModifiedCases: string;
+  compareV1Original: string;
+  compareV2New: string;
+  compareSteps: string;
+  compareResult: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -715,6 +733,24 @@ const translations: Record<Language, Translations> = {
     passwordLowercase: "Una letra minúscula",
     passwordNumber: "Un número",
     passwordSpecialChar: "Un carácter especial (@$!%*?&#)",
+    // Compare Mode Additional
+    compareOriginalRequirement: "Requisito Original",
+    compareNewRequirement: "Requisito Nuevo",
+    compareOriginalPlaceholder: "Pegá el requisito de la versión original...",
+    compareNewPlaceholder: "Pegá el requisito de la nueva versión...",
+    compareContextOptional: "Contexto (opcional)",
+    compareContextPlaceholder: "Información adicional sobre el sistema...",
+    compareNew: "Nuevos",
+    compareRemoved: "Eliminados",
+    compareModified: "Modificados",
+    compareUnchanged: "Sin cambios",
+    compareNewCases: "Casos Nuevos",
+    compareRemovedCases: "Casos Eliminados",
+    compareModifiedCases: "Casos Modificados",
+    compareV1Original: "V1 - Original",
+    compareV2New: "V2 - Nuevo",
+    compareSteps: "pasos",
+    compareResult: "Resultado",
   },
   en: {
     appName: "TestCraft AI",
@@ -1070,6 +1106,24 @@ const translations: Record<Language, Translations> = {
     passwordLowercase: "One lowercase letter",
     passwordNumber: "One number",
     passwordSpecialChar: "One special character (@$!%*?&#)",
+    // Compare Mode Additional
+    compareOriginalRequirement: "Original Requirement",
+    compareNewRequirement: "New Requirement",
+    compareOriginalPlaceholder: "Paste the original version requirement...",
+    compareNewPlaceholder: "Paste the new version requirement...",
+    compareContextOptional: "Context (optional)",
+    compareContextPlaceholder: "Additional information about the system...",
+    compareNew: "New",
+    compareRemoved: "Removed",
+    compareModified: "Modified",
+    compareUnchanged: "Unchanged",
+    compareNewCases: "New Cases",
+    compareRemovedCases: "Removed Cases",
+    compareModifiedCases: "Modified Cases",
+    compareV1Original: "V1 - Original",
+    compareV2New: "V2 - New",
+    compareSteps: "steps",
+    compareResult: "Result",
   }
 };
 

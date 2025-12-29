@@ -194,7 +194,7 @@ export default function TermsPage() {
                 <li>Realizás un uso abusivo o fraudulento del Servicio.</li>
                 <li>No efectuás los pagos correspondientes.</li>
               </ul>
-              <p className="mt-3"><strong className="text-white">10.2</strong> Podés cancelar tu cuenta en cualquier momento contactándonos a <a href="mailto:testcraftia@gmail.com" className="text-violet-400 hover:text-violet-300">testcraftia@gmail.com</a>.</p>
+              <p className="mt-3"><strong className="text-white">10.2</strong> Podés cancelar tu cuenta en cualquier momento contactándonos a <a href="mailto:testcraftai@gmail.com" className="text-violet-400 hover:text-violet-300">testcraftai@gmail.com</a>.</p>
             </div>
           </section>
 

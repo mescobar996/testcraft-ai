@@ -15,6 +15,7 @@ import {
   ChevronUp
 } from "lucide-react";
 import { TestCase, GenerationResult } from "@/app/page";
+import { useLanguage } from "@/lib/language-context";
 
 interface CompareModeProps {
   onCompare: (req1: string, req2: string, context: string) => Promise<{
@@ -32,6 +33,7 @@ interface ComparisonResult {
 }
 
 export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
+  const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
   const [requirement1, setRequirement1] = useState("");
   const [requirement2, setRequirement2] = useState("");
@@ -115,8 +117,8 @@ export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
       >
         <div className="flex items-center gap-2">
           <GitCompare className="w-5 h-5 text-orange-400" />
-          <span className="font-medium text-white">Modo Comparación</span>
-          <span className="text-xs text-slate-400">(Comparar 2 versiones)</span>
+          <span className="font-medium text-white">{t.compareTitle}</span>
+          <span className="text-xs text-slate-400">{t.compareSubtitle}</span>
         </div>
         {isExpanded ? (
           <ChevronUp className="w-5 h-5 text-slate-400" />
@@ -134,10 +136,10 @@ export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
             <div className="space-y-2">
               <label className="text-sm text-slate-300 flex items-center gap-2">
                 <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">V1</span>
-                Requisito Original
+                {t.compareOriginalRequirement}
               </label>
               <Textarea
-                placeholder="Pegá el requisito de la versión original..."
+                placeholder={t.compareOriginalPlaceholder}
                 value={requirement1}
                 onChange={(e) => setRequirement1(e.target.value)}
                 className="min-h-[120px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 resize-none"
@@ -148,10 +150,10 @@ export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
             <div className="space-y-2">
               <label className="text-sm text-slate-300 flex items-center gap-2">
                 <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded">V2</span>
-                Requisito Nuevo
+                {t.compareNewRequirement}
               </label>
               <Textarea
-                placeholder="Pegá el requisito de la nueva versión..."
+                placeholder={t.compareNewPlaceholder}
                 value={requirement2}
                 onChange={(e) => setRequirement2(e.target.value)}
                 className="min-h-[120px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-green-500 resize-none"
@@ -161,9 +163,9 @@ export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
 
           {/* Context */}
           <div className="space-y-2">
-            <label className="text-sm text-slate-300">Contexto (opcional)</label>
+            <label className="text-sm text-slate-300">{t.compareContextOptional}</label>
             <Textarea
-              placeholder="Información adicional sobre el sistema..."
+              placeholder={t.compareContextPlaceholder}
               value={context}
               onChange={(e) => setContext(e.target.value)}
               className="min-h-[60px] bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 resize-none"
@@ -179,12 +181,12 @@ export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Comparando versiones...
+                {t.comparingButton}
               </>
             ) : (
               <>
                 <GitCompare className="w-5 h-5 mr-2" />
-                Comparar Versiones
+                {t.compareButton}
               </>
             )}
           </Button>
@@ -194,27 +196,27 @@ export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
             <div className="space-y-4 pt-4 border-t border-slate-800">
               {/* Summary Stats */}
               <div className="grid grid-cols-4 gap-2">
-                <StatCard 
+                <StatCard
                   icon={<Plus className="w-4 h-4" />}
-                  label="Nuevos"
+                  label={t.compareNew}
                   count={comparison.added.length}
                   color="green"
                 />
-                <StatCard 
+                <StatCard
                   icon={<Minus className="w-4 h-4" />}
-                  label="Eliminados"
+                  label={t.compareRemoved}
                   count={comparison.removed.length}
                   color="red"
                 />
-                <StatCard 
+                <StatCard
                   icon={<ArrowRight className="w-4 h-4" />}
-                  label="Modificados"
+                  label={t.compareModified}
                   count={comparison.modified.length}
                   color="yellow"
                 />
-                <StatCard 
+                <StatCard
                   icon={<Equal className="w-4 h-4" />}
-                  label="Sin cambios"
+                  label={t.compareUnchanged}
                   count={comparison.unchanged.length}
                   color="slate"
                 />
@@ -225,10 +227,10 @@ export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium text-green-400 flex items-center gap-2">
                     <Plus className="w-4 h-4" />
-                    Casos Nuevos ({comparison.added.length})
+                    {t.compareNewCases} ({comparison.added.length})
                   </h4>
                   {comparison.added.map(tc => (
-                    <CompareCard key={tc.id} testCase={tc} type="added" />
+                    <CompareCard key={tc.id} testCase={tc} type="added" t={t} />
                   ))}
                 </div>
               )}
@@ -238,10 +240,10 @@ export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium text-red-400 flex items-center gap-2">
                     <Minus className="w-4 h-4" />
-                    Casos Eliminados ({comparison.removed.length})
+                    {t.compareRemovedCases} ({comparison.removed.length})
                   </h4>
                   {comparison.removed.map(tc => (
-                    <CompareCard key={tc.id} testCase={tc} type="removed" />
+                    <CompareCard key={tc.id} testCase={tc} type="removed" t={t} />
                   ))}
                 </div>
               )}
@@ -251,10 +253,10 @@ export function CompareMode({ onCompare, isLoading }: CompareModeProps) {
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium text-yellow-400 flex items-center gap-2">
                     <ArrowRight className="w-4 h-4" />
-                    Casos Modificados ({comparison.modified.length})
+                    {t.compareModifiedCases} ({comparison.modified.length})
                   </h4>
                   {comparison.modified.map(({ v1, v2 }) => (
-                    <ModifiedCard key={v1.id} v1={v1} v2={v2} />
+                    <ModifiedCard key={v1.id} v1={v1} v2={v2} t={t} />
                   ))}
                 </div>
               )}
@@ -290,11 +292,11 @@ function StatCard({ icon, label, count, color }: {
   );
 }
 
-function CompareCard({ testCase, type }: { testCase: TestCase; type: "added" | "removed" }) {
+function CompareCard({ testCase, type, t }: { testCase: TestCase; type: "added" | "removed"; t: any }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  
-  const colors = type === "added" 
-    ? "border-green-500/30 bg-green-500/5" 
+
+  const colors = type === "added"
+    ? "border-green-500/30 bg-green-500/5"
     : "border-red-500/30 bg-red-500/5";
 
   return (
@@ -308,15 +310,15 @@ function CompareCard({ testCase, type }: { testCase: TestCase; type: "added" | "
       </button>
       {isExpanded && (
         <div className="px-3 pb-3 text-xs text-slate-400 space-y-2">
-          <p><strong>Pasos:</strong> {testCase.steps.join(" → ")}</p>
-          <p><strong>Resultado:</strong> {testCase.expectedResult}</p>
+          <p><strong>{t.compareSteps}:</strong> {testCase.steps.join(" → ")}</p>
+          <p><strong>{t.compareResult}:</strong> {testCase.expectedResult}</p>
         </div>
       )}
     </div>
   );
 }
 
-function ModifiedCard({ v1, v2 }: { v1: TestCase; v2: TestCase }) {
+function ModifiedCard({ v1, v2, t }: { v1: TestCase; v2: TestCase; t: any }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -332,13 +334,13 @@ function ModifiedCard({ v1, v2 }: { v1: TestCase; v2: TestCase }) {
         <div className="px-3 pb-3 space-y-3">
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="p-2 bg-blue-500/10 rounded border border-blue-500/20">
-              <p className="text-blue-400 font-medium mb-1">V1 - Original</p>
-              <p className="text-slate-400">{v1.steps.length} pasos</p>
+              <p className="text-blue-400 font-medium mb-1">{t.compareV1Original}</p>
+              <p className="text-slate-400">{v1.steps.length} {t.compareSteps}</p>
               <p className="text-slate-400 truncate">{v1.expectedResult}</p>
             </div>
             <div className="p-2 bg-green-500/10 rounded border border-green-500/20">
-              <p className="text-green-400 font-medium mb-1">V2 - Nuevo</p>
-              <p className="text-slate-400">{v2.steps.length} pasos</p>
+              <p className="text-green-400 font-medium mb-1">{t.compareV2New}</p>
+              <p className="text-slate-400">{v2.steps.length} {t.compareSteps}</p>
               <p className="text-slate-400 truncate">{v2.expectedResult}</p>
             </div>
           </div>
