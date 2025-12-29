@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Providers } from '@/components/Providers'
 import { CursorTrail } from '@/components/CursorTrail'
 import { AnimatedBackground } from '@/components/AnimatedBackground'
+import { MercadoPagoAnnouncement } from '@/components/MercadoPagoAnnouncement'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -143,6 +144,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <CursorTrail />
         <AnimatedBackground />
+        <MercadoPagoAnnouncement />
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />
