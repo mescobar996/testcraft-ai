@@ -143,6 +143,7 @@ export async function POST(request: NextRequest) {
     // Crear sesión de checkout
     const session = await stripeClient.checkout.sessions.create({
       customer: customerId,
+      client_reference_id: user.id, // ✅ CRÍTICO: Permite que el webhook identifique al usuario
       payment_method_types: ['card'],
       line_items: [
         {
@@ -156,6 +157,12 @@ export async function POST(request: NextRequest) {
       metadata: {
         userId: user.id,
         planId: plan.id,
+      },
+      subscription_data: {
+        metadata: {
+          userId: user.id, // ✅ También en subscription metadata para eventos posteriores
+        },
+        trial_period_days: 7, // ✅ Trial de 7 días como mencionaste
       },
     })
 
