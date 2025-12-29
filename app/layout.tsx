@@ -144,8 +144,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <CursorTrail />
         <AnimatedBackground />
-        <MercadoPagoAnnouncement />
-        <Providers>{children}</Providers>
+        <Providers>
+          <MercadoPagoAnnouncement />
+          {children}
+        </Providers>
         <Analytics />
         <SpeedInsights />
       </body>

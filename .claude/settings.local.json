@@ -20,7 +20,8 @@
       "Bash(Select-String \"\\(Compiled|error|Error\\)\")",
       "Bash(cd:*)",
       "Bash(grep:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(npm run dev:*)"
     ]
   }
 }
