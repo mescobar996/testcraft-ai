@@ -444,6 +444,15 @@ interface Translations {
   demoCase3Title: string;
   demoCase3Step1: string;
   demoCase3Step2: string;
+  demoAnalyzing: string;
+  demoGeneratedCases: string;
+  demoExport: string;
+  demoCasesWillAppear: string;
+  demoCasesGenerated: string;
+  demoTime: string;
+  demoCoverage: string;
+  demoCtaText: string;
+  demoCtaButton: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -887,6 +896,15 @@ const translations: Record<Language, Translations> = {
     demoCase3Title: "Caso de Prueba 3: Contraseña Débil",
     demoCase3Step1: "Ingresar contraseña <8 caracteres",
     demoCase3Step2: "Verificar validación en tiempo real",
+    demoAnalyzing: "IA analizando requisitos...",
+    demoGeneratedCases: "Casos de Prueba Generados",
+    demoExport: "Exportar",
+    demoCasesWillAppear: "Los casos de prueba aparecerán aquí",
+    demoCasesGenerated: "Casos Generados",
+    demoTime: "Tiempo",
+    demoCoverage: "Cobertura",
+    demoCtaText: "Genera tus propios casos de prueba en segundos",
+    demoCtaButton: "Comenzar Gratis",
   },
   en: {
     appName: "TestCraft AI",
@@ -1328,6 +1346,15 @@ const translations: Record<Language, Translations> = {
     demoCase3Title: "Test Case 3: Weak Password",
     demoCase3Step1: "Enter password <8 characters",
     demoCase3Step2: "Verify real-time validation",
+    demoAnalyzing: "AI analyzing requirements...",
+    demoGeneratedCases: "Generated Test Cases",
+    demoExport: "Export",
+    demoCasesWillAppear: "Test cases will appear here",
+    demoCasesGenerated: "Cases Generated",
+    demoTime: "Time",
+    demoCoverage: "Coverage",
+    demoCtaText: "Generate your own test cases in seconds",
+    demoCtaButton: "Start Free",
   }
 };
 

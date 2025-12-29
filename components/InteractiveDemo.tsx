@@ -126,7 +126,7 @@ export function InteractiveDemo() {
             {step >= 2 && (
               <div className="flex items-center gap-2 text-xs text-slate-500">
                 <div className="w-2 h-2 bg-violet-500 rounded-full animate-pulse"></div>
-                IA analizando requisitos...
+                {t.demoAnalyzing}
               </div>
             )}
           </div>
@@ -137,12 +137,12 @@ export function InteractiveDemo() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-slate-300 font-medium flex items-center gap-2">
               <FileText className="w-4 h-4" />
-              Casos de Prueba Generados
+              {t.demoGeneratedCases}
             </h3>
             {step === 3 && (
               <button className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1">
                 <Download className="w-3 h-3" />
-                Exportar
+                {t.demoExport}
               </button>
             )}
           </div>
@@ -150,7 +150,7 @@ export function InteractiveDemo() {
           {step < 3 ? (
             <div className="text-center py-12 text-slate-600">
               <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">Los casos de prueba aparecerán aquí</p>
+              <p className="text-sm">{t.demoCasesWillAppear}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -186,15 +186,15 @@ export function InteractiveDemo() {
               <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-800">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-white">3</div>
-                  <div className="text-xs text-slate-500">Casos Generados</div>
+                  <div className="text-xs text-slate-500">{t.demoCasesGenerated}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-400">2.1s</div>
-                  <div className="text-xs text-slate-500">Tiempo</div>
+                  <div className="text-xs text-slate-500">{t.demoTime}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-violet-400">100%</div>
-                  <div className="text-xs text-slate-500">Cobertura</div>
+                  <div className="text-xs text-slate-500">{t.demoCoverage}</div>
                 </div>
               </div>
             </div>
@@ -205,14 +205,14 @@ export function InteractiveDemo() {
       {/* CTA Below Demo */}
       <div className="mt-6 text-center">
         <p className="text-slate-400 text-sm mb-3">
-          Genera tus propios casos de prueba en segundos
+          {t.demoCtaText}
         </p>
         <a
           href="#"
           className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-medium rounded-lg transition-colors"
         >
           <Sparkles className="w-4 h-4" />
-          Comenzar Gratis
+          {t.demoCtaButton}
         </a>
       </div>
 
