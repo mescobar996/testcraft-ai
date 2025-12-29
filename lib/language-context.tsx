@@ -430,6 +430,20 @@ interface Translations {
   resetPasswordComplexity: string;
   resetPasswordConfirmRequired: string;
   resetPasswordMismatch: string;
+  // Interactive Demo
+  demoRequirement: string;
+  demoCase1Title: string;
+  demoCase1Step1: string;
+  demoCase1Step2: string;
+  demoCase1Step3: string;
+  demoCase1Step4: string;
+  demoCase2Title: string;
+  demoCase2Step1: string;
+  demoCase2Step2: string;
+  demoCase2Step3: string;
+  demoCase3Title: string;
+  demoCase3Step1: string;
+  demoCase3Step2: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -859,6 +873,20 @@ const translations: Record<Language, Translations> = {
     resetPasswordComplexity: "La contraseña debe tener mayúsculas, minúsculas y números",
     resetPasswordConfirmRequired: "Confirma tu contraseña",
     resetPasswordMismatch: "Las contraseñas no coinciden",
+    // Interactive Demo
+    demoRequirement: "Como usuario quiero poder registrarme en la plataforma usando mi email y contraseña",
+    demoCase1Title: "Caso de Prueba 1: Registro Exitoso",
+    demoCase1Step1: "Abrir página de registro",
+    demoCase1Step2: "Ingresar email válido",
+    demoCase1Step3: "Ingresar contraseña válida (8+ caracteres)",
+    demoCase1Step4: "Hacer clic en 'Registrarse'",
+    demoCase2Title: "Caso de Prueba 2: Email Inválido",
+    demoCase2Step1: "Ingresar email sin formato válido",
+    demoCase2Step2: "Intentar registrarse",
+    demoCase2Step3: "Verificar mensaje de error",
+    demoCase3Title: "Caso de Prueba 3: Contraseña Débil",
+    demoCase3Step1: "Ingresar contraseña <8 caracteres",
+    demoCase3Step2: "Verificar validación en tiempo real",
   },
   en: {
     appName: "TestCraft AI",
@@ -1286,6 +1314,20 @@ const translations: Record<Language, Translations> = {
     resetPasswordComplexity: "Password must contain uppercase, lowercase and numbers",
     resetPasswordConfirmRequired: "Please confirm your password",
     resetPasswordMismatch: "Passwords do not match",
+    // Interactive Demo
+    demoRequirement: "As a user I want to be able to register on the platform using my email and password",
+    demoCase1Title: "Test Case 1: Successful Registration",
+    demoCase1Step1: "Open registration page",
+    demoCase1Step2: "Enter valid email",
+    demoCase1Step3: "Enter valid password (8+ characters)",
+    demoCase1Step4: "Click on 'Register'",
+    demoCase2Title: "Test Case 2: Invalid Email",
+    demoCase2Step1: "Enter email without valid format",
+    demoCase2Step2: "Attempt to register",
+    demoCase2Step3: "Verify error message",
+    demoCase3Title: "Test Case 3: Weak Password",
+    demoCase3Step1: "Enter password <8 characters",
+    demoCase3Step2: "Verify real-time validation",
   }
 };
 

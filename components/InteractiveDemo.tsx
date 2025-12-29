@@ -10,34 +10,34 @@ export function InteractiveDemo() {
   const [isTyping, setIsTyping] = useState(false);
   const [typedText, setTypedText] = useState("");
 
-  const demoRequirement = "Como usuario quiero poder registrarme en la plataforma usando mi email y contraseña";
+  const demoRequirement = t.demoRequirement;
 
   const demoOutput = [
     {
-      title: "Caso de Prueba 1: Registro Exitoso",
+      title: t.demoCase1Title,
       type: "positivo",
       steps: [
-        "Abrir página de registro",
-        "Ingresar email válido",
-        "Ingresar contraseña válida (8+ caracteres)",
-        "Hacer clic en 'Registrarse'"
+        t.demoCase1Step1,
+        t.demoCase1Step2,
+        t.demoCase1Step3,
+        t.demoCase1Step4
       ]
     },
     {
-      title: "Caso de Prueba 2: Email Inválido",
+      title: t.demoCase2Title,
       type: "negativo",
       steps: [
-        "Ingresar email sin formato válido",
-        "Intentar registrarse",
-        "Verificar mensaje de error"
+        t.demoCase2Step1,
+        t.demoCase2Step2,
+        t.demoCase2Step3
       ]
     },
     {
-      title: "Caso de Prueba 3: Contraseña Débil",
+      title: t.demoCase3Title,
       type: "borde",
       steps: [
-        "Ingresar contraseña <8 caracteres",
-        "Verificar validación en tiempo real"
+        t.demoCase3Step1,
+        t.demoCase3Step2
       ]
     }
   ];
@@ -77,7 +77,7 @@ export function InteractiveDemo() {
     const interval = setInterval(sequence, 13000); // Total duration
 
     return () => clearInterval(interval);
-  }, []);
+  }, [demoRequirement]);
 
   const getTypeColor = (type: string) => {
     switch (type) {
