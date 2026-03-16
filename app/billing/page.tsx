@@ -44,10 +44,10 @@ export default async function BillingPage({
   const showSuccess = searchParams.success === 'true'
   const showCanceled = searchParams.canceled === 'true'
 
+  /* 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-12">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">Gestión de Suscripción</h1>
           <p className="text-slate-400 max-w-2xl mx-auto">
@@ -55,7 +55,6 @@ export default async function BillingPage({
           </p>
         </div>
 
-        {/* Mensajes de estado */}
         {showSuccess && (
           <div className="bg-green-900/50 border border-green-700 rounded-lg p-4 mb-8">
             <div className="flex items-center gap-3">
@@ -78,7 +77,6 @@ export default async function BillingPage({
           </div>
         )}
 
-        {/* Información actual de suscripción */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 mb-12">
           <h2 className="text-2xl font-bold text-white mb-6">Tu Suscripción Actual</h2>
           
@@ -125,7 +123,6 @@ export default async function BillingPage({
           </div>
         </div>
 
-        {/* Planes disponibles */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-8 text-center">
             Cambiar de Plan
@@ -133,7 +130,6 @@ export default async function BillingPage({
           <PricingCards userSubscription={subscription} />
         </div>
 
-        {/* FAQ */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-white mb-6">Preguntas Frecuentes</h2>
           
@@ -176,7 +172,6 @@ export default async function BillingPage({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="mt-12 text-center">
           <p className="text-slate-500 text-sm">
             ¿Necesitas ayuda?{" "}
@@ -189,6 +184,16 @@ export default async function BillingPage({
             </a>
           </p>
         </div>
+      </div>
+    </div>
+  )
+  */
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="text-center space-y-4">
+        <h1 className="text-2xl font-bold text-white">Gestión de Facturación</h1>
+        <p className="text-slate-400">La gestión de pagos se encuentra deshabilitada para esta versión.</p>
+        <Link href="/" className="text-violet-400 hover:underline inline-block">Volver al Inicio</Link>
       </div>
     </div>
   )

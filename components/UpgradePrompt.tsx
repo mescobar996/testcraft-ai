@@ -18,7 +18,9 @@ export function UpgradePrompt({ usageCount, maxUsage, onClose }: UpgradePromptPr
   // Solo mostrar en 80%, 90%, o 100%
   const shouldShow = percentage >= 80 && !isDismissed;
 
-  if (!shouldShow || maxUsage === Infinity) return null;
+  // Deshabilitado para versión portafolio
+  return null;
+  // if (!shouldShow || maxUsage === Infinity) return null;
 
   const handleDismiss = () => {
     setIsDismissed(true);

@@ -33,14 +33,14 @@ export function Footer() {
             <div className="space-y-3">
               <h3 className="text-white font-semibold text-sm">{t.product}</h3>
               <ul className="space-y-2">
-                <li>
+                {/* <li>
                   <Link
                     href="/pricing"
                     className="text-gray-400 hover:text-white text-xs transition-colors"
                   >
                     {t.pricing}
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link
                     href="/faq"
@@ -76,7 +76,7 @@ export function Footer() {
             </div>
 
             {/* Pro Upgrade */}
-            <div className="space-y-3">
+            {/* <div className="space-y-3">
               <h3 className="text-white font-semibold text-sm">{t.proSection}</h3>
               {user && !isPro ? (
                 <button
@@ -96,7 +96,7 @@ export function Footer() {
                   <span className="text-xs font-medium">{t.proActive}</span>
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
 
           {/* Bottom */}

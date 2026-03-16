@@ -89,6 +89,7 @@ export function PricingCards({ userSubscription }: PricingCardsProps) {
     }
   }
 
+  /* 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
       {Object.entries(PLANS).map(([planId, plan]) => {
@@ -161,4 +162,6 @@ export function PricingCards({ userSubscription }: PricingCardsProps) {
       })}
     </div>
   )
+  */
+  return <div className="text-center py-20 text-slate-400">Sección de precios deshabilitada temporalmente.</div>
 }

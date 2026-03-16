@@ -196,7 +196,7 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             </div>
 
             <div className="flex items-center gap-1 sm:gap-2">
-              <UsageCounter />
+{/* <UsageCounter /> */}
               <div className="hidden md:flex items-center gap-2">
                 <KeyboardShortcutsHelp shortcuts={shortcuts} />
                 <Suspense fallback={<div className="w-8 h-8" />}>
@@ -238,8 +238,8 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
             </div>
           </div>
 
-          <TrialBanner />
-          <UsageBanner />
+{/* <TrialBanner />
+          <UsageBanner /> */}
           <Suspense fallback={<div className="h-20" />}>
             <OnboardingChecklist />
           </Suspense>
@@ -386,11 +386,11 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
       </Suspense>
 
       {/* Upgrade prompt contextual */}
-      {user && !isPro && (
+      {/* {user && !isPro && (
         <Suspense fallback={null}>
           <UpgradePrompt usageCount={usageCount} maxUsage={maxUsage} />
         </Suspense>
-      )}
+      )} */}
 
       {/* Panel de diagnóstico - TEMPORAL para debugging */}
       {process.env.NODE_ENV === 'development' && (

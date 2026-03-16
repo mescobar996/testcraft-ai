@@ -23,7 +23,9 @@ export function MercadoPagoAnnouncement() {
     localStorage.setItem('mp-announcement-dismissed', 'true');
   };
 
-  if (isDismissed) return null;
+  // Deshabilitado para versión portafolio
+  return null;
+  // if (isDismissed) return null;
 
   return (
     <div className="bg-gradient-to-r from-blue-600 to-cyan-600 border-b border-blue-500/30">

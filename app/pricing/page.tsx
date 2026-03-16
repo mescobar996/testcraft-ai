@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 }
 
 export default function PricingPage() {
+  /* 
   return (
     <div className="min-h-screen px-4 py-12">
       <header className="border-b border-violet-500/20 bg-purple-950/60 backdrop-blur-xl sticky top-0 z-50 mb-12 -mx-4 px-4 shadow-lg shadow-violet-500/10">
@@ -20,7 +21,6 @@ export default function PricingPage() {
         </div>
       </header>
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-white mb-6">
             Planes que se adaptan a ti
@@ -31,12 +31,10 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* Pricing Cards */}
         <div className="mb-20">
           <PricingCards />
         </div>
 
-        {/* Comparación detallada */}
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-white text-center mb-12">
             Compara todas las características
@@ -92,7 +90,6 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* FAQ */}
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-white text-center mb-12">
             Preguntas Frecuentes
@@ -152,7 +149,6 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* CTA Final */}
         <div className="text-center bg-gradient-to-r from-violet-600/20 to-fuchsia-600/20 rounded-2xl p-12 border border-violet-500/20">
           <h2 className="text-3xl font-bold text-white mb-4">
             ¿Listo para optimizar tu proceso de testing?
@@ -169,6 +165,16 @@ export default function PricingPage() {
             <Check className="w-5 h-5" />
           </Link>
         </div>
+      </div>
+    </div>
+  )
+  */
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="text-center space-y-4">
+        <h1 className="text-2xl font-bold text-white">Sección de Precios</h1>
+        <p className="text-slate-400">Esta sección se encuentra deshabilitada para la versión de demostración.</p>
+        <Link href="/" className="text-violet-400 hover:underline inline-block">Volver al Inicio</Link>
       </div>
     </div>
   )
