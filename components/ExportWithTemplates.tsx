@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TestCase } from "@/app/page";
+import type { TestCase } from "@/types/testcase";
 import { useLanguage } from "@/lib/language-context";
 import { useToast } from "@/components/Toast";
 import {

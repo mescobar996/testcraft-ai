@@ -17,7 +17,7 @@ import {
   ArrowUpDown,
   CopyCheck,
 } from "lucide-react";
-import { GenerationResult, TestCase } from "@/app/page";
+import type { GenerationResult, TestCase } from "@/types/testcase";
 import { StatsCards } from "@/components/StatsCards";
 import { ExportMenu } from "@/components/ExportMenu";
 import { ExportWithTemplates } from "@/components/ExportWithTemplates";

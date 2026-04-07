@@ -8,7 +8,7 @@ import {
   getSuggestionCounts,
   type QualitySuggestion
 } from "@/lib/ai-suggestions";
-import type { TestCase } from "@/app/page";
+import type { TestCase } from "@/types/testcase";
 import {
   Lightbulb,
   AlertCircle,

@@ -1,6 +1,6 @@
 "use client";
 
-import { TestCase } from "@/app/page";
+import type { TestCase } from "@/types/testcase";
 import { CheckCircle2, XCircle, AlertTriangle, BarChart3 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 

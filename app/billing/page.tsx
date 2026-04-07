@@ -11,11 +11,10 @@ export const metadata: Metadata = {
   description: "Gestiona tu suscripción y plan de TestCraft AI",
 }
 
-export default async function BillingPage({
-  searchParams,
-}: {
-  searchParams: { success?: string; canceled?: string }
+export default async function BillingPage(props: {
+  searchParams: Promise<{ success?: string; canceled?: string }>
 }) {
+  const searchParams = await props.searchParams;
   const supabase = createServerComponentClient({ cookies })
   
   // Verificar autenticación
@@ -44,7 +43,6 @@ export default async function BillingPage({
   const showSuccess = searchParams.success === 'true'
   const showCanceled = searchParams.canceled === 'true'
 
-  /* 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-12">
       <div className="max-w-6xl mx-auto">
@@ -184,16 +182,6 @@ export default async function BillingPage({
             </a>
           </p>
         </div>
-      </div>
-    </div>
-  )
-  */
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="text-center space-y-4">
-        <h1 className="text-2xl font-bold text-white">Gestión de Facturación</h1>
-        <p className="text-slate-400">La gestión de pagos se encuentra deshabilitada para esta versión.</p>
-        <Link href="/" className="text-violet-400 hover:underline inline-block">Volver al Inicio</Link>
       </div>
     </div>
   )

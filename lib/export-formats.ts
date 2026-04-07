@@ -1,4 +1,4 @@
-import { TestCase } from '@/app/page';
+import type { TestCase } from '@/types/testcase';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 

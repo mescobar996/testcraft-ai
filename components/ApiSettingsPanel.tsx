@@ -611,7 +611,7 @@ export function ApiSettingsPanel() {
                   <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
                     <h3 className="text-white font-medium mb-3">Ejemplo de Request</h3>
                     <div className="bg-slate-900 rounded-lg p-3 font-mono text-xs overflow-x-auto">
-                      <pre className="text-slate-300">{`curl -X POST https://testcraft-ai-five.vercel.app/api/v1/generate \\
+                      <pre className="text-slate-300">{`curl -X POST ${process.env.NEXT_PUBLIC_APP_URL || 'https://testcraft-ai-five.vercel.app'}/api/v1/generate \\
   -H "Content-Type: application/json" \\
   -H "X-API-Key: tc_live_xxx..." \\
   -d '{
@@ -621,7 +621,7 @@ export function ApiSettingsPanel() {
   }'`}</pre>
                     </div>
                     <button
-                      onClick={() => copyToClipboard(`curl -X POST https://testcraft-ai-five.vercel.app/api/v1/generate \\
+                      onClick={() => copyToClipboard(`curl -X POST ${process.env.NEXT_PUBLIC_APP_URL || 'https://testcraft-ai-five.vercel.app'}/api/v1/generate \\
   -H "Content-Type: application/json" \\
   -H "X-API-Key: TU_API_KEY" \\
   -d '{"requirement": "Tu requisito aquí", "format": "both"}'`, "curl")}

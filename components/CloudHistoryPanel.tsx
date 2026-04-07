@@ -16,7 +16,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { getGenerations, deleteGeneration, HistoryRecord } from "@/lib/history-db";
-import { GenerationResult } from "@/app/page";
+import type { GenerationResult } from "@/types/testcase";
 
 interface CloudHistoryPanelProps {
   onSelect: (requirement: string, result: GenerationResult) => void;

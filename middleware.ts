@@ -13,8 +13,6 @@ export async function middleware(request: NextRequest) {
 
     // Rutas que requieren autenticación
     const protectedRoutes = [
-      '/dashboard',
-      '/profile',
       '/settings',
       '/billing'
     ]

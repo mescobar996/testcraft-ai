@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { TestCase } from '@/app/page';
+import type { TestCase } from '@/types/testcase';
 
 interface PDFData {
   testCases: TestCase[];

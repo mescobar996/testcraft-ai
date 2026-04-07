@@ -10,7 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { TestCase } from "@/app/page";
+import type { TestCase } from "@/types/testcase";
 import { useToast } from "@/components/Toast";
 import { useLanguage } from "@/lib/language-context";
 

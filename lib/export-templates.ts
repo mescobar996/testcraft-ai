@@ -1,4 +1,4 @@
-import { TestCase } from '@/app/page';
+import type { TestCase } from '@/types/testcase';
 
 export interface ExportColumn {
   header: string;

@@ -15,27 +15,13 @@ import { saveGeneration, HistoryRecord } from "@/lib/history-db";
 import { trackGeneration } from "@/lib/analytics";
 import { FileText, Shield, Download, CheckCircle2, Heart, Clock, Sparkles } from "lucide-react";
 
+import type { TestCase, GenerationResult, AIEngine, NavTab } from "@/types/testcase";
+
+// Re-export types for backward compatibility
+export type { TestCase, GenerationResult, AIEngine, NavTab } from "@/types/testcase";
+
 // Lazy load
 const Footer = lazy(() => import("@/components/Footer").then(m => ({ default: m.Footer })));
-
-export interface TestCase {
-  id: string;
-  title: string;
-  preconditions: string;
-  steps: string[];
-  expectedResult: string;
-  priority: "Alta" | "Media" | "Baja";
-  type: "Positivo" | "Negativo" | "Borde";
-}
-
-export interface GenerationResult {
-  testCases: TestCase[];
-  gherkin: string;
-  summary: string;
-}
-
-export type AIEngine = 'anthropic' | 'ollama' | 'template';
-export type NavTab = 'generate' | 'history' | 'favorites';
 
 const ENGINE_LABELS: Record<AIEngine, { name: string; desc: string; dot: string }> = {
   anthropic: { name: "Cloud", desc: "Claude · Pago", dot: "bg-violet-400" },

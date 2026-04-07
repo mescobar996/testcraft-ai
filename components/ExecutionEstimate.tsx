@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Clock, Timer, AlertTriangle, CheckCircle, Zap } from "lucide-react";
-import { TestCase } from "@/app/page";
+import type { TestCase } from "@/types/testcase";
 
 interface ExecutionEstimateProps {
   testCases: TestCase[];

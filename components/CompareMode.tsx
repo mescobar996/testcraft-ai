@@ -14,7 +14,7 @@ import {
   ChevronDown,
   ChevronUp
 } from "lucide-react";
-import { TestCase, GenerationResult } from "@/app/page";
+import type { TestCase, GenerationResult } from "@/types/testcase";
 import { useLanguage } from "@/lib/language-context";
 
 interface CompareModeProps {

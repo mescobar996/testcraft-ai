@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 }
 
 export default function PricingPage() {
-  /* 
   return (
     <div className="min-h-screen px-4 py-12">
       <header className="border-b border-violet-500/20 bg-purple-950/60 backdrop-blur-xl sticky top-0 z-50 mb-12 -mx-4 px-4 shadow-lg shadow-violet-500/10">
@@ -165,16 +164,6 @@ export default function PricingPage() {
             <Check className="w-5 h-5" />
           </Link>
         </div>
-      </div>
-    </div>
-  )
-  */
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="text-center space-y-4">
-        <h1 className="text-2xl font-bold text-white">Sección de Precios</h1>
-        <p className="text-slate-400">Esta sección se encuentra deshabilitada para la versión de demostración.</p>
-        <Link href="/" className="text-violet-400 hover:underline inline-block">Volver al Inicio</Link>
       </div>
     </div>
   )

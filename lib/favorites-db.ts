@@ -1,5 +1,5 @@
 import { getSupabaseClient } from './supabase';
-import { TestCase } from '@/app/page';
+import type { TestCase } from '@/types/testcase';
 
 export interface FavoriteCase {
   id: string;

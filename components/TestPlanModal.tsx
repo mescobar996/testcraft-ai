@@ -14,7 +14,7 @@ import {
   FileCheck,
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
-import { TestCase } from "@/app/page";
+import type { TestCase } from "@/types/testcase";
 
 interface TestPlanModalProps {
   testCases: TestCase[];

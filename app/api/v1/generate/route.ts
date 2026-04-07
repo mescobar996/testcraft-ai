@@ -24,7 +24,7 @@ export async function GET() {
   return NextResponse.json({
     name: 'TestCraft AI API',
     version: '1.0.0',
-    documentation: 'https://testcraft-ai-five.vercel.app/api/docs',
+    documentation: `${process.env.NEXT_PUBLIC_APP_URL || 'https://testcraft-ai-five.vercel.app'}/api/docs`,
     endpoints: {
       generate: {
         method: 'POST',

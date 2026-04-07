@@ -1,5 +1,5 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { GenerationResult } from '@/app/page';
+import type { GenerationResult } from '@/types/testcase';
 
 export interface HistoryRecord {
   id: string;

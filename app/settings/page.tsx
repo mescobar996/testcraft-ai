@@ -6,7 +6,7 @@ import { cookies } from "next/headers"
 import { IntegrationSettings } from "@/components/IntegrationSettings"
 import { AnalyticsSection } from "@/components/AnalyticsSection"
 import { ReferralPanel } from "@/components/ReferralPanel"
-import { Settings, User, Bell, Shield, CreditCard, BarChart3 } from "lucide-react"
+import { Settings, User, Shield, CreditCard, BarChart3 } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Configuración - TestCraft AI",

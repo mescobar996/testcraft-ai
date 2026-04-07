@@ -10,7 +10,7 @@ import {
   FileText,
   X
 } from "lucide-react";
-import { GenerationResult } from "@/app/page";
+import type { GenerationResult } from "@/types/testcase";
 import { useLanguage } from "@/lib/language-context";
 
 export interface HistoryItem {

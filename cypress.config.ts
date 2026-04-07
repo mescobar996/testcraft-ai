@@ -15,8 +15,8 @@ export default defineConfig({
     env: {
       SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      TEST_USER_EMAIL: 'test@example.com',
-      TEST_USER_PASSWORD: 'Test123!',
+      TEST_USER_EMAIL: process.env.TEST_USER_EMAIL || '',
+      TEST_USER_PASSWORD: process.env.TEST_USER_PASSWORD || '',
     },
   },
   component: {

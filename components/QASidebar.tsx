@@ -6,7 +6,7 @@ import { RequirementValidator } from "./RequirementValidator";
 import { ExecutionEstimate } from "./ExecutionEstimate";
 import { QualitySuggestions } from "./QualitySuggestions";
 import { CompareMode } from "./CompareMode";
-import { TestCase, AIEngine, GenerationResult } from "@/app/page";
+import type { TestCase, AIEngine, GenerationResult } from "@/types/testcase";
 
 interface QASidebarProps {
   isOpen: boolean;

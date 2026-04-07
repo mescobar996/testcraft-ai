@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
-import { TestCase } from "@/app/page";
+import type { TestCase } from "@/types/testcase";
 
 interface FavoriteRecord {
   id: string;

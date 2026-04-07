@@ -3,7 +3,7 @@
  * Analiza casos de prueba generados y sugiere mejoras
  */
 
-import type { TestCase } from "@/app/page";
+import type { TestCase } from "@/types/testcase";
 
 export interface QualitySuggestion {
   id: string;
