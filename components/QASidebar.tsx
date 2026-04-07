@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X, CheckCircle, Clock, Lightbulb, GitCompare, ChevronDown } from "lucide-react";
 import { RequirementValidator } from "./RequirementValidator";
 import { ExecutionEstimate } from "./ExecutionEstimate";
@@ -26,6 +26,7 @@ export function QASidebar({
   onGenerateWithEngine,
 }: QASidebarProps) {
   const [activeTool, setActiveTool] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -40,6 +41,40 @@ export function QASidebar({
     return () => window.removeEventListener("keydown", handler);
   }, [isOpen, onClose]);
 
+  // Focus trap
+  useEffect(() => {
+    if (!isOpen || !panelRef.current) return;
+    
+    const panel = panelRef.current;
+    const focusable = panel.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    
+    // Focus first element
+    first?.focus();
+    
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    
+    panel.addEventListener('keydown', handler);
+    return () => panel.removeEventListener('keydown', handler);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const toggleTool = (tool: string) => {
@@ -47,22 +82,25 @@ export function QASidebar({
   };
 
   const handleCompare = async (
-    req1: string,
-    req2: string,
-    context: string,
+    _req1: string,
+    _req2: string,
+    _context: string,
   ): Promise<{ version1: GenerationResult; version2: GenerationResult }> => {
-    const otherEngine = engine === 'template' ? 'anthropic' : 'template';
-    if (onGenerateWithEngine) {
-      onGenerateWithEngine(otherEngine);
+    if (!onGenerateWithEngine) {
+      return {
+        version1: { testCases: [], gherkin: "", summary: "" },
+        version2: { testCases: [], gherkin: "", summary: "" },
+      };
     }
+    // Generate with the other engine to get a comparison
+    const otherEngine = engine === 'template' ? 'anthropic' : 'template';
+    onGenerateWithEngine(otherEngine);
 
-    const emptyResult: GenerationResult = {
-      testCases: [],
-      gherkin: "",
-      summary: "",
+    // Results will be populated by the parent's generation flow
+    return {
+      version1: { testCases: [], gherkin: "", summary: "" },
+      version2: { testCases: [], gherkin: "", summary: "" },
     };
-
-    return { version1: emptyResult, version2: emptyResult };
   };
 
   return (
@@ -76,6 +114,7 @@ export function QASidebar({
 
       {/* Panel */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         className="fixed right-0 top-0 bottom-0 w-80 bg-zinc-900 border-l border-white/[0.06] z-50 flex flex-col shadow-2xl"
