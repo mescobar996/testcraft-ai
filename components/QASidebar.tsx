@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { X, CheckCircle, Clock, Lightbulb, GitCompare } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, CheckCircle, Clock, Lightbulb, GitCompare, ChevronDown } from "lucide-react";
 import { RequirementValidator } from "./RequirementValidator";
 import { ExecutionEstimate } from "./ExecutionEstimate";
 import { QualitySuggestions } from "./QualitySuggestions";
@@ -27,15 +27,33 @@ export function QASidebar({
 }: QASidebarProps) {
   const [activeTool, setActiveTool] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        const tag = document.activeElement?.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA") return;
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
+
+  const toggleTool = (tool: string) => {
+    setActiveTool(prev => prev === tool ? null : tool);
+  };
 
   const handleCompare = async (
     req1: string,
     req2: string,
     context: string,
   ): Promise<{ version1: GenerationResult; version2: GenerationResult }> => {
+    const otherEngine = engine === 'template' ? 'anthropic' : 'template';
     if (onGenerateWithEngine) {
-      onGenerateWithEngine(engine);
+      onGenerateWithEngine(otherEngine);
     }
 
     const emptyResult: GenerationResult = {
@@ -57,7 +75,11 @@ export function QASidebar({
       />
 
       {/* Panel */}
-      <div className="fixed right-0 top-0 bottom-0 w-80 bg-zinc-900 border-l border-white/[0.06] z-50 flex flex-col shadow-2xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="fixed right-0 top-0 bottom-0 w-80 bg-zinc-900 border-l border-white/[0.06] z-50 flex flex-col shadow-2xl"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] shrink-0">
           <h2 className="text-sm font-bold text-white flex items-center gap-2">
@@ -80,9 +102,7 @@ export function QASidebar({
             icon={<CheckCircle className="w-4 h-4 text-green-400" />}
             title="Validador de Requisitos"
             active={activeTool === "validator"}
-            onClick={() =>
-              setActiveTool(activeTool === "validator" ? null : "validator")
-            }
+            onClick={() => toggleTool("validator")}
           >
             <RequirementValidator
               requirement={requirement}
@@ -95,9 +115,7 @@ export function QASidebar({
             icon={<Clock className="w-4 h-4 text-blue-400" />}
             title="Estimaci&#243;n de Tiempo"
             active={activeTool === "estimate"}
-            onClick={() =>
-              setActiveTool(activeTool === "estimate" ? null : "estimate")
-            }
+            onClick={() => toggleTool("estimate")}
           >
             <ExecutionEstimate testCases={testCases} />
           </ToolCard>
@@ -107,9 +125,7 @@ export function QASidebar({
             icon={<Lightbulb className="w-4 h-4 text-yellow-400" />}
             title="Sugerencias de Calidad"
             active={activeTool === "quality"}
-            onClick={() =>
-              setActiveTool(activeTool === "quality" ? null : "quality")
-            }
+            onClick={() => toggleTool("quality")}
           >
             <QualitySuggestions testCases={testCases} />
           </ToolCard>
@@ -119,9 +135,7 @@ export function QASidebar({
             icon={<GitCompare className="w-4 h-4 text-pink-400" />}
             title="Comparar Motores"
             active={activeTool === "compare"}
-            onClick={() =>
-              setActiveTool(activeTool === "compare" ? null : "compare")
-            }
+            onClick={() => toggleTool("compare")}
           >
             <CompareMode onCompare={handleCompare} isLoading={false} />
           </ToolCard>
@@ -159,19 +173,9 @@ function ToolCard({
       >
         {icon}
         <span className="text-xs font-semibold text-white flex-1">{title}</span>
-        <svg
+        <ChevronDown
           className={`w-3.5 h-3.5 text-zinc-500 transition-transform ${active ? "rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        />
       </button>
       {active && (
         <div className="px-3 pb-3 border-t border-white/[0.04] pt-2">
