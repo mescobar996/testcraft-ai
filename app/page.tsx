@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, lazy, Suspense } from "react";
+import { QASidebar } from "@/components/QASidebar";
 import { TestCaseForm } from "@/components/TestCaseForm";
 import { TestCaseOutput } from "@/components/TestCaseOutput";
 import { AppIcon } from "@/components/AppIcon";
@@ -57,6 +58,7 @@ export default function Home() {
   const [newGeneration, setNewGeneration] = useState<HistoryRecord | null>(null);
   const [triggerGenerate, setTriggerGenerate] = useState(0);
   const [activeTab, setActiveTab] = useState<NavTab>('generate');
+  const [qaSidebarOpen, setQaSidebarOpen] = useState(false);
   const { user } = useAuth();
   const { t } = useLanguage();
 
@@ -350,6 +352,31 @@ export default function Home() {
       <Suspense fallback={<div className="h-32" />}>
         <Footer />
       </Suspense>
+
+      {/* ── QA Sidebar Toggle ── */}
+      {result && !isLoading && (
+        <button
+          onClick={() => setQaSidebarOpen(!qaSidebarOpen)}
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-30 bg-violet-600 hover:bg-violet-500 text-white px-2 py-3 rounded-l-lg shadow-lg shadow-violet-600/20 text-xs font-semibold transition-colors"
+          aria-label="Abrir herramientas QA"
+        >
+          🔧
+        </button>
+      )}
+
+      {/* ── QA Sidebar ── */}
+      <QASidebar
+        isOpen={qaSidebarOpen}
+        onClose={() => setQaSidebarOpen(false)}
+        requirement={currentRequirement}
+        testCases={result?.testCases || []}
+        engine={engine}
+        onGenerateWithEngine={(newEngine) => {
+          setEngine(newEngine);
+          setQaSidebarOpen(false);
+          setTriggerGenerate(prev => prev + 1);
+        }}
+      />
     </main>
   );
 }
