@@ -1,29 +1,21 @@
 "use client";
 
-import { useState, useCallback, lazy, Suspense } from "react";
+import { useState, useCallback, useEffect, lazy, Suspense } from "react";
 import { TestCaseForm } from "@/components/TestCaseForm";
 import { TestCaseOutput } from "@/components/TestCaseOutput";
 import { AppIcon } from "@/components/AppIcon";
 import { UserMenu } from "@/components/UserMenu";
-import { UsageBanner } from "@/components/UsageBanner";
-import { UsageCounter } from "@/components/UsageCounter";
-import { KeyboardShortcutsHelp, useKeyboardShortcuts, ShortcutBadge } from "@/components/KeyboardShortcutsImproved";
-import { ImageUploader } from "@/components/ImageUploader";
-import { TrialBanner, TrialStatusBadge } from "@/components/TrialBanner";
+import { GuidePanel } from "@/components/GuidePanel";
+import { CloudHistoryTab } from "@/components/CloudHistoryTab";
+import { FavoritesTab } from "@/components/FavoritesTab";
 import { useAuth } from "@/lib/auth-context";
 import { useLanguage } from "@/lib/language-context";
 import { saveGeneration, HistoryRecord } from "@/lib/history-db";
 import { trackGeneration } from "@/lib/analytics";
-import { Zap, Shield, Clock, Camera } from "lucide-react";
+import { FileText, Shield, Download, CheckCircle2, Heart, Clock, Sparkles } from "lucide-react";
 
-// Lazy load componentes pesados para mejor performance
+// Lazy load
 const Footer = lazy(() => import("@/components/Footer").then(m => ({ default: m.Footer })));
-const CloudHistoryPanel = lazy(() => import("@/components/CloudHistoryPanel").then(m => ({ default: m.CloudHistoryPanel })));
-const FavoritesPanel = lazy(() => import("@/components/FavoritesPanel").then(m => ({ default: m.FavoritesPanel })));
-const DiagnosticPanel = lazy(() => import("@/components/DiagnosticPanel").then(m => ({ default: m.DiagnosticPanel })));
-const InteractiveDemo = lazy(() => import("@/components/InteractiveDemo").then(m => ({ default: m.InteractiveDemo })));
-const UpgradePrompt = lazy(() => import("@/components/UpgradePrompt").then(m => ({ default: m.UpgradePrompt })));
-const OnboardingChecklist = lazy(() => import("@/components/OnboardingChecklist").then(m => ({ default: m.OnboardingChecklist })));
 
 export interface TestCase {
   id: string;
@@ -41,41 +33,64 @@ export interface GenerationResult {
   summary: string;
 }
 
+export type AIEngine = 'anthropic' | 'ollama' | 'template';
+export type NavTab = 'generate' | 'history' | 'favorites';
+
+const ENGINE_LABELS: Record<AIEngine, { name: string; desc: string; dot: string }> = {
+  anthropic: { name: "Cloud", desc: "Claude · Pago", dot: "bg-violet-400" },
+  ollama: { name: "Local", desc: "Ollama · Gratis", dot: "bg-emerald-400" },
+  template: { name: "Template", desc: "Sin IA · <10ms", dot: "bg-amber-400" },
+};
+
+const TABS: { id: NavTab; label: string; icon: React.ReactNode }[] = [
+  { id: 'generate', label: 'Generar', icon: <Sparkles className="w-3.5 h-3.5" /> },
+  { id: 'history', label: 'Historial', icon: <Clock className="w-3.5 h-3.5" /> },
+  { id: 'favorites', label: 'Favoritos', icon: <Heart className="w-3.5 h-3.5" /> },
+];
+
 export default function Home() {
   const [result, setResult] = useState<GenerationResult | null>(null);
   const [currentRequirement, setCurrentRequirement] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isImageLoading, setIsImageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [engine, setEngine] = useState<AIEngine>('template');
   const [newGeneration, setNewGeneration] = useState<HistoryRecord | null>(null);
   const [triggerGenerate, setTriggerGenerate] = useState(0);
-  const { user, canGenerate, incrementUsage, isPro, usageCount, maxUsage } = useAuth();
+  const [activeTab, setActiveTab] = useState<NavTab>('generate');
+  const { user } = useAuth();
   const { t } = useLanguage();
 
   const handleGenerate = async (requirement: string, context: string, format: string) => {
-    if (!canGenerate) {
-      setError(t.limitReached);
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
     setCurrentRequirement(requirement);
 
     try {
-      const response = await fetch("/api/generate", {
+      let endpoint: string;
+      const body: Record<string, unknown> = { requirement, context, format };
+
+      if (engine === 'ollama') {
+        endpoint = '/api/generate-local';
+        body.model = 'qwen2.5:7b';
+      } else if (engine === 'template') {
+        endpoint = '/api/generate-template';
+      } else {
+        endpoint = '/api/generate';
+      }
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ requirement, context, format }),
+        body: JSON.stringify(body),
       });
 
-      if (!response.ok) throw new Error(t.errorGeneratingCases);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || t.errorGeneratingCases);
+      }
 
       const data = await response.json();
       setResult(data);
-      incrementUsage();
-
-      // Track analytics
       trackGeneration(user?.id || null, false);
 
       if (user) {
@@ -89,64 +104,38 @@ export default function Home() {
     }
   };
 
-  const handleGenerateFromImage = (imageResult: GenerationResult) => {
-    setResult(imageResult);
-    setCurrentRequirement(t.generatedFromImage);
-    setError(null);
-    incrementUsage();
-
-    // Track analytics para generación desde imagen
-    trackGeneration(user?.id || null, true);
-  };
-
   const handleRegenerateCase = async (testCase: TestCase): Promise<TestCase | null> => {
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          requirement: `Regenerar el siguiente caso de prueba con mejoras:
-Título: ${testCase.title}
-Tipo: ${testCase.type}
-Prioridad: ${testCase.priority}
-Precondiciones: ${testCase.preconditions}
-Pasos actuales: ${testCase.steps.join(", ")}
-Resultado esperado: ${testCase.expectedResult}
-
-Genera una versión mejorada manteniendo el mismo ID y tipo.`,
+          requirement: `Regenerar: ${testCase.title}. Tipo: ${testCase.type}. Prioridad: ${testCase.priority}.`,
           context: "Regeneración de caso individual",
           format: "table",
         }),
       });
-
       if (!response.ok) return null;
-
       const data = await response.json();
-      if (data.testCases && data.testCases.length > 0) {
+      if (data.testCases?.length > 0) {
         return { ...data.testCases[0], id: testCase.id, type: testCase.type };
       }
       return null;
-    } catch {
-      return null;
-    }
+    } catch { return null; }
   };
 
-  const handleUpdateResult = (updatedResult: GenerationResult) => {
-    setResult(updatedResult);
-  };
+  const handleUpdateResult = (updatedResult: GenerationResult) => setResult(updatedResult);
 
   const handleSelectFromHistory = (requirement: string, historyResult: GenerationResult) => {
     setResult(historyResult);
     setCurrentRequirement(requirement);
     setError(null);
+    setActiveTab('generate');
   };
 
   const handleSelectFavorite = (testCase: TestCase) => {
-    setResult({
-      testCases: [testCase],
-      gherkin: "",
-      summary: "Caso de prueba favorito"
-    });
+    setResult({ testCases: [testCase], gherkin: "", summary: "Caso de prueba favorito" });
+    setActiveTab('generate');
   };
 
   const copyGherkin = useCallback(() => {
@@ -155,9 +144,9 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
 
   const copyAllCases = useCallback(() => {
     if (result?.testCases) {
-      const text = result.testCases.map(tc => 
-        `${tc.id} - ${tc.title}\nTipo: ${tc.type} | Prioridad: ${tc.priority}\nPasos:\n${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join("\n")}\nResultado: ${tc.expectedResult}`
-      ).join("\n\n---\n\n");
+      const text = result.testCases.map(tc =>
+        `${tc.id} - ${tc.title}\nTipo: ${tc.type} | Prioridad: ${tc.priority}\nPasos:\n${tc.steps.map((s, i) => `  ${i + 1}. ${s}`).join('\n')}\nResultado: ${tc.expectedResult}`
+      ).join('\n\n---\n\n');
       navigator.clipboard.writeText(text);
     }
   }, [result]);
@@ -171,263 +160,210 @@ Genera una versión mejorada manteniendo el mismo ID y tipo.`,
     setTriggerGenerate(prev => prev + 1);
   }, []);
 
-  const shortcuts = [
-    { key: "Enter", ctrl: true, description: "Generar casos de prueba", action: triggerGenerateAction },
-    { key: "g", ctrl: true, description: "Copiar Gherkin", action: copyGherkin },
-    { key: "c", ctrl: true, shift: true, description: "Copiar todos los casos", action: copyAllCases },
-    { key: "f", ctrl: true, description: "Enfocar campo de requisito", action: focusRequirement },
-  ];
-
-  useKeyboardShortcuts(shortcuts);
+  // Keyboard shortcuts globales
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); triggerGenerateAction(); }
+      if (e.ctrlKey && e.key === 'g') { e.preventDefault(); copyGherkin(); }
+      if (e.ctrlKey && e.shiftKey && e.key === 'C') { e.preventDefault(); copyAllCases(); }
+      if (e.ctrlKey && e.key === 'f' && !e.shiftKey) {
+        // Only if not in an input/textarea
+        if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          focusRequirement();
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [triggerGenerateAction, copyGherkin, copyAllCases, focusRequirement]);
 
   return (
-    <main className="min-h-screen relative">
-      <header className="border-b border-violet-500/20 bg-purple-950/60 backdrop-blur-xl sticky top-0 z-40 shadow-lg shadow-violet-500/10">
-        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-2 sm:gap-4">
-            <div className="flex items-center gap-2 sm:gap-3 group">
-              <div className="transition-transform duration-200 group-hover:scale-105">
-                <AppIcon size="lg" withGlow />
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-base sm:text-lg md:text-xl font-bold text-white">{t.appName}</h1>
-                <p className="text-[10px] sm:text-xs text-zinc-500">{t.appSubtitle}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1 sm:gap-2">
-{/* <UsageCounter /> */}
-              <div className="hidden md:flex items-center gap-2">
-                <KeyboardShortcutsHelp shortcuts={shortcuts} />
-                <Suspense fallback={<div className="w-8 h-8" />}>
-                  <FavoritesPanel onSelectCase={handleSelectFavorite} />
-                </Suspense>
-                <Suspense fallback={<div className="w-8 h-8" />}>
-                  <CloudHistoryPanel
-                    onSelect={handleSelectFromHistory}
-                    onNewGeneration={newGeneration}
-                  />
-                </Suspense>
-              </div>
-              <UserMenu />
-            </div>
+    <main className="min-h-screen bg-zinc-950 text-white">
+      {/* ── NAV ── */}
+      <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-zinc-950/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+          {/* Left: Brand - shrink-0 so it doesn't compress */}
+          <div className="flex items-center gap-3 shrink-0">
+            <AppIcon size="sm" />
+            <span className="text-sm font-semibold tracking-tight hidden md:inline">{t.appName}</span>
           </div>
+
+          {/* Center: Tabs - use mx-auto to center naturally */}
+          <nav className="flex items-center gap-0.5 rounded-lg bg-white/[0.04] border border-white/[0.06] p-0.5 mx-auto">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+                  activeTab === tab.id
+                    ? "bg-white/10 text-white shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+
+          {/* Right: Guide + User - shrink-0 so they never compress */}
+          <div className="flex items-center gap-2 shrink-0">
+            <GuidePanel />
+            <UserMenu />
+          </div>
+        </div>
+
+        {/* Mobile tabs - separate row on small screens */}
+        <div className="sm:hidden border-t border-white/[0.06] px-4 py-2">
+          <nav className="flex items-center gap-0.5">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all flex-1 justify-center ${
+                  activeTab === tab.id
+                    ? "bg-white/10 text-white"
+                    : "text-zinc-500"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
       </header>
 
-      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12">
-        {/* Hero Section - Mobile First */}
-        <div className="max-w-6xl mx-auto mb-10 sm:mb-14 md:mb-20">
-          <div className="mb-6 sm:mb-8 md:mb-12 text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-5 md:mb-6 leading-tight px-2">
-              {t.heroTitle}{" "}
-              <span className="text-violet-500">
-                {t.heroHighlight}
-              </span>
-            </h1>
-            <p className="text-zinc-400 text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-7 md:mb-8 leading-relaxed max-w-2xl mx-auto px-4">
-              {t.heroSubtitle}
-            </p>
+      {/* ── TAB: GENERATE ── */}
+      {activeTab === 'generate' && (
+        <>
+          {/* Hero */}
+          <section className="relative overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-violet-600/8 via-transparent to-transparent" />
+            <div className="relative mx-auto max-w-7xl px-4 pt-12 pb-6 sm:pt-16 sm:pb-8">
+              <div className="mx-auto max-w-2xl text-center">
+                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
+                  Generá casos de prueba
+                  <span className="text-violet-400"> en segundos</span>
+                </h1>
+                <p className="mx-auto mt-3 max-w-lg text-xs text-zinc-500 sm:text-sm md:mt-4 md:max-w-xl">
+                  Escribí un requisito, elegí un motor y obtené casos profesionales con cobertura completa.
+                </p>
 
-            <div className="flex justify-center gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-7 md:mb-8 px-4">
-              <ImageUploader
-                onGenerateFromImage={handleGenerateFromImage}
-                isLoading={isImageLoading}
-                setIsLoading={setIsImageLoading}
-              />
+                {/* Engine pills */}
+                <div className="mt-6 flex items-center justify-center gap-2">
+                  {(['template', 'ollama', 'anthropic'] as AIEngine[]).map((eng) => (
+                    <button
+                      key={eng}
+                      type="button"
+                      onClick={() => setEngine(eng)}
+                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                        engine === eng
+                          ? eng === 'template'
+                            ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
+                            : eng === 'ollama'
+                            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                            : "border-violet-500/40 bg-violet-500/10 text-violet-300"
+                          : "border-white/10 bg-white/5 text-zinc-600 hover:text-zinc-400 hover:border-white/15"
+                      }`}
+                    >
+                      <span className={`h-1.5 w-1.5 rounded-full ${ENGINE_LABELS[eng].dot}`} />
+                      {ENGINE_LABELS[eng].name}
+                      <span className="hidden sm:inline text-[10px] opacity-60">· {ENGINE_LABELS[eng].desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
+          </section>
 
-{/* <TrialBanner />
-          <UsageBanner /> */}
-          <Suspense fallback={<div className="h-20" />}>
-            <OnboardingChecklist />
-          </Suspense>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6 max-w-6xl mx-auto">
-            <div className="order-2 lg:order-1">
+          {/* Workspace */}
+          <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 sm:pb-16 md:px-8">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
               <TestCaseForm
                 onGenerate={handleGenerate}
                 isLoading={isLoading}
                 triggerGenerate={triggerGenerate}
               />
+              <div data-results>
+                <TestCaseOutput
+                  result={result}
+                  isLoading={isLoading}
+                  error={error}
+                  requirementTitle={currentRequirement.split('\n')[0].substring(0, 50)}
+                  onRegenerateCase={handleRegenerateCase}
+                  onUpdateResult={handleUpdateResult}
+                />
+              </div>
             </div>
+          </section>
 
-            <div className="order-1 lg:order-2" data-results>
-              <TestCaseOutput
-                result={result}
-                isLoading={isLoading || isImageLoading}
-                error={error}
-                requirementTitle={currentRequirement.split('\n')[0].substring(0, 50)}
-                onRegenerateCase={handleRegenerateCase}
-                onUpdateResult={handleUpdateResult}
-              />
+          {/* Features Strip */}
+          <section className="border-t border-white/[0.06] bg-zinc-900/40">
+            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:px-8">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <FeatureCard icon={<FileText className="w-5 h-5" />} title="3 motores de IA" desc="Cloud, Local y Templates. Elegí el que mejor se adapte." />
+                <FeatureCard icon={<Shield className="w-5 h-5" />} title="Cobertura completa" desc="Positivos, negativos y de borde generados automáticamente." />
+                <FeatureCard icon={<Download className="w-5 h-5" />} title="Multi-formato" desc="PDF, Excel, Gherkin, JSON, Jira CSV, TestRail CSV." />
+                <FeatureCard icon={<CheckCircle2 className="w-5 h-5" />} title="99 templates" desc="Login, Registro, Carrito, API, Pago y más. Sin IA." />
+              </div>
             </div>
-          </div>
-        </div>
+          </section>
+        </>
+      )}
 
-        {/* 01. Sobre TestCraft AI - Mobile First */}
-        <section className="w-full max-w-6xl mx-auto mb-12 md:mb-16 lg:mb-24 px-4">
-          <div className="text-center mb-8 md:mb-10 lg:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">{t.aboutTitle}</h2>
-            <p className="text-zinc-400 text-sm sm:text-base md:text-lg leading-relaxed max-w-3xl mx-auto px-2">
-              {t.aboutDesc}
+      {/* ── TAB: HISTORY ── */}
+      {activeTab === 'history' && (
+        <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6 md:px-8">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-white">Historial en la Nube</h2>
+            <p className="text-xs text-zinc-500 mt-1">
+              {user
+                ? "Todas tus generaciones guardadas. Hacé clic en una para reutilizarla."
+                : "Iniciá sesión para guardar y ver tu historial."}
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-4xl mx-auto">
-            <div className="text-center p-4 sm:p-5 md:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:border-violet-400/50 transition-all">
-              <div className="text-3xl sm:text-4xl font-bold text-violet-400 mb-1 md:mb-2">10K+</div>
-              <div className="text-gray-300 text-xs sm:text-sm">{t.statsGenerated}</div>
-            </div>
-            <div className="text-center p-4 sm:p-5 md:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:border-violet-400/50 transition-all">
-              <div className="text-3xl sm:text-4xl font-bold text-violet-400 mb-1 md:mb-2">500+</div>
-              <div className="text-gray-300 text-xs sm:text-sm">{t.statsUsers}</div>
-            </div>
-            <div className="text-center p-4 sm:p-5 md:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:border-violet-400/50 transition-all sm:col-span-2 lg:col-span-1">
-              <div className="text-3xl sm:text-4xl font-bold text-violet-400 mb-1 md:mb-2">24/7</div>
-              <div className="text-gray-300 text-xs sm:text-sm">{t.statsAvailability}</div>
-            </div>
-          </div>
+          <CloudHistoryTab
+            onSelect={handleSelectFromHistory}
+            onNewGeneration={newGeneration}
+          />
         </section>
+      )}
 
-        {/* 02. Características & Tecnologías - Mobile First */}
-        <section className="w-full max-w-6xl mx-auto mb-12 md:mb-16 lg:mb-24 px-4">
-          <div className="text-center mb-8 md:mb-10 lg:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">{t.featuresTitle}</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            <div>
-              <h3 className="text-white font-semibold mb-3 md:mb-4 text-xs sm:text-sm uppercase tracking-wider">{t.featuresAI}</h3>
-              <div className="flex flex-wrap gap-1.5 md:gap-2">
-                <SkillTag>{t.tagClaudeAI}</SkillTag>
-                <SkillTag>{t.tagPositive}</SkillTag>
-                <SkillTag>{t.tagNegative}</SkillTag>
-                <SkillTag>{t.tagEdge}</SkillTag>
-                <SkillTag icon={<Camera className="w-3 h-3" />}>{t.tagFromImage}</SkillTag>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-3 md:mb-4 text-xs sm:text-sm uppercase tracking-wider">{t.featuresFormats}</h3>
-              <div className="flex flex-wrap gap-1.5 md:gap-2">
-                <SkillTag>{t.tagGherkin}</SkillTag>
-                <SkillTag>{t.tagTable}</SkillTag>
-                <SkillTag>{t.tagJSON}</SkillTag>
-                <SkillTag>{t.tagPDF}</SkillTag>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-3 md:mb-4 text-xs sm:text-sm uppercase tracking-wider">{t.featuresIntegrationsSoon}</h3>
-              <div className="flex flex-wrap gap-1.5 md:gap-2">
-                <SkillTag>{t.tagJira}</SkillTag>
-                <SkillTag>{t.tagAzure}</SkillTag>
-                <SkillTag>{t.tagGitHub}</SkillTag>
-                <SkillTag>{t.tagTestRail}</SkillTag>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-3 md:mb-4 text-xs sm:text-sm uppercase tracking-wider">{t.featuresPerformance}</h3>
-              <div className="flex flex-wrap gap-1.5 md:gap-2">
-                <SkillTag icon={<Zap className="w-3 h-3" />}>{t.tagFast}</SkillTag>
-                <SkillTag>{t.tagCloud}</SkillTag>
-                <SkillTag>{t.tagHistory}</SkillTag>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 03. Casos de Uso - Mobile First */}
-        <section className="w-full max-w-6xl mx-auto mb-12 md:mb-16 lg:mb-24 px-4">
-          <div className="text-center mb-8 md:mb-10 lg:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">{t.useCasesTitle}</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            <ProjectCard
-              title={t.useCaseEcommerce}
-              description={t.useCaseEcommerceDesc}
-              tags={["Stripe", "PayPal", "Carrito"]}
-            />
-            <ProjectCard
-              title={t.useCaseAPI}
-              description={t.useCaseAPIDesc}
-              tags={["OAuth", "JWT", "CRUD"]}
-            />
-            <ProjectCard
-              title={t.useCaseUI}
-              description={t.useCaseUIDesc}
-              tags={["Responsive", "Forms", "Navigation"]}
-              isNew
-            />
-            <ProjectCard
-              title={t.useCaseRegression}
-              description={t.useCaseRegressionDesc}
-              tags={["CI/CD", "Automation", "Regression"]}
-            />
-          </div>
-        </section>
-
-        {/* 04. Demo Interactivo - Mobile First */}
-        <section className="w-full max-w-5xl mx-auto mb-12 md:mb-16 lg:mb-24 px-4">
-          <div className="text-center mb-8 md:mb-10 lg:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
-              {t.demoTitle}
-            </h2>
-            <p className="text-zinc-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-2">
-              {t.demoSubtitle}
+      {/* ── TAB: FAVORITES ── */}
+      {activeTab === 'favorites' && (
+        <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6 md:px-8">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-white">Favoritos</h2>
+            <p className="text-xs text-zinc-500 mt-1">
+              {user
+                ? "Casos marcados para acceso rápido. Hacé clic para verlos."
+                : "Iniciá sesión para guardar favoritos."}
             </p>
           </div>
-          <Suspense fallback={<div className="h-96 bg-slate-900/30 rounded-xl animate-pulse" />}>
-            <InteractiveDemo />
-          </Suspense>
+          <FavoritesTab onSelectCase={handleSelectFavorite} />
         </section>
-      </div>
+      )}
 
+      {/* ── FOOTER ── */}
       <Suspense fallback={<div className="h-32" />}>
         <Footer />
       </Suspense>
-
-      {/* Upgrade prompt contextual */}
-      {/* {user && !isPro && (
-        <Suspense fallback={null}>
-          <UpgradePrompt usageCount={usageCount} maxUsage={maxUsage} />
-        </Suspense>
-      )} */}
-
-      {/* Panel de diagnóstico - TEMPORAL para debugging */}
-      {process.env.NODE_ENV === 'development' && (
-        <Suspense fallback={null}>
-          <DiagnosticPanel />
-        </Suspense>
-      )}
     </main>
   );
 }
 
-function SkillTag({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
+/* ── Feature Card ── */
+function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
-    <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded text-gray-300 text-[10px] sm:text-xs font-medium hover:border-violet-400/50 transition-colors">
-      {icon}
-      <span className="whitespace-nowrap">{children}</span>
-    </div>
-  );
-}
-
-function ProjectCard({ title, description, tags, isNew }: { title: string; description: string; tags: string[]; isNew?: boolean }) {
-  const { t } = useLanguage();
-  return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 sm:p-5 md:p-6 hover:border-white/20 transition-colors relative">
-      {isNew && (
-        <div className="absolute -top-2 -right-2 px-2 py-1 bg-violet-500 rounded text-[9px] sm:text-[10px] font-bold text-white uppercase">
-          {t.new}
-        </div>
-      )}
-      <h3 className="text-white font-semibold mb-2 sm:mb-3 text-base sm:text-lg">{title}</h3>
-      <p className="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">{description}</p>
-      <div className="flex flex-wrap gap-1.5 sm:gap-2">
-        {tags.map((tag) => (
-          <span key={tag} className="px-2 py-0.5 sm:py-1 bg-white/10 text-gray-400 text-[10px] sm:text-xs rounded whitespace-nowrap">
-            {tag}
-          </span>
-        ))}
+    <div className="group flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 transition-colors hover:border-white/10 hover:bg-white/[0.04]">
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400 transition-colors group-hover:bg-violet-500/15">
+        {icon}
+      </div>
+      <div>
+        <h3 className="text-sm font-semibold text-white">{title}</h3>
+        <p className="mt-1 text-xs leading-relaxed text-zinc-500">{desc}</p>
       </div>
     </div>
   );
